@@ -1,3 +1,4 @@
+// src/ai/flows/script-generation/generate-web-doc-script.ts
 'use server';
 
 /**
@@ -28,6 +29,8 @@ export type GenerateWebDocScriptInput = z.infer<typeof GenerateWebDocScriptInput
 const GenerateWebDocScriptOutputSchema = z.object({
   title: z.string().describe('The title of the web documentary.'),
   scenes: z.array(SceneSchema).describe('An array of scenes that make up the documentary.'),
+  seoKeywords: z.string().describe('SEO keywords relevant to the script as a whole.'),
+  thumbnailIdeas: z.string().describe('Ideas for creating a thumbnail for the video.'),
 });
 export type GenerateWebDocScriptOutput = z.infer<typeof GenerateWebDocScriptOutputSchema>;
 
@@ -52,8 +55,12 @@ Your task is to:
 3.  For each scene, write the narration in Brazilian Portuguese.
 4.  For each scene, create a detailed image generation prompt (in English).
 5.  For each scene, create a detailed video generation prompt (in English).
+6.  Generate relevant SEO keywords for the overall script.
+7.  Provide some thumbnail ideas.
 
-The final output should be a complete storyboard, ready for production. The narration must be in Brazilian Portuguese, but the image and video prompts must be in English.
+The final output should be a complete storyboard, ready for production. 
+The narration, title, seoKeywords and thumbnailIdeas must be in Brazilian Portuguese.
+The image and video prompts must be in English.
 `,
 });
 

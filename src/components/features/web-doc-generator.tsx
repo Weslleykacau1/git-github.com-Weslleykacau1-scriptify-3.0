@@ -6,19 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { BookOpen, Pencil, List, Clock, Info, Loader2 } from 'lucide-react';
+import { BookOpen, Pencil, List, Clock, Info, Loader2, Copy, Video, Image as ImageIcon, FileInput, Download, Search, Film } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateWebDocScript, GenerateWebDocScriptOutput } from '@/ai/flows/script-generation/generate-web-doc-script';
-import { Textarea } from '../ui/textarea';
+
 
 export function WebDocGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [topic, setTopic] = useState('');
   const [topicsToCover, setTopicsToCover] = useState('');
   const [duration, setDuration] = useState(5);
-  const [generatedScript, setGeneratedScript] = useState<GenerateWebDocScriptOutput | null>(null);
+  const [result, setResult] = useState<GenerateWebDocScriptOutput | null>(null);
   const { toast } = useToast();
 
   const handleGenerate = async () => {
@@ -27,7 +27,7 @@ export function WebDocGenerator() {
         return;
     }
     setIsLoading(true);
-    setGeneratedScript(null);
+    setResult(null);
     toast({ title: 'Gerando roteiro de Web Doc...' });
     try {
       const result = await generateWebDocScript({
@@ -35,7 +35,7 @@ export function WebDocGenerator() {
         topicsToCover: topicsToCover || undefined,
         duration,
       });
-      setGeneratedScript(result);
+      setResult(result);
       toast({ title: 'Roteiro de Web Doc gerado com sucesso!' });
     } catch (error) {
       console.error('Failed to generate web doc script:', error);
@@ -45,20 +45,33 @@ export function WebDocGenerator() {
     }
   };
 
+  const handleCopy = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: `${type} copiado para a área de transferência!` });
+  };
+
+
   return (
     <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="px-0">
-        <div className="flex items-center gap-3">
-          <BookOpen className="h-6 w-6 text-primary" />
-          <CardTitle className="m-0 text-xl font-bold font-headline">Gerador de Roteiro para Web Doc</CardTitle>
+         <div className="flex items-center gap-3">
+          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <BookOpen className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="m-0 text-xl font-bold font-headline">Gerador de Roteiro para Web Documentário</CardTitle>
+            <CardDescription>
+                Crie um roteiro completo, cena por cena, para o seu documentário.
+            </CardDescription>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="px-0 space-y-4">
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertTitle>Como usar o Gerador de Roteiro para Web Doc</AlertTitle>
+          <AlertTitle>Como usar?</AlertTitle>
           <AlertDescription>
-            Esta ferramenta cria um roteiro completo para um documentário, cena por cena. Para cada cena, a IA gera a narração em português e um "prompt" de imagem em inglês. Use este prompt em geradores de imagem (como Midjourney ou DALL-E) para criar os visuais que acompanharão a narração, produzindo um storyboard completo.
+            Defina o tema e a IA criará o roteiro, os prompts de imagem/vídeo para cada cena, ideias de thumbnail e palavras-chave de SEO.
           </AlertDescription>
         </Alert>
         <div className="space-y-2">
@@ -97,14 +110,83 @@ export function WebDocGenerator() {
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BookOpen className="mr-2 h-4 w-4" />}
           Gerar Roteiro de Web Doc
         </Button>
-        {generatedScript && (
-             <div className="space-y-2 w-full">
-                <Label>Roteiro Gerado (JSON)</Label>
-                <Textarea 
-                    value={JSON.stringify(generatedScript, null, 2)} 
-                    readOnly 
-                    className="min-h-[250px] bg-muted font-mono text-xs" 
-                />
+         {isLoading && (
+            <div className="mt-6 flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )}
+        {result && (
+             <div className="mt-6 space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className='text-lg'>{result.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {result.scenes.map((scene, index) => (
+                            <div key={index} className="border bg-card p-4 rounded-lg space-y-4">
+                                <h4 className="font-semibold">{scene.sceneTitle}</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 text-sm font-medium">
+                                            <FileInput className="h-4 w-4 text-primary" />
+                                            <span>Roteiro (PT-BR)</span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{scene.narration}</p>
+                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.narration, 'Roteiro')}>
+                                            <Copy className="mr-2 h-4 w-4" />
+                                            Copiar Roteiro
+                                        </Button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-sm font-medium">
+                                                <ImageIcon className="h-4 w-4 text-primary" />
+                                                <span>Prompt de Imagem (EN)</span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
+                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                                <Copy className="mr-2 h-4 w-4" />
+                                                Copiar
+                                            </Button>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-sm font-medium">
+                                                <Video className="h-4 w-4 text-primary" />
+                                                <span>Prompt de Vídeo (EN)</span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
+                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
+                                                <Copy className="mr-2 h-4 w-4" />
+                                                Copiar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className='text-lg'>Ideias para Thumbnail</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
+                            <Button variant="outline" size="sm" className='mt-2'><Film className="mr-2 h-4 w-4"/>Gerar Thumbnail</Button>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className='text-lg'>Palavras-chave de SEO</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
+                            <Button variant="outline" size="sm" className='mt-2'><Search className="mr-2 h-4 w-4"/>Otimizar para SEO</Button>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         )}
       </CardFooter>
