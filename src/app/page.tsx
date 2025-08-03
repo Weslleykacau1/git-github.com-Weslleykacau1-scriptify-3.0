@@ -7,6 +7,7 @@ import { ContentSuggester } from '@/components/features/content-suggester';
 import { MediaPromptGenerator } from '@/components/features/media-prompt-generator';
 import { ThumbnailGenerator } from '@/components/features/thumbnail-generator';
 import { CharacterGallery } from '@/components/features/character-gallery';
+import { SceneGallery } from '@/components/features/scene-gallery';
 
 export default function Home() {
   return (
@@ -60,7 +61,7 @@ const items = [
     description: 'Acesse e gerencie todas as suas cenas criadas.',
     className: 'md:col-span-1',
     icon: <Clapperboard className="h-6 w-6 text-primary" />,
-    component: <div className='w-full h-full flex items-center justify-center text-xs text-center'>Em breve...</div>,
+    component: <SceneGallery />,
   },
   {
     title: 'Galeria de Personagens',
