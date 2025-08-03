@@ -4,8 +4,9 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive, FileText } from 'lucide-react';
+import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive, FileText, Wand2 } from 'lucide-react';
 import { generateCharacterProfile, GenerateCharacterProfileOutput } from '@/ai/flows/generate-character-profile';
+import { generateScriptIdeas, GenerateScriptIdeasOutput } from '@/ai/flows/generate-script-ideas';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -13,6 +14,7 @@ import { Textarea } from '../ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Card, CardContent } from '../ui/card';
 
 export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
@@ -20,6 +22,8 @@ export function CharacterProfileGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const [profile, setProfile] = useState<Partial<GenerateCharacterProfileOutput>>({});
+  const [sceneDescription, setSceneDescription] = useState('');
+  const [script, setScript] = useState<GenerateScriptIdeasOutput | null>(null);
   const { toast } = useToast();
 
   const handleProfileChange = (field: keyof GenerateCharacterProfileOutput, value: string) => {
@@ -69,19 +73,34 @@ export function CharacterProfileGenerator() {
     analyzeWithAI({ textDescription });
   };
   
-  const handleGenerateScript = async (format: 'markdown' | 'json') => {
+  const handleGenerateScript = async () => {
+    if (!profile.name || !sceneDescription) {
+        toast({
+            title: 'Campos obrigatórios em falta',
+            description: 'Por favor, certifique-se de que o perfil do personagem e a descrição da cena estão preenchidos.',
+            variant: 'destructive',
+        });
+        return;
+    }
     setIsGeneratingScript(true);
-    toast({
-      title: 'Gerando roteiro...',
-      description: `O roteiro está sendo gerado em formato ${format}.`,
-    });
-    // Simular chamada de API
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsGeneratingScript(false);
-    toast({
-      title: 'Roteiro Gerado!',
-      description: 'Seu roteiro foi gerado com sucesso.',
-    });
+    setScript(null);
+    try {
+        const characterProfileString = JSON.stringify(profile, null, 2);
+        const result = await generateScriptIdeas({
+            characterProfile: characterProfileString,
+            sceneDescription: sceneDescription,
+        });
+        setScript(result);
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: 'Erro ao gerar roteiro',
+            description: 'Ocorreu um erro ao comunicar com a IA.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsGeneratingScript(false);
+    }
   };
   
   return (
@@ -235,7 +254,12 @@ export function CharacterProfileGenerator() {
             </div>
              <div className="space-y-2">
                 <Label htmlFor="sceneSetting">Cenário</Label>
-                <Textarea id="sceneSetting" placeholder="Descreva o ambiente em detalhes - iluminação, cores, objetos, atmosfera..." />
+                <Textarea 
+                    id="sceneSetting" 
+                    placeholder="Descreva o ambiente em detalhes - iluminação, cores, objetos, atmosfera..."
+                    value={sceneDescription}
+                    onChange={(e) => setSceneDescription(e.target.value)}
+                />
                 <Alert>
                     <Sparkles className="h-4 w-4" />
                     <AlertDescription className="text-xs">
@@ -369,19 +393,29 @@ export function CharacterProfileGenerator() {
             </p>
 
             <div className="flex flex-col space-y-4 flex-grow justify-center">
-              <Button onClick={() => handleGenerateScript('markdown')} disabled={isGeneratingScript} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold text-lg">
-                {isGeneratingScript && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Gerar Roteiro (Markdown)
-              </Button>
-              <Button onClick={() => handleGenerateScript('json')} disabled={isGeneratingScript} variant="ghost" className="text-lg">
-                {isGeneratingScript ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <span className="font-mono mr-2">{'{ }'}</span>
-                )}
-                Gerar Roteiro (JSON)
+              <Button onClick={handleGenerateScript} disabled={isGeneratingScript} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold text-lg">
+                {isGeneratingScript ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2"/>}
+                Gerar Roteiro
               </Button>
             </div>
+            
+            {isGeneratingScript && (
+                <div className="flex justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            )}
+
+            {script && (
+                <Card>
+                    <CardContent className="p-4">
+                        <Textarea 
+                            readOnly
+                            value={script.scriptIdea}
+                            className="min-h-[200px] bg-muted/50 border-0"
+                        />
+                    </CardContent>
+                </Card>
+            )}
 
             <Alert>
               <AlertDescription className="text-xs text-center">
