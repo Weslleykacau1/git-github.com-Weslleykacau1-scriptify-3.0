@@ -76,9 +76,16 @@ export function ThumbnailGenerator() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="default">Estilo Padrão da IA</SelectItem>
-              <SelectItem value="mrbeast">Estilo MrBeast</SelectItem>
-              <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
-              <SelectItem value="clickbait">Clickbait</SelectItem>
+              <SelectItem value="shocked">Expressão Chocada + Fundo Caótico</SelectItem>
+              <SelectItem value="half-human">Metade Humano / Metade IA ou Vilão</SelectItem>
+              <SelectItem value="three-emotions">Três Emoções do Mesmo Rosto</SelectItem>
+              <SelectItem value="floating">Personagem Flutuando ou Fora da Realidade</SelectItem>
+              <SelectItem value="dramatic-close-up">Close no Rosto com Detalhe Dramático</SelectItem>
+              <SelectItem value="mysterious-object">Segurando um Objeto Misterioso ou Dossiê</SelectItem>
+              <SelectItem value="versus">Versus (Agente vs Inimigo / Empresa / Objeto)</SelectItem>
+              <SelectItem value="pop-color">Fundo Pop Colorido + Texto Impactante</SelectItem>
+              <SelectItem value="detective">Detetive no Escuro com Lupa / Pistas</SelectItem>
+              <SelectItem value="hacker">Estilo Hacker (Capuz + Código Refletido nos Óculos)</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">Deixe a IA decidir o melhor estilo com base no conteúdo.</p>
