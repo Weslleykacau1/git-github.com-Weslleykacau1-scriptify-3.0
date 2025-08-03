@@ -23,7 +23,7 @@ export function ThumbnailGenerator() {
     if (!mainImage || !theme) {
       toast({
         title: 'Campos obrigatórios',
-        description: 'Por favor, carregue a imagem principal e defina um tema.',
+        description: 'Por favor, carregue la imagem principal e defina um tema.',
         variant: 'destructive',
       });
       return;
@@ -86,6 +86,16 @@ export function ThumbnailGenerator() {
               <SelectItem value="pop-color">Fundo Pop Colorido + Texto Impactante</SelectItem>
               <SelectItem value="detective">Detetive no Escuro com Lupa / Pistas</SelectItem>
               <SelectItem value="hacker">Estilo Hacker (Capuz + Código Refletido nos Óculos)</SelectItem>
+              <SelectItem value="extreme-zoom">Zoom Extremo nos Olhos / Expressão Facial</SelectItem>
+              <SelectItem value="arrows-circle">Setas Vermelhas + Circulo de Destaque</SelectItem>
+              <SelectItem value="before-after">Antes e Depois (divisão de tela com contraste)</SelectItem>
+              <SelectItem value="frozen-action">Mini Cena de Ação Congelada (tipo filme)</SelectItem>
+              <SelectItem value="neon-lighting">Iluminação Neon (Cyberpunk / Tech Vibe)</SelectItem>
+              <SelectItem value="mysterious-silhouette">Silhueta Misteriosa com "Quem é?"</SelectItem>
+              <SelectItem value="giant-text">Texto Gigante Coberto por Emojis / Censurado</SelectItem>
+              <SelectItem value="explosion-background">Explosão no Fundo com Personagem Central Calmo</SelectItem>
+              <SelectItem value="fire-ice">Rosto em Chamas / Gelo (efeitos extremos)</SelectItem>
+              <SelectItem value="movie-poster">Thumbnail Estilo Cartaz de Filme / Série</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">Deixe a IA decidir o melhor estilo com base no conteúdo.</p>
