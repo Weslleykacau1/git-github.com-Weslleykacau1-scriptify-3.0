@@ -3,7 +3,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, UploadCloud, Clapperboard, FileText, Trash2 } from 'lucide-react';
+import { Plus, UploadCloud, Clapperboard, FileText, Trash2, Palette } from 'lucide-react';
 
 const characters = [
   {
@@ -22,11 +22,14 @@ export function CharacterGallery() {
   return (
     <div className="flex flex-col h-full w-full space-y-4">
       <div className="flex justify-between items-start mb-2">
-        <div>
-          <h2 className="text-xl font-bold font-headline">Galeria de Personagens</h2>
-          <p className="text-sm text-muted-foreground">
-            Personagens que você criou. Carregue um para editar ou gerar roteiros.
-          </p>
+        <div className='flex items-center gap-3'>
+          <Palette className="h-6 w-6 text-primary" />
+          <div>
+            <h2 className="text-xl font-bold font-headline">Galeria de Personagens</h2>
+            <p className="text-sm text-muted-foreground">
+              Personagens que você criou. Carregue um para editar ou gerar roteiros.
+            </p>
+          </div>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />

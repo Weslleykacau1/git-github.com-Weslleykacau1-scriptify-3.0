@@ -93,7 +93,7 @@ export function VideoTranscriber() {
       <Card>
         <CardHeader>
             <div className="flex items-center gap-3">
-                <FileText className="h-6 w-6 text-primary" />
+                <Video className="h-6 w-6 text-primary" />
                 <CardTitle className="m-0 text-xl font-bold font-headline">Transcrever Vídeo Anexado</CardTitle>
             </div>
              <p className="text-sm text-muted-foreground">

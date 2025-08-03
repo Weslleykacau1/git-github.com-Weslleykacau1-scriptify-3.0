@@ -32,12 +32,14 @@ export function ScriptIdeaGenerator() {
     <div className="flex flex-col h-full w-full space-y-4">
       <div className="flex items-center gap-3">
         <Pencil className="h-6 w-6 text-primary" />
-        <h2 className="text-xl font-bold font-headline">Gerador de Roteiro Viral</h2>
+        <div>
+            <h2 className="text-xl font-bold font-headline">Gerador de Roteiro Viral</h2>
+            <p className="text-sm text-muted-foreground">
+                Escreva um tema, escolha as opções e clique para criar um roteiro. A imagem de referência é opcional. O resultado será guardado na sua galeria.
+            </p>
+        </div>
       </div>
-      <p className="text-sm text-muted-foreground">
-        Escreva um tema, escolha as opções e clique para criar um roteiro. A imagem de referência é opcional. O resultado será guardado na sua galeria.
-      </p>
-
+      
       <div className="space-y-2">
         <Label className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Imagem de Inspiração (Opcional)</Label>
         <FileUploader onFileChange={setImage} file={image} />

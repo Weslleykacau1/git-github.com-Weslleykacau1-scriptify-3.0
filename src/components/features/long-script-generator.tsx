@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { FileText, User, Clapperboard, Camera, Pencil, Clock } from 'lucide-react';
+import { FileText, User, Clapperboard, Camera, Pencil, Clock, BookOpen } from 'lucide-react';
 
 export function LongScriptGenerator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +24,7 @@ export function LongScriptGenerator() {
     <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="px-0">
         <div className="flex items-center gap-3">
-          <FileText className="h-6 w-6 text-primary" />
+          <BookOpen className="h-6 w-6 text-primary" />
           <CardTitle className="m-0 text-xl font-bold font-headline">Gerador de Roteiro de Vídeo Longo</CardTitle>
         </div>
         <CardDescription>

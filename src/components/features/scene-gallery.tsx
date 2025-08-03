@@ -3,7 +3,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, UploadCloud, FileText, Trash2, Download } from 'lucide-react';
+import { Plus, UploadCloud, FileText, Trash2, Download, Clapperboard } from 'lucide-react';
 
 const scenes = [
   {
@@ -17,11 +17,14 @@ export function SceneGallery() {
   return (
     <div className="flex flex-col h-full w-full space-y-4">
       <div className="flex justify-between items-start mb-2">
-        <div>
-          <h2 className="text-xl font-bold font-headline">Galeria de Cenas</h2>
-          <p className="text-sm text-muted-foreground">
-            Cenas que você salvou. Carregue uma para editar ou use-a com um influenciador para gerar um roteiro.
-          </p>
+        <div className="flex items-center gap-3">
+          <Clapperboard className="h-6 w-6 text-primary" />
+          <div>
+            <h2 className="text-xl font-bold font-headline">Galeria de Cenas</h2>
+            <p className="text-sm text-muted-foreground">
+              Cenas que você salvou. Carregue uma para editar ou use-a com um influenciador para gerar um roteiro.
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
             <Button>
