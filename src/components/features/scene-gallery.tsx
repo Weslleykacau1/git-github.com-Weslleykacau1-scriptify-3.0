@@ -50,11 +50,11 @@ export function SceneGallery() {
             </CardContent>
             <CardFooter className="flex flex-col items-start gap-2">
               <div className="flex w-full gap-2">
-                <Button className="flex-1"><UploadCloud className="mr-2"/>Carregar</Button>
+                <Button className="flex-1"><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
               </div>
               <div className="flex w-full justify-between items-center mt-2">
-                <Button variant="ghost" size="sm"><FileText className="mr-2"/>Exportar</Button>
-                <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive"><Trash2 /></Button>
+                <Button variant="ghost" size="sm"><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
+                <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive"><Trash2 className="h-4 w-4"/></Button>
               </div>
             </CardFooter>
           </Card>

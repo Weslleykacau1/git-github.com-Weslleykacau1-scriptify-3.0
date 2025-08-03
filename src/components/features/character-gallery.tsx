@@ -12,9 +12,9 @@ const characters = [
     bio: 'O Dr. Saúde, seu guia confiável para uma vida mais longa e feliz!',
   },
   {
-    name: 'Personagem Sem Nome',
-    niche: 'A definir',
-    bio: 'Descrição do personagem a ser preenchida.',
+    name: 'Lucas Mendes',
+    niche: 'Viagens e Estilo de Vida',
+    bio: 'Vivendo aventuras pelo mundo e compartilhando cada momento com você!',
   },
 ];
 
@@ -49,12 +49,12 @@ export function CharacterGallery() {
             </CardContent>
             <CardFooter className="flex flex-col items-start gap-2">
               <div className="flex w-full gap-2">
-                <Button className="flex-1"><UploadCloud className="mr-2"/>Carregar</Button>
-                <Button variant="secondary" className="flex-1">Cena Rápida</Button>
+                <Button className="flex-1"><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
+                <Button variant="secondary" className="flex-1"><Clapperboard className="mr-2 h-4 w-4" />Cena Rápida</Button>
               </div>
               <div className="flex w-full justify-between items-center mt-2">
-                <Button variant="ghost" size="sm"><FileText className="mr-2"/>Exportar</Button>
-                <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive"><Trash2 /></Button>
+                <Button variant="ghost" size="sm"><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
+                <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive"><Trash2 className="h-4 w-4"/></Button>
               </div>
             </CardFooter>
           </Card>
