@@ -527,16 +527,6 @@ export function CharacterProfileGenerator() {
                     <Box className="h-6 w-6 text-green-400" />
                     <h3 className="font-semibold text-lg text-green-400">Integração de Produto (Opcional)</h3>
                 </div>
-                <div className="space-y-2">
-                    <Label>Carregue a imagem do produto</Label>
-                    <FileUploader onFileChange={setProductPhotoDataUri} file={productPhotoDataUri} />
-                    {productPhotoDataUri && (
-                        <Button onClick={analyzeProduct} disabled={isLoadingProduct} className="mt-4 w-full">
-                            {isLoadingProduct ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            Analisar Imagem do Produto
-                        </Button>
-                    )}
-                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <Label htmlFor="productName">Nome do Produto</Label>
@@ -546,6 +536,16 @@ export function CharacterProfileGenerator() {
                         <Label htmlFor="partnerBrand">Marca Parceira</Label>
                         <Input id="partnerBrand" value={scene.product?.brand || ''} onChange={(e) => setScene(p => ({...p, product: {...p?.product, brand: e.target.value}}))} />
                     </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>Carregue a imagem do produto</Label>
+                    <FileUploader onFileChange={setProductPhotoDataUri} file={productPhotoDataUri} />
+                    {productPhotoDataUri && (
+                        <Button onClick={analyzeProduct} disabled={isLoadingProduct} className="mt-4 w-full">
+                            {isLoadingProduct ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                            Analisar Imagem do Produto
+                        </Button>
+                    )}
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="productDescription">Descrição do Produto</Label>
