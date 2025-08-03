@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, FileInput, Image as ImageIcon, Video, Copy, Download, Search, Film } from 'lucide-react';
 import { generateMediaPrompts, GenerateMediaPromptsOutput } from '@/ai/flows/generate-media-prompts';
@@ -49,9 +48,9 @@ export function MediaPromptGenerator() {
     }
   }
 
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
-    toast({ title: 'Copiado para a área de transferência!' });
+    toast({ title: `${type} copiado para a área de transferência!` });
   };
 
   return (
@@ -101,8 +100,6 @@ export function MediaPromptGenerator() {
                     <CardHeader>
                         <CardTitle className='text-lg'>Prompts Gerados por Cena</CardTitle>
                         <div className="flex gap-2">
-                           <Button variant="outline" size="sm"><Search className="mr-2"/>Gerar SEO</Button>
-                           <Button variant="outline" size="sm"><Film className="mr-2"/>Gerar Thumbnail</Button>
                            <Button variant="outline" size="sm"><Download className="mr-2"/>Exportar</Button>
                         </div>
                     </CardHeader>
@@ -113,25 +110,38 @@ export function MediaPromptGenerator() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm font-medium">
-                                            <ImageIcon className="h-4 w-4 text-primary" />
-                                            <span>Prompt de Imagem (EN)</span>
+                                            <FileInput className="h-4 w-4 text-primary" />
+                                            <span>Roteiro (PT-BR)</span>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
-                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt)}>
+                                        <p className="text-sm text-muted-foreground">{scene.script}</p>
+                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.script, 'Roteiro')}>
                                             <Copy className="mr-2 h-4 w-4" />
-                                            Copiar
+                                            Copiar Roteiro
                                         </Button>
                                     </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm font-medium">
-                                            <Video className="h-4 w-4 text-primary" />
-                                            <span>Prompt de Vídeo (EN)</span>
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-sm font-medium">
+                                                <ImageIcon className="h-4 w-4 text-primary" />
+                                                <span>Prompt de Imagem (EN)</span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
+                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                                <Copy className="mr-2 h-4 w-4" />
+                                                Copiar
+                                            </Button>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
-                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt)}>
-                                            <Copy className="mr-2 h-4 w-4" />
-                                            Copiar
-                                        </Button>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-sm font-medium">
+                                                <Video className="h-4 w-4 text-primary" />
+                                                <span>Prompt de Vídeo (EN)</span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
+                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
+                                                <Copy className="mr-2 h-4 w-4" />
+                                                Copiar
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -146,6 +156,7 @@ export function MediaPromptGenerator() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
+                            <Button variant="outline" size="sm" className='mt-2'><Film className="mr-2"/>Gerar Thumbnail</Button>
                         </CardContent>
                     </Card>
                     <Card>
@@ -154,6 +165,7 @@ export function MediaPromptGenerator() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
+                            <Button variant="outline" size="sm" className='mt-2'><Search className="mr-2"/>Otimizar para SEO</Button>
                         </CardContent>
                     </Card>
                 </div>
