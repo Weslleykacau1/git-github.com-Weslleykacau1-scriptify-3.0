@@ -1,0 +1,62 @@
+{
+  "characters": [
+    {
+      "id": "char_1",
+      "name": "Dr. Saúde",
+      "niche": "Saúde e bem-estar",
+      "bio": "O Dr. Saúde, seu guia confiável para uma vida mais longa e feliz!",
+      "image": "/placeholders/dr-saude.png",
+      "profile": {
+        "name": "Dr. Saúde",
+        "niche": "Saúde e bem-estar",
+        "personality": "Confiável, experiente, amigável",
+        "physicalAppearance": "Homem de meia idade, cabelo grisalho, usa um jaleco branco",
+        "clothingStyle": "Profissional, jaleco branco sobre camisa social",
+        "biography": "Um médico renomado que decidiu usar as redes sociais para compartilhar dicas de saúde de forma acessível.",
+        "uniqueTraits": "Sempre termina seus vídeos com o bordão 'Saúde em primeiro lugar!'",
+        "accent": "Paulista",
+        "age": "52",
+        "gender": "Masculino",
+        "generationSeed": "123456",
+        "negativePrompt": ""
+      }
+    },
+    {
+      "id": "char_2",
+      "name": "Lucas Mendes",
+      "niche": "Viagens e Estilo de Vida",
+      "bio": "Vivendo aventuras pelo mundo e compartilhando cada momento com você!",
+      "image": "/placeholders/lucas-mendes.png",
+      "profile": {
+        "name": "Lucas Mendes",
+        "niche": "Viagens e Estilo de Vida",
+        "personality": "Aventureiro, carismático, espontâneo",
+        "physicalAppearance": "Jovem, cabelo castanho, bronzeado, olhos castanhos",
+        "clothingStyle": "Roupas casuais e confortáveis, adequadas para viagens",
+        "biography": "Um nômade digital que trocou a vida de escritório por uma mochila e um passaporte cheio de carimbos.",
+        "uniqueTraits": "Consegue falar 5 idiomas",
+        "accent": "Carioca",
+        "age": "28",
+        "gender": "Masculino",
+        "generationSeed": "654321",
+        "negativePrompt": "evitar cenários urbanos"
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene_1",
+      "title": "Cena Sem Título",
+      "description": "A cena se passa em um ambiente interno, possivelmente um estúdio ou escritório, com iluminação...",
+      "duration": 8,
+      "setting": "Um estúdio de gravação moderno com fundo neutro, boa iluminação e um microfone profissional.",
+      "mainAction": "O personagem fala diretamente para a câmera, explicando um conceito.",
+      "dialogue": "Olá pessoal! Hoje vamos falar sobre a importância de uma boa noite de sono.",
+      "cameraAngle": "dynamic",
+      "videoFormat": "9:16",
+      "allowsDigitalText": false,
+      "onlyPhysicalText": false,
+      "product": null
+    }
+  ]
+}
