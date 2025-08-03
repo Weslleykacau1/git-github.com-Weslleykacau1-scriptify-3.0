@@ -1,3 +1,4 @@
+// src/ai/flows/content-assistance/suggest-dialogue.ts
 'use server';
 
 /**
@@ -13,6 +14,7 @@ import {z} from 'genkit';
 
 const SuggestDialogueInputSchema = z.object({
   characterPersonality: z.string().describe('Os traços de personalidade do personagem.'),
+  characterAccent: z.string().describe('O sotaque do personagem (em português do Brasil).'),
   sceneDescription: z.string().describe('A descrição do cenário.'),
   sceneAction: z.string().describe('A ação principal que o personagem está a realizar.'),
 });
@@ -31,7 +33,7 @@ const prompt = ai.definePrompt({
   name: 'suggestDialoguePrompt',
   input: {schema: SuggestDialogueInputSchema},
   output: {schema: SuggestDialogueOutputSchema},
-  prompt: `Você é um roteirista de diálogos. Crie uma linha de diálogo autêntica e curta para o personagem, considerando sua personalidade e o que está acontecendo na cena. O diálogo deve ser em português do Brasil.
+  prompt: `Você é um roteirista de diálogos. Crie uma linha de diálogo autêntica e curta para o personagem, considerando sua personalidade e o que está acontecendo na cena. O diálogo deve ser em português do Brasil e refletir o sotaque "{{characterAccent}}".
 
 Personalidade do Personagem:
 {{{characterPersonality}}}

@@ -1,3 +1,4 @@
+// src/ai/flows/script-generation/generate-video-script.ts
 'use server';
 
 /**
@@ -38,7 +39,7 @@ const prompt = ai.definePrompt({
 The output must be in MARKDOWN format.
 The script should have a total duration of {{scene.duration}} seconds.
 For each second, describe the visual action and camera work in detail. Visual descriptions and SFX must be in ENGLISH.
-The character's dialogue must be in BRAZILIAN PORTUGUESE, matching their personality and accent.
+The character's dialogue must be in BRAZILIAN PORTUGUESE, matching their personality and the specified accent.
 
 **Character Profile:**
 - Name: {{character.name}}

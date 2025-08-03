@@ -236,6 +236,7 @@ export function CharacterProfileGenerator() {
         case 'dialogue':
           result = await suggestDialogue({
             characterPersonality: profile.personality || '',
+            characterAccent: profile.accent || 'Padrão',
             sceneDescription: scene.setting || '',
             sceneAction: scene.mainAction || ''
           });
