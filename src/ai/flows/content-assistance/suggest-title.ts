@@ -32,10 +32,10 @@ const prompt = ai.definePrompt({
   prompt: `Você é um especialista em títulos criativos. Crie um título curto e impactante para a cena descrita abaixo.
 
 Cenário:
-{{sceneDescription}}
+{{{sceneDescription}}}
 
 Ação:
-{{sceneAction}}
+{{{sceneAction}}}
 
 Sugestão de Título:`,
 });

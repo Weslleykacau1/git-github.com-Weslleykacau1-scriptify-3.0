@@ -34,13 +34,13 @@ const prompt = ai.definePrompt({
   prompt: `Você é um roteirista de diálogos. Crie uma linha de diálogo autêntica e curta para o personagem, considerando sua personalidade e o que está acontecendo na cena. O diálogo deve ser em português do Brasil.
 
 Personalidade do Personagem:
-{{characterPersonality}}
+{{{characterPersonality}}}
 
 Cenário:
-{{sceneDescription}}
+{{{sceneDescription}}}
 
 Ação Principal:
-{{sceneAction}}
+{{{sceneAction}}}
 
 Diálogo Sugerido:`,
 });

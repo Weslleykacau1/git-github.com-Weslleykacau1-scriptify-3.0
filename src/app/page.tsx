@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
-import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Video, GalleryVertical, MicVocal, ArrowLeft, Zap } from 'lucide-react';
+import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
@@ -13,21 +13,22 @@ import { CharacterGallery } from '@/components/features/character-gallery';
 import { SceneGallery } from '@/components/features/scene-gallery';
 import { Button } from '@/components/ui/button';
 import { VideoTranscriber } from '@/components/features/video-transcriber';
+import { ArrowLeft } from 'lucide-react';
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script';
 
-const featureComponents: Record<Exclude<ActiveView, 'home'>, React.ReactNode> = {
-  creator: <CharacterProfileGenerator />,
-  viral: <ScriptIdeaGenerator />,
-  transcribe: <VideoTranscriber />,
-  scene_gallery: <SceneGallery />,
-  character_gallery: <CharacterGallery />,
-  thumbnail: <ThumbnailGenerator />,
-  advanced_script: <AdvancedScriptingTools />,
-};
-
 export default function Home() {
   const [activeView, setActiveView] = useState<ActiveView>('home');
+
+  const featureComponents: Record<Exclude<ActiveView, 'home'>, React.ReactNode> = {
+    creator: <CharacterProfileGenerator />,
+    viral: <ScriptIdeaGenerator />,
+    transcribe: <VideoTranscriber />,
+    scene_gallery: <SceneGallery />,
+    character_gallery: <CharacterGallery />,
+    thumbnail: <ThumbnailGenerator />,
+    advanced_script: <AdvancedScriptingTools />,
+  };
 
   const items = [
     {
@@ -36,7 +37,6 @@ export default function Home() {
       description: 'A ferramenta principal para dar vida às suas ideias. Crie influenciadores e defina as cenas para os seus vídeos.',
       className: 'md:col-span-2 md:row-span-2',
       icon: <Bot className="h-6 w-6" />,
-      component: <CharacterProfileGenerator />,
     },
     {
       id: 'viral' as ActiveView,
@@ -44,7 +44,6 @@ export default function Home() {
       description: 'Use a fórmula viral para criar roteiros curtos e de alto impacto para Shorts e TikTok.',
       className: 'md:col-span-1',
       icon: <Rocket className="h-6 w-6" />,
-      component: <ScriptIdeaGenerator />,
     },
     {
       id: 'transcribe' as ActiveView,
@@ -52,7 +51,6 @@ export default function Home() {
       description: 'Transforme áudio de vídeos em texto para criar novos roteiros e conteúdos.',
       className: 'md:col-span-1',
       icon: <FileText className="h-6 w-6" />,
-      component: <VideoTranscriber />,
     },
     {
       id: 'scene_gallery' as ActiveView,
@@ -60,7 +58,6 @@ export default function Home() {
       description: 'Acesse e gerencie todas as suas cenas criadas.',
       className: 'md:col-span-1',
       icon: <Clapperboard className="h-6 w-6" />,
-      component: <SceneGallery />,
     },
     {
       id: 'character_gallery' as ActiveView,
@@ -68,7 +65,6 @@ export default function Home() {
       description: 'Acesse e gerencie todos os seus personagens criados.',
       className: 'md:col-span-1',
       icon: <Users className="h-6 w-6" />,
-      component: <CharacterGallery />,
     },
     {
       id: 'thumbnail' as ActiveView,
@@ -76,7 +72,6 @@ export default function Home() {
       description: 'Crie thumbnails de alta qualidade para seus vídeos.',
       className: 'md:col-span-1',
       icon: <ImageIcon className="h-6 w-6" />,
-      component: <ThumbnailGenerator />,
     },
     {
       id: 'advanced_script' as ActiveView,
@@ -84,7 +79,6 @@ export default function Home() {
       description: 'Gere roteiros longos, para web docs, e transforme roteiros prontos em prompts de imagem e video.',
       className: 'md:col-span-2',
       icon: <Zap className="h-6 w-6" />,
-      component: <AdvancedScriptingTools />,
     },
   ];
 
@@ -98,8 +92,8 @@ export default function Home() {
         <div className="relative">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-48 bg-primary/30 blur-[100px] pointer-events-none -z-10" />
           <BentoGrid>
-            {items.map((item, i) => (
-               <div key={i} className={item.className} onClick={() => handleNavigate(item.id)}>
+            {items.map((item) => (
+               <div key={item.id} className={item.className} onClick={() => handleNavigate(item.id)}>
                   <BentoGridItem
                   title={item.title}
                   description={item.description}

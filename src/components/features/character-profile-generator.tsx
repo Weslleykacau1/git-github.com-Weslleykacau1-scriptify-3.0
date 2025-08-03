@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Box } from 'lucide-react';
-import { analyzeCharacterImage, AnalyzeCharacterImageOutput } from '@/ai/flows/analysis/analyze-character-image';
+import { analyzeCharacterImage } from '@/ai/flows/analysis/analyze-character-image';
 import { analyzeTextProfile } from '@/ai/flows/analysis/analyze-text-profile';
 import { analyzeSceneBackground } from '@/ai/flows/analysis/analyze-scene-background';
 import { analyzeProductImage } from '@/ai/flows/analysis/analyze-product-image';
@@ -85,7 +85,7 @@ export function CharacterProfileGenerator() {
         } else {
           setScene(item);
         }
-        toast({ title: `${type} carregado!`, description: `Os dados de "${name}" foram carregados.` });
+        toast({ title: `${type.charAt(0).toUpperCase() + type.slice(1)} carregado(a)!`, description: `Os dados de "${name}" foram carregados.` });
       } else {
         toast({ title: 'Não encontrado', variant: 'destructive' });
       }
@@ -113,6 +113,7 @@ export function CharacterProfileGenerator() {
         }
 
         localStorage.setItem(key, JSON.stringify(existingData));
+        window.dispatchEvent(new Event('storage')); // Notify other components
         toast({
             title: `${type === 'character' ? 'Personagem' : 'Cena'} guardado(a)!`,
             description: `"${itemName}" foi guardado(a) na sua galeria.`,
@@ -251,8 +252,6 @@ export function CharacterProfileGenerator() {
   };
 
   const getCharacterProfileAsString = () => {
-    // Simple conversion for the suggester component.
-    // A more robust implementation might format this more nicely.
     return JSON.stringify(profile, null, 2);
   };
   
@@ -402,11 +401,12 @@ export function CharacterProfileGenerator() {
         <div className="space-y-6">
             <div className="space-y-2">
                 <Label htmlFor="sceneTitle">Título da Cena</Label>
-                <Input id="sceneTitle" placeholder="Ex: Unboxing do Produto X" value={scene.title || ''} onChange={(e) => handleSceneChange('title', e.target.value)} />
-                <Button variant="outline" size="sm" className="mt-2" onClick={() => handleAIGeneration('title')} disabled={isLoadingAI === 'title' || !scene.setting || !scene.mainAction}>
-                    {isLoadingAI === 'title' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                     Gerar Título com IA
-                </Button>
+                <div className='flex items-center gap-2'>
+                  <Input id="sceneTitle" placeholder="Ex: Unboxing do Produto X" value={scene.title || ''} onChange={(e) => handleSceneChange('title', e.target.value)} />
+                  <Button variant="outline" size="icon" onClick={() => handleAIGeneration('title')} disabled={isLoadingAI === 'title' || !scene.setting || !scene.mainAction}>
+                      {isLoadingAI === 'title' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                  </Button>
+                </div>
             </div>
             <div className="space-y-2">
                 <Label>Referência de Cenário (Opcional)</Label>
@@ -436,20 +436,20 @@ export function CharacterProfileGenerator() {
             </div>
             <div className="space-y-2">
                 <Label htmlFor="mainAction">Ação Principal</Label>
-                <Textarea id="mainAction" placeholder="O que o influenciador está a fazer..." value={scene.mainAction || ''} onChange={(e) => handleSceneChange('mainAction', e.target.value)} />
-                <Button variant="outline" size="sm" className="mt-2" onClick={() => handleAIGeneration('action')} disabled={isLoadingAI === 'action' || !scene.setting}>
-                    {isLoadingAI === 'action' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />} 
-                    Gerar Ação com IA
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Textarea id="mainAction" placeholder="O que o influenciador está a fazer..." value={scene.mainAction || ''} onChange={(e) => handleSceneChange('mainAction', e.target.value)} />
+                  <Button variant="outline" size="icon" onClick={() => handleAIGeneration('action')} disabled={isLoadingAI === 'action' || !scene.setting}>
+                      {isLoadingAI === 'action' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} 
+                  </Button>
+                </div>
             </div>
              <div className="space-y-2">
                 <Label htmlFor="dialogue">Diálogo</Label>
-                <Textarea id="dialogue" placeholder="O que o influenciador diz (em Português do Brasil)..." value={scene.dialogue || ''} onChange={(e) => handleSceneChange('dialogue', e.target.value)} />
-                <div className="flex gap-2 mt-2">
-                    <Button variant="outline" size="sm" onClick={() => handleAIGeneration('dialogue')} disabled={isLoadingAI === 'dialogue' || !profile.personality || !scene.setting || !scene.mainAction}>
-                        {isLoadingAI === 'dialogue' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />} 
-                        Gerar Diálogo
-                    </Button>
+                <div className="flex items-center gap-2">
+                  <Textarea id="dialogue" placeholder="O que o influenciador diz (em Português do Brasil)..." value={scene.dialogue || ''} onChange={(e) => handleSceneChange('dialogue', e.target.value)} />
+                  <Button variant="outline" size="icon" onClick={() => handleAIGeneration('dialogue')} disabled={isLoadingAI === 'dialogue' || !profile.personality || !scene.setting || !scene.mainAction}>
+                      {isLoadingAI === 'dialogue' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} 
+                  </Button>
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -6,10 +6,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader2, Wand2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { generateScriptIdeas } from '@/ai/flows/generate-script-ideas';
 import { generateJsonScript } from '@/ai/flows/script-generation/generate-json-script';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Textarea } from '../ui/textarea';
+import type { Character, Scene } from '@/lib/types';
+import { generateVideoScript } from '@/ai/flows/script-generation/generate-video-script';
+
 
 interface ContentSuggesterProps {
   characterProfile: string;
@@ -22,8 +24,19 @@ export function ContentSuggester({ characterProfile, sceneDescription }: Content
   const { toast } = useToast();
 
   const handleGenerate = async (format: 'markdown' | 'json') => {
-    if (!characterProfile || !sceneDescription) {
-        toast({ title: 'Erro', description: 'Por favor, preencha o perfil do influenciador e a descrição da cena.', variant: 'destructive' });
+    let char: Partial<Character>;
+    let scene: Partial<Scene>;
+    try {
+        char = JSON.parse(characterProfile);
+        scene = JSON.parse(sceneDescription);
+    } catch(e) {
+         toast({ title: 'Erro', description: 'Perfil de influenciador ou descrição de cena inválidos.', variant: 'destructive' });
+        return;
+    }
+
+
+    if (!char?.name || !scene?.setting) {
+        toast({ title: 'Erro', description: 'Por favor, preencha o perfil do influenciador e o cenário da cena.', variant: 'destructive' });
         return;
     }
 
@@ -36,8 +49,8 @@ export function ContentSuggester({ characterProfile, sceneDescription }: Content
     
     try {
         if (format === 'markdown') {
-            const result = await generateScriptIdeas({ characterProfile, sceneDescription });
-            setGeneratedScript(result.scriptIdea);
+            const result = await generateVideoScript({ character: char as Character, scene: scene as Scene });
+            setGeneratedScript(result.script);
         } else {
             const result = await generateJsonScript({ characterProfile, sceneDescription });
             setGeneratedScript(JSON.stringify(result, null, 2));
@@ -59,7 +72,7 @@ export function ContentSuggester({ characterProfile, sceneDescription }: Content
   };
 
   return (
-    <div className="flex flex-col h-full w-full space-y-6">
+    <div className="flex flex-col h-full w-full space-y-6 pt-8 mt-8 border-t">
       <div className="flex items-center gap-3">
         <FileText className="h-6 w-6 text-primary" />
         <h2 className="text-2xl font-bold font-headline">3. Gere o Roteiro Detalhado</h2>
@@ -73,7 +86,7 @@ export function ContentSuggester({ characterProfile, sceneDescription }: Content
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4"/>}
           Gerar Roteiro (Markdown)
         </Button>
-        <Button onClick={() => handleGenerate('json')} disabled={isLoading} variant="ghost" className="text-lg">
+        <Button onClick={() => handleGenerate('json')} disabled={isLoading} variant="outline" className="text-lg">
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
