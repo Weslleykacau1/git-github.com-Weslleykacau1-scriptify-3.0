@@ -35,15 +35,15 @@ const prompt = ai.definePrompt({
   name: 'analyzeProductImagePrompt',
   input: {schema: AnalyzeProductImageInputSchema},
   output: {schema: AnalyzeProductImageOutputSchema},
-  prompt: `You are a product analysis expert. Analyze the provided image and extract the following information:
+  prompt: `Você é um especialista em análise de produtos. Analise a imagem fornecida e extraia as seguintes informações com a máxima fidelidade:
 
-- Product Name: The commercial name of the product.
-- Brand: The brand that manufactures the product.
-- Description: A detailed description of the product, including its features, materials, and potential uses.
+- Nome do Produto: O nome comercial do produto.
+- Marca: A marca que fabrica o produto.
+- Descrição: Uma descrição detalhada e fiel do produto, focando em suas características visíveis, materiais aparentes e usos potenciais.
 
-The output should be in Portuguese.
+A saída deve ser em português.
 
-Image: {{media url=photoDataUri}}`,
+Imagem: {{media url=photoDataUri}}`,
 });
 
 const analyzeProductImageFlow = ai.defineFlow(
