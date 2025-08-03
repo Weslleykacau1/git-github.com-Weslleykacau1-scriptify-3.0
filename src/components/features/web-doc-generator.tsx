@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BookOpen, Pencil, List, Clock, Info, Loader2, Copy, Video, Image as ImageIcon, FileInput, Download, Search, Film } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -104,13 +104,13 @@ export function WebDocGenerator() {
             </SelectContent>
           </Select>
         </div>
-      </CardContent>
-      <CardFooter className="px-0 mt-4 flex-col items-stretch gap-4">
-        <Button onClick={handleGenerate} disabled={isLoading} className="w-full">
+        <Button onClick={handleGenerate} disabled={isLoading} className="w-full pt-4">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BookOpen className="mr-2 h-4 w-4" />}
           Gerar Roteiro de Web Doc
         </Button>
-         {isLoading && (
+      </CardContent>
+      <CardFooter className="px-0 mt-4 flex-col items-stretch gap-4">
+        {isLoading && (
             <div className="mt-6 flex justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
