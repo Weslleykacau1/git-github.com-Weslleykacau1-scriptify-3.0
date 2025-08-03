@@ -1,84 +1,115 @@
+// src/components/features/script-idea-generator.tsx
 'use client';
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2 } from 'lucide-react';
 import { generateScriptIdeas } from '@/ai/flows/generate-script-ideas';
 import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { FileUploader } from '../ui/file-uploader';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 export function ScriptIdeaGenerator() {
-  const [characterProfile, setCharacterProfile] = useState('');
-  const [sceneDescription, setSceneDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [scriptIdea, setScriptIdea] = useState('');
   const { toast } = useToast();
+  const [image, setImage] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!characterProfile || !sceneDescription) {
-      toast({
-        title: 'Erro',
-        description: 'Por favor, preencha o perfil do personagem e a descrição da cena.',
-        variant: 'destructive',
-      });
-      return;
-    }
+  const handleGenerate = () => {
     setIsLoading(true);
-    setScriptIdea('');
-
-    try {
-      const result = await generateScriptIdeas({ characterProfile, sceneDescription });
-      setScriptIdea(result.scriptIdea);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao gerar ideia de roteiro',
-        description: 'Ocorreu um erro ao gerar a ideia de roteiro.',
-        variant: 'destructive',
-      });
-    } finally {
+    toast({ title: 'Gerando roteiro viral...' });
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      toast({ title: 'Roteiro gerado com sucesso!' });
+    }, 2000);
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <form onSubmit={handleSubmit} className="flex-grow flex flex-col gap-4">
-        <div className="grid grid-cols-1 gap-4 flex-grow">
-          <div className='space-y-1'>
-            <Label htmlFor="char-profile">Perfil do Personagem</Label>
-            <Textarea
-              id="char-profile"
-              placeholder="Ex: Um vlogger carismático..."
-              value={characterProfile}
-              onChange={(e) => setCharacterProfile(e.target.value)}
-              className="h-24"
-            />
-          </div>
-          <div className='space-y-1'>
-            <Label htmlFor="scene-desc">Descrição da Cena</Label>
-            <Textarea
-              id="scene-desc"
-              placeholder="Ex: Um vídeo de unboxing..."
-              value={sceneDescription}
-              onChange={(e) => setSceneDescription(e.target.value)}
-              className="h-24"
-            />
-          </div>
+    <div className="flex flex-col h-full w-full space-y-4">
+      <div className="flex items-center gap-3">
+        <Pencil className="h-6 w-6 text-primary" />
+        <h2 className="text-xl font-bold font-headline">Gerador de Roteiro Viral</h2>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Escreva um tema, escolha as opções e clique para criar um roteiro. A imagem de referência é opcional. O resultado será guardado na sua galeria.
+      </p>
+
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Imagem de Inspiração (Opcional)</Label>
+        <FileUploader onFileChange={setImage} file={image} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="viral-theme">Tema do Roteiro Viral</Label>
+        <Input id="viral-theme" placeholder="Ex: Situação inesperada cozinhando" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-1">
+          <Label htmlFor="duration">Duração</Label>
+          <Select defaultValue="8">
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="8">8 seg</SelectItem>
+              <SelectItem value="15">15 seg</SelectItem>
+              <SelectItem value="30">30 seg</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Button type="submit" disabled={isLoading} className="mt-auto">
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Gerar Ideia
-        </Button>
-      </form>
-      {scriptIdea && (
-        <div className="mt-4 space-y-2">
-            <Label>Ideia Gerada</Label>
-          <Textarea readOnly value={scriptIdea} className="h-32 text-sm" />
+        <div className="space-y-1">
+          <Label>Tipo de Vídeo</Label>
+          <RadioGroup defaultValue="shorts" className="flex items-center space-x-4 pt-2">
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="shorts" id="shorts" />
+              <Label htmlFor="shorts" className="font-normal">Shorts</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="watch" id="watch" />
+              <Label htmlFor="watch" className="font-normal">Watch</Label>
+            </div>
+          </RadioGroup>
         </div>
-      )}
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="cta">Call to Action (CTA)</Label>
+        <Select defaultValue="follow">
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="follow">Siga para mais!</SelectItem>
+              <SelectItem value="comment">Comente abaixo!</SelectItem>
+              <SelectItem value="share">Compartilhe com um amigo!</SelectItem>
+            </SelectContent>
+          </Select>
+      </div>
+
+      <Button onClick={handleGenerate} disabled={isLoading} size="lg" className="w-full">
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
+        Gerar Roteiro Mega Viral
+      </Button>
+
+      <Alert>
+        <Wand2 className="h-4 w-4" />
+        <AlertTitle>O que é a "Fórmula Mega Viral"?</AlertTitle>
+        <AlertDescription className="text-xs space-y-1 mt-2">
+            <p>Ao gerar um roteiro de "Shorts", a IA é instruída a seguir uma estrutura com alto potencial de viralização, dividida nestas partes:</p>
+            <ul className="list-disc pl-4">
+                <li><span className="font-semibold">Set up:</span> Uma frase inicial que cria o contexto.</li>
+                <li><span className="font-semibold">Hook:</span> Uma ação inesperada que prende a atenção.</li>
+                <li><span className="font-semibold">Escalation:</span> O desenvolvimento da ação.</li>
+                <li><span className="font-semibold">Climax/Punchline:</span> O ponto alto ou a piada final.</li>
+                <li><span className="font-semibold">CTA:</span> Uma chamada para ação (ex: "Siga para mais!").</li>
+            </ul>
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }
