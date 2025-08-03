@@ -102,6 +102,10 @@ export function CharacterProfileGenerator() {
         setIsGeneratingScript(false);
     }
   };
+
+  const handleAction = (action: string) => {
+    toast({ title: `Ação: ${action}`, description: 'Esta funcionalidade será implementada em breve.' });
+  };
   
   return (
     <div className="flex flex-col h-full w-full space-y-6">
@@ -233,9 +237,9 @@ export function CharacterProfileGenerator() {
             </div>
         </div>
         <div className="flex flex-wrap gap-2 justify-end pt-4">
-            <Button variant="outline"><Plus /> Novo Influenciador</Button>
-            <Button variant="outline"><Library /> Carregar da Galeria</Button>
-            <Button><Save /> Adicionar à Galeria</Button>
+            <Button variant="outline" onClick={() => handleAction('Novo Influenciador')}><Plus /> Novo Influenciador</Button>
+            <Button variant="outline" onClick={() => handleAction('Carregar da Galeria')}><Library /> Carregar da Galeria</Button>
+            <Button onClick={() => handleAction('Adicionar à Galeria')}><Save /> Adicionar à Galeria</Button>
         </div>
 
         <div className="flex items-center gap-3 pt-8">
@@ -246,7 +250,7 @@ export function CharacterProfileGenerator() {
             <div className="space-y-2">
                 <Label htmlFor="sceneTitle">Título da Cena</Label>
                 <Input id="sceneTitle" placeholder="Ex: Unboxing do Produto X" />
-                <Button variant="outline" size="sm" className="mt-2"><Sparkles className="mr-2 h-4 w-4" /> Gerar Título com IA</Button>
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => handleAction('Gerar Título com IA')}><Sparkles className="mr-2 h-4 w-4" /> Gerar Título com IA</Button>
             </div>
             <div className="space-y-2">
                 <Label>Referência de Cenário (Opcional)</Label>
@@ -270,14 +274,14 @@ export function CharacterProfileGenerator() {
             <div className="space-y-2">
                 <Label htmlFor="mainAction">Ação Principal</Label>
                 <Textarea id="mainAction" placeholder="O que o influenciador está a fazer..." />
-                <Button variant="outline" size="sm" className="mt-2"><Sparkles className="mr-2 h-4 w-4" /> Gerar Ação com IA</Button>
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => handleAction('Gerar Ação com IA')}><Sparkles className="mr-2 h-4 w-4" /> Gerar Ação com IA</Button>
             </div>
              <div className="space-y-2">
                 <Label htmlFor="dialogue">Diálogo</Label>
                 <Textarea id="dialogue" placeholder="O que o influenciador diz (em Português do Brasil)..." />
                 <div className="flex gap-2 mt-2">
-                    <Button variant="outline" size="sm"><Sparkles className="mr-2 h-4 w-4" /> Gerar Diálogo</Button>
-                    <Button variant="outline" size="sm"><Sparkles className="mr-2 h-4 w-4" /> Gerar SEO</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleAction('Gerar Diálogo')}><Sparkles className="mr-2 h-4 w-4" /> Gerar Diálogo</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleAction('Gerar SEO')}><Sparkles className="mr-2 h-4 w-4" /> Gerar SEO</Button>
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -377,9 +381,9 @@ export function CharacterProfileGenerator() {
             </div>
             
             <div className="flex flex-wrap gap-2 justify-start pt-4">
-                <Button variant="outline"><Plus className="mr-2"/> Nova Cena</Button>
-                <Button variant="outline"><Library className="mr-2"/> Carregar da Galeria</Button>
-                <Button><Save className="mr-2"/> Guardar Cena</Button>
+                <Button variant="outline" onClick={() => handleAction('Nova Cena')}><Plus className="mr-2"/> Nova Cena</Button>
+                <Button variant="outline" onClick={() => handleAction('Carregar da Galeria')}><Library className="mr-2"/> Carregar da Galeria</Button>
+                <Button onClick={() => handleAction('Guardar Cena')}><Save className="mr-2"/> Guardar Cena</Button>
             </div>
         </div>
         
