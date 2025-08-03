@@ -480,9 +480,11 @@ export function CharacterProfileGenerator() {
                 <div className="space-y-1">
                     <Label htmlFor="videoFormat">Formato do Vídeo</Label>
                     <Select value={scene.videoFormat} onValueChange={(v) => handleSceneChange('videoFormat', v)}>
-                        <SelectTrigger><SelectValue placeholder="9:16 (Vertical)" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Selecione o formato..." /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="9:16">9:16 (Vertical)</SelectItem>
+                            <SelectItem value="9:16">Vertical (9:16)</SelectItem>
+                            <SelectItem value="16:9">Horizontal (16:9)</SelectItem>
+                            <SelectItem value="1:1">Quadrado (1:1)</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

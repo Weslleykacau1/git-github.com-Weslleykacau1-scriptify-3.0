@@ -30,7 +30,7 @@ export interface Scene {
     dialogue?: string;
     cameraAngle?: 'dynamic' | 'vlog' | 'selfie' | 'pov' | 'medium_shot' | 'wide_shot';
     duration?: number;
-    videoFormat?: '9:16';
+    videoFormat?: '9:16' | '16:9' | '1:1';
     allowsDigitalText?: boolean;
     onlyPhysicalText?: boolean;
     product?: Product | null;
