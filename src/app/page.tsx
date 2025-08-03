@@ -12,13 +12,14 @@ import { ThumbnailGenerator } from '@/components/features/thumbnail-generator';
 import { CharacterGallery } from '@/components/features/character-gallery';
 import { SceneGallery } from '@/components/features/scene-gallery';
 import { Button } from '@/components/ui/button';
+import { VideoTranscriber } from '@/components/features/video-transcriber';
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script';
 
 const featureComponents: Record<Exclude<ActiveView, 'home'>, React.ReactNode> = {
   creator: <CharacterProfileGenerator />,
   viral: <ScriptIdeaGenerator />,
-  transcribe: <div className='w-full h-full flex items-center justify-center text-xs text-center'>Em breve...</div>,
+  transcribe: <VideoTranscriber />,
   scene_gallery: <SceneGallery />,
   character_gallery: <CharacterGallery />,
   thumbnail: <ThumbnailGenerator />,
@@ -51,7 +52,7 @@ export default function Home() {
       description: 'Transforme áudio de vídeos em texto para criar novos roteiros e conteúdos.',
       className: 'md:col-span-1',
       icon: <MicVocal className="h-6 w-6 text-primary" />,
-      component: <div className='w-full h-full flex items-center justify-center text-xs text-center'>Em breve...</div>,
+      component: <VideoTranscriber />,
     },
     {
       id: 'scene_gallery' as ActiveView,
