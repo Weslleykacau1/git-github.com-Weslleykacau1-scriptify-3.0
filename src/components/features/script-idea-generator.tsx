@@ -6,26 +6,50 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2 } from 'lucide-react';
-import { generateScriptIdeas } from '@/ai/flows/generate-script-ideas';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { FileUploader } from '../ui/file-uploader';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { generateViralScript } from '@/ai/flows/script-generation/generate-viral-script';
 
 export function ScriptIdeaGenerator() {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
   const [image, setImage] = useState<string | null>(null);
+  const [theme, setTheme] = useState('');
+  const [duration, setDuration] = useState<'8s' | '15s' | '30s'>('8s');
+  const [videoType, setVideoType] = useState<'Shorts' | 'Watch'>('Shorts');
+  const [cta, setCta] = useState('Siga para mais!');
+  const [generatedScript, setGeneratedScript] = useState('');
+  
+  const { toast } = useToast();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    if (!theme) {
+        toast({ title: 'Erro', description: 'Por favor, insira um tema para o roteiro.', variant: 'destructive' });
+        return;
+    }
     setIsLoading(true);
+    setGeneratedScript('');
     toast({ title: 'Gerando roteiro viral...' });
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({ title: 'Roteiro gerado com sucesso!' });
-    }, 2000);
+    
+    try {
+        const result = await generateViralScript({
+            theme,
+            duration,
+            videoType,
+            cta,
+            imagePrompt: image || undefined,
+        });
+        setGeneratedScript(result.script);
+        toast({ title: 'Roteiro gerado com sucesso!' });
+    } catch (error) {
+        console.error("Failed to generate viral script", error);
+        toast({ title: 'Erro ao gerar roteiro', description: 'Ocorreu um erro ao comunicar com a IA.', variant: 'destructive' });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -37,7 +61,7 @@ export function ScriptIdeaGenerator() {
         <div>
             <h2 className="text-xl font-bold font-headline">Gerador de Roteiro Viral</h2>
             <p className="text-sm text-muted-foreground">
-                Escreva um tema, escolha as opções e clique para criar um roteiro. A imagem de referência é opcional. O resultado será guardado na sua galeria.
+                Escreva um tema, escolha as opções e clique para criar um roteiro. A imagem de referência é opcional.
             </p>
         </div>
       </div>
@@ -49,32 +73,32 @@ export function ScriptIdeaGenerator() {
 
       <div className="space-y-1">
         <Label htmlFor="viral-theme">Tema do Roteiro Viral</Label>
-        <Input id="viral-theme" placeholder="Ex: Situação inesperada cozinhando" />
+        <Input id="viral-theme" placeholder="Ex: Situação inesperada cozinhando" value={theme} onChange={(e) => setTheme(e.target.value)} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
           <Label htmlFor="duration">Duração</Label>
-          <Select defaultValue="8">
+          <Select value={duration} onValueChange={(v) => setDuration(v as any)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="8">8 seg</SelectItem>
-              <SelectItem value="15">15 seg</SelectItem>
-              <SelectItem value="30">30 seg</SelectItem>
+              <SelectItem value="8s">8 seg</SelectItem>
+              <SelectItem value="15s">15 seg</SelectItem>
+              <SelectItem value="30s">30 seg</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-1">
           <Label>Tipo de Vídeo</Label>
-          <RadioGroup defaultValue="shorts" className="flex items-center space-x-4 pt-2">
+          <RadioGroup value={videoType} onValueChange={(v) => setVideoType(v as any)} className="flex items-center space-x-4 pt-2">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="shorts" id="shorts" />
+              <RadioGroupItem value="Shorts" id="shorts" />
               <Label htmlFor="shorts" className="font-normal">Shorts</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="watch" id="watch" />
+              <RadioGroupItem value="Watch" id="watch" />
               <Label htmlFor="watch" className="font-normal">Watch</Label>
             </div>
           </RadioGroup>
@@ -83,14 +107,14 @@ export function ScriptIdeaGenerator() {
 
       <div className="space-y-1">
         <Label htmlFor="cta">Call to Action (CTA)</Label>
-        <Select defaultValue="follow">
+        <Select value={cta} onValueChange={setCta}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="follow">Siga para mais!</SelectItem>
-              <SelectItem value="comment">Comente abaixo!</SelectItem>
-              <SelectItem value="share">Compartilhe com um amigo!</SelectItem>
+              <SelectItem value="Siga para mais!">Siga para mais!</SelectItem>
+              <SelectItem value="Comente abaixo!">Comente abaixo!</SelectItem>
+              <SelectItem value="Compartilhe com um amigo!">Compartilhe com um amigo!</SelectItem>
             </SelectContent>
           </Select>
       </div>
@@ -99,6 +123,13 @@ export function ScriptIdeaGenerator() {
         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
         Gerar Roteiro Mega Viral
       </Button>
+
+        {generatedScript && (
+            <div className='space-y-2'>
+                <Label>Roteiro Gerado (Markdown)</Label>
+                <Textarea readOnly value={generatedScript} className='min-h-[200px] bg-muted' />
+            </div>
+        )}
 
       <Alert>
         <Wand2 className="h-4 w-4" />
