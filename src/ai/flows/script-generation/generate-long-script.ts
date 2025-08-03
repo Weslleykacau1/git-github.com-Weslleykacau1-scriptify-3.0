@@ -12,6 +12,13 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const SceneSchema = z.object({
+  sceneTitle: z.string().describe('The title of the scene.'),
+  narration: z.string().describe('The narration script for this scene in Brazilian Portuguese.'),
+  imagePrompt: z.string().describe('A detailed prompt in English to generate an image for the scene.'),
+  videoPrompt: z.string().describe('A detailed prompt in English to generate a video for the scene.'),
+});
+
 const GenerateLongScriptInputSchema = z.object({
   characterProfile: z
     .string()
@@ -28,9 +35,7 @@ export type GenerateLongScriptInput = z.infer<typeof GenerateLongScriptInputSche
 
 const GenerateLongScriptOutputSchema = z.object({
     title: z.string().describe('The title of the video script.'),
-    script: z.string().describe('A complete, detailed script for a long-form video, structured for viewer retention. All dialogue/narration must be in Brazilian Portuguese.'),
-    imagePrompt: z.string().describe('A detailed prompt in English to generate a representative image for the video.'),
-    videoPrompt: z.string().describe('A detailed prompt in English to generate a representative video for the script.'),
+    scenes: z.array(SceneSchema).describe('An array of scenes that make up the documentary.'),
     thumbnailIdeas: z.string().describe('Ideas for creating a thumbnail for the video.'),
     seoKeywords: z.string().describe('SEO keywords relevant to the script as a whole.'),
 });
@@ -48,11 +53,12 @@ const prompt = ai.definePrompt({
 
 Your tasks are to:
 1.  Create a compelling title for the video.
-2.  Write a complete and detailed script. It should be engaging and structured to maximize viewer retention (e.g., introduction, development, climax, conclusion), strictly adhering to the {{duration}}-minute length.
-3.  Generate a detailed image prompt (in English) that visually represents the core theme of the script.
-4.  Generate a detailed video prompt (in English) that could be used to create a trailer or a key scene.
-5.  Provide some creative ideas for the video's thumbnail.
-6.  Generate relevant SEO keywords for the video.
+2.  Break the script down into a series of logical scenes that collectively meet the {{duration}}-minute duration.
+3.  For each scene, write the narration in Brazilian Portuguese.
+4.  For each scene, create a detailed image generation prompt (in English).
+5.  For each scene, create a detailed video generation prompt (in English).
+6.  Provide some creative ideas for the video's thumbnail.
+7.  Generate relevant SEO keywords for the video.
 
 The script's dialogue and narration must be in Brazilian Portuguese.
 All other outputs (prompts, ideas, keywords) should be in the language appropriate for their use (Prompts in English, others in Portuguese).

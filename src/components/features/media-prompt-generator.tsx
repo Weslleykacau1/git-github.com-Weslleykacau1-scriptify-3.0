@@ -52,6 +52,19 @@ export function MediaPromptGenerator() {
     navigator.clipboard.writeText(text);
     toast({ title: `${type} copiado para a área de transferência!` });
   };
+  
+  const handleExport = () => {
+    if (!result) return;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `analise_roteiro.json`);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    toast({ title: "Análise exportada como JSON!" });
+  };
+
 
   return (
     <Card className="bg-transparent border-none shadow-none">
@@ -104,7 +117,7 @@ export function MediaPromptGenerator() {
                     <CardHeader>
                         <CardTitle className='text-lg'>Prompts Gerados por Cena</CardTitle>
                         <div className="flex gap-2">
-                           <Button variant="outline" size="sm"><Download className="mr-2"/>Exportar</Button>
+                           <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar JSON</Button>
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
