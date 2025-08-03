@@ -1,0 +1,108 @@
+// src/components/features/thumbnail-generator.tsx
+'use client';
+
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { FileUploader } from '@/components/ui/file-uploader';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Image as ImageIcon, Sparkles, Loader2, Camera, Film } from 'lucide-react';
+
+export function ThumbnailGenerator() {
+  const [mainImage, setMainImage] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [theme, setTheme] = useState('');
+  const [style, setStyle] = useState('default');
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleGenerate = async () => {
+    if (!mainImage || !theme) {
+      toast({
+        title: 'Campos obrigatórios',
+        description: 'Por favor, carregue a imagem principal e defina um tema.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setIsLoading(true);
+    setResult(null);
+    try {
+      // Placeholder for AI call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setResult('Resultado da IA aqui...');
+      toast({ title: 'Ideias de thumbnail geradas com sucesso!' });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Erro ao gerar ideias',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full w-full">
+      {/* Step 1: Reference Image */}
+      <div className="flex flex-col space-y-4">
+        <h3 className="font-semibold text-lg">Passo 1: Imagem de Referência</h3>
+        <p className="text-sm text-muted-foreground">Anexe imagens de referência e digite um tema para gerar ideias de thumbnail.</p>
+        
+        <div className="space-y-2">
+            <Label className="flex items-center gap-2"><Camera className="h-4 w-4" /> Imagem Principal</Label>
+            <FileUploader onFileChange={setMainImage} file={mainImage} />
+        </div>
+
+        <div className="space-y-2">
+            <Label className="flex items-center gap-2"><Film className="h-4 w-4" /> Imagem de Fundo (Opcional)</Label>
+            <FileUploader onFileChange={setBackgroundImage} file={backgroundImage} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="theme">Tema para Thumbnail</Label>
+          <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Ex: Minha rotina de skincare, Review do novo jogo, etc." />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="style">Estilo da Thumbnail</Label>
+          <Select value={style} onValueChange={setStyle}>
+            <SelectTrigger id="style">
+              <SelectValue placeholder="Selecione um estilo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Estilo Padrão da IA</SelectItem>
+              <SelectItem value="mrbeast">Estilo MrBeast</SelectItem>
+              <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
+              <SelectItem value="clickbait">Clickbait</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">Deixe a IA decidir o melhor estilo com base no conteúdo.</p>
+        </div>
+
+        <Button onClick={handleGenerate} disabled={isLoading} className="mt-auto">
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+          Gerar Ideias para Thumbnail
+        </Button>
+      </div>
+
+      {/* Step 2: Thumbnail Result */}
+      <div className="flex flex-col space-y-4">
+        <h3 className="font-semibold text-lg">Passo 2: Resultado da Thumbnail</h3>
+        <p className="text-sm text-muted-foreground">Aqui estão as sugestões da IA.</p>
+        <div className="flex-grow border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-card p-4">
+          {isLoading && <Loader2 className="h-8 w-8 animate-spin text-primary" />}
+          {!isLoading && !result && <p className="text-muted-foreground text-center">Aguardando a geração de ideias...</p>}
+          {result && (
+            // This will be replaced with the actual thumbnail images
+            <div className="text-white">{result}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

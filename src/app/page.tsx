@@ -5,6 +5,7 @@ import { CharacterProfileGenerator } from '@/components/features/character-profi
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { ContentSuggester } from '@/components/features/content-suggester';
 import { MediaPromptGenerator } from '@/components/features/media-prompt-generator';
+import { ThumbnailGenerator } from '@/components/features/thumbnail-generator';
 
 export default function Home() {
   return (
@@ -72,7 +73,7 @@ const items = [
     description: 'Crie thumbnails de alta qualidade para seus vídeos.',
     className: 'md:col-span-1',
     icon: <ImageIcon className="h-6 w-6 text-primary" />,
-    component: <div className='w-full h-full flex items-center justify-center text-xs text-center'>Em breve...</div>,
+    component: <ThumbnailGenerator />,
   },
   {
     title: 'Gerador de Roteiro Detalhado',
