@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard } from 'lucide-react';
+import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive } from 'lucide-react';
 import { generateCharacterProfile, GenerateCharacterProfileOutput } from '@/ai/flows/generate-character-profile';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
@@ -12,6 +12,7 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
@@ -238,6 +239,107 @@ export function CharacterProfileGenerator() {
                     <Button variant="outline" size="sm"><Sparkles className="mr-2 h-4 w-4" /> Gerar Diálogo</Button>
                     <Button variant="outline" size="sm"><Sparkles className="mr-2 h-4 w-4" /> Gerar SEO</Button>
                 </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                    <Label htmlFor="cameraAngle">Ângulo da Câmara</Label>
+                    <Select>
+                        <SelectTrigger><SelectValue placeholder="Câmera Dinâmica (Criatividade da IA)" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="dynamic">Câmera Dinâmica (Criatividade da IA)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="duration">Duração</Label>
+                    <Select>
+                        <SelectTrigger><SelectValue placeholder="8 seg" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="8">8 seg</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="videoFormat">Formato do Vídeo</Label>
+                    <Select>
+                        <SelectTrigger><SelectValue placeholder="9:16 (Vertical)" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="9:16">9:16 (Vertical)</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <div className="border rounded-lg p-4 space-y-4 border-red-500/30 bg-red-500/10">
+                <div className="flex items-center gap-3">
+                    <Text className="h-6 w-6 text-red-400" />
+                    <h3 className="font-semibold text-lg text-red-400">Controlo de Texto no Ecrã</h3>
+                </div>
+                <div className="flex justify-between items-center">
+                    <Label htmlFor="digitalText">Permite textos digitais na tela?</Label>
+                    <RadioGroup defaultValue="no" id="digitalText" className="flex gap-4">
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes" id="digitalText-yes" />
+                            <Label htmlFor="digitalText-yes">Sim</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="no" id="digitalText-no" />
+                            <Label htmlFor="digitalText-no">Não</Label>
+                        </div>
+                    </RadioGroup>
+                </div>
+                <div className="flex justify-between items-center">
+                    <Label htmlFor="physicalText">Apenas textos físicos como rótulos e placas reais?</Label>
+                    <RadioGroup defaultValue="no" id="physicalText" className="flex gap-4">
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes" id="physicalText-yes" />
+                            <Label htmlFor="physicalText-yes">Sim</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="no" id="physicalText-no" />
+                            <Label htmlFor="physicalText-no">Não</Label>
+                        </div>
+                    </RadioGroup>
+                </div>
+            </div>
+
+            <div className="border rounded-lg p-4 space-y-4 border-green-500/30 bg-green-500/10">
+                <div className="flex items-center gap-3">
+                    <Box className="h-6 w-6 text-green-400" />
+                    <h3 className="font-semibold text-lg text-green-400">Integração de Produto (Opcional)</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <Label htmlFor="productName">Nome do Produto</Label>
+                        <Input id="productName" />
+                    </div>
+                    <div className="space-y-1">
+                        <Label htmlFor="partnerBrand">Marca Parceira</Label>
+                        <Input id="partnerBrand" />
+                    </div>
+                </div>
+                <div className="space-y-1">
+                    <Label>carregue o video ou a imagem do produto</Label>
+                    <Button variant="outline" className="w-full justify-start"><FileArchive className="mr-2 h-4 w-4" /> Escolher ficheiro</Button>
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="productDescription">Descrição do Produto</Label>
+                    <Textarea id="productDescription" placeholder="Descrição detalhada do produto..." />
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroup defaultValue="no" id="sponsored" className="flex">
+                        <div className="flex items-center space-x-2">
+                             <RadioGroupItem value="yes" id="sponsored-yes" />
+                        </div>
+                    </RadioGroup>
+                    <Label htmlFor="sponsored-yes">É uma parceria / conteúdo patrocinado.</Label>
+                </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 justify-start pt-4">
+                <Button variant="outline"><Plus className="mr-2"/> Nova Cena</Button>
+                <Button variant="outline"><Library className="mr-2"/> Carregar da Galeria</Button>
+                <Button><Save className="mr-2"/> Guardar Cena</Button>
             </div>
         </div>
     </div>
