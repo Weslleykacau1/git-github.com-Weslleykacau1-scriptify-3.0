@@ -10,9 +10,10 @@ import Image from 'next/image';
 interface FileUploaderProps {
   onFileChange: (fileData: string | null) => void;
   file: string | null;
+  children?: React.ReactNode;
 }
 
-export function FileUploader({ onFileChange, file }: FileUploaderProps) {
+export function FileUploader({ onFileChange, file, children }: FileUploaderProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
@@ -48,12 +49,15 @@ export function FileUploader({ onFileChange, file }: FileUploaderProps) {
     >
       <input {...getInputProps()} />
       {file ? (
-        <>
-            <Image src={file} alt="Preview" width={192} height={192} className="max-h-48 w-auto rounded-md object-contain" />
-            <Button variant="ghost" size="icon" className="absolute top-2 right-2 rounded-full bg-destructive/50 hover:bg-destructive text-destructive-foreground h-6 w-6" onClick={removeFile}>
-                <X className="h-4 w-4" />
-            </Button>
-        </>
+        <div className="flex flex-col items-center gap-4">
+            <div className='relative'>
+                <Image src={file} alt="Preview" width={192} height={192} className="max-h-48 w-auto rounded-md object-contain" />
+                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 rounded-full bg-destructive/50 hover:bg-destructive text-destructive-foreground h-6 w-6" onClick={removeFile}>
+                    <X className="h-4 w-4" />
+                </Button>
+            </div>
+            {children}
+        </div>
       ) : (
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <UploadCloud className="h-10 w-10" />

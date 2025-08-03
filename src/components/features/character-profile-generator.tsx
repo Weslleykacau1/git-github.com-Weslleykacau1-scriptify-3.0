@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive, FileText, Wand2 } from 'lucide-react';
-import { generateCharacterProfile, GenerateCharacterProfileOutput } from '@/ai/flows/generate-character-profile';
+import { analyzeCharacterImage, AnalyzeCharacterImageOutput } from '@/ai/flows/analysis/analyze-character-image';
+import { analyzeTextProfile } from '@/ai/flows/analysis/analyze-text-profile';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -20,10 +21,10 @@ export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
   const [textDescription, setTextDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [profile, setProfile] = useState<Partial<GenerateCharacterProfileOutput>>({});
+  const [profile, setProfile] = useState<Partial<AnalyzeCharacterImageOutput>>({});
   const { toast } = useToast();
 
-  const handleProfileChange = (field: keyof GenerateCharacterProfileOutput, value: string) => {
+  const handleProfileChange = (field: keyof AnalyzeCharacterImageOutput, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
   
@@ -36,10 +37,14 @@ export function CharacterProfileGenerator() {
     generateRandomSeed();
   }, []);
 
-  const analyzeWithAI = async (input: { photoDataUri?: string; textDescription?: string }) => {
+  const analyzeImage = async () => {
+    if (!photoDataUri) {
+      toast({ title: 'Erro', description: 'Por favor, envie uma imagem.', variant: 'destructive' });
+      return;
+    }
     setIsLoading(true);
     try {
-      const result = await generateCharacterProfile(input);
+      const result = await analyzeCharacterImage({ photoDataUri });
       setProfile(result);
       toast({ title: 'Perfil preenchido com sucesso!' });
     } catch (error) {
@@ -54,20 +59,26 @@ export function CharacterProfileGenerator() {
     }
   };
   
-  const analyzeImage = () => {
-    if (!photoDataUri) {
-      toast({ title: 'Erro', description: 'Por favor, envie uma imagem.', variant: 'destructive' });
-      return;
-    }
-    analyzeWithAI({ photoDataUri });
-  };
-  
-  const analyzeText = () => {
+  const analyzeText = async () => {
     if (!textDescription) {
       toast({ title: 'Erro', description: 'Por favor, insira uma descrição de texto.', variant: 'destructive' });
       return;
     }
-    analyzeWithAI({ textDescription });
+    setIsLoading(true);
+    try {
+      const result = await analyzeTextProfile({ textDescription });
+      setProfile(result);
+      toast({ title: 'Perfil preenchido com sucesso!' });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Erro ao analisar com IA',
+        description: 'Ocorreu um erro ao gerar o perfil.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const handleAction = (action: string) => {
@@ -88,17 +99,20 @@ export function CharacterProfileGenerator() {
                 <UploadCloud className="h-6 w-6 text-primary" />
                 <h3 className="font-semibold text-lg">Carregar Foto de Referência</h3>
             </div>
-            <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} />
+            <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri}>
+                {photoDataUri && (
+                    <Button onClick={analyzeImage} disabled={isLoading} className="mt-4 w-full">
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Analisar Imagem
+                    </Button>
+                )}
+            </FileUploader>
             <Alert>
                 <Sparkles className="h-4 w-4" />
                 <AlertDescription className="text-xs">
                 A análise será detalhada, incluindo características faciais, cabelo, estilo e personalidade.
                 </AlertDescription>
             </Alert>
-            <Button onClick={analyzeImage} disabled={isLoading || !photoDataUri}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Analisar Imagem
-            </Button>
         </div>
 
         {/* Text Analysis Section */}
