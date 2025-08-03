@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
-import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Video, GalleryVertical, MicVocal, ArrowLeft } from 'lucide-react';
+import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Video, GalleryVertical, MicVocal, ArrowLeft, Zap } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
@@ -51,7 +51,7 @@ export default function Home() {
       title: 'Transcrever Vídeo',
       description: 'Transforme áudio de vídeos em texto para criar novos roteiros e conteúdos.',
       className: 'md:col-span-1',
-      icon: <MicVocal className="h-6 w-6 text-primary" />,
+      icon: <FileText className="h-6 w-6 text-primary" />,
       component: <VideoTranscriber />,
     },
     {
@@ -83,7 +83,7 @@ export default function Home() {
       title: 'Ferramentas de Roteiro Avançadas',
       description: 'Gere roteiros longos, para web docs, e transforme roteiros prontos em prompts de imagem e video.',
       className: 'md:col-span-1',
-      icon: <GalleryVertical className="h-6 w-6 text-primary" />,
+      icon: <Zap className="h-6 w-6 text-primary" />,
       component: <AdvancedScriptingTools />,
     },
   ];

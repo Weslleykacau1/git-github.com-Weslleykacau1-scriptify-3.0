@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const BentoGrid = ({
@@ -37,11 +38,15 @@ const BentoGridItem = ({
   return (
     <div
       className={cn(
-        "rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-6 bg-card border border-transparent justify-between flex flex-col space-y-4 cursor-pointer",
+        "relative rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-6 bg-card border border-transparent justify-between flex flex-col space-y-4 cursor-pointer overflow-hidden",
         className
       )}
     >
-      <div className="flex flex-col space-y-4 h-full">
+        <div className="absolute -bottom-10 -right-10 text-primary/10 opacity-50 group-hover/bento:scale-110 transition-transform duration-300 ease-in-out">
+          {icon && React.cloneElement(icon as React.ReactElement, { className: "h-32 w-32" })}
+        </div>
+
+      <div className="flex flex-col space-y-4 h-full z-10">
         <div className="space-y-2 mb-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">

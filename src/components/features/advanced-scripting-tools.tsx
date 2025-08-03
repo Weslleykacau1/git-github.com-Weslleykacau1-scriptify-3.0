@@ -5,14 +5,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LongScriptGenerator } from './long-script-generator';
 import { MediaPromptGenerator } from './media-prompt-generator';
 import { WebDocGenerator } from './web-doc-generator';
-import { BookOpen, FileInput, Film } from 'lucide-react';
+import { BookOpen, FileInput, Film, Zap } from 'lucide-react';
 
 export function AdvancedScriptingTools() {
   return (
     <div className="flex flex-col h-full w-full">
         <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-primary" />
+                <Zap className="h-6 w-6 text-primary" />
             </div>
             <div>
                 <h2 className="text-xl font-bold font-headline">Ferramentas de Roteiro Avançadas</h2>
