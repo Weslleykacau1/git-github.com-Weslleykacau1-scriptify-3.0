@@ -23,7 +23,9 @@ export function CharacterGallery() {
     <div className="flex flex-col h-full w-full space-y-4">
       <div className="flex justify-between items-start mb-2">
         <div className='flex items-center gap-3'>
-          <Palette className="h-6 w-6 text-primary" />
+          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Palette className="h-6 w-6 text-primary" />
+          </div>
           <div>
             <h2 className="text-xl font-bold font-headline">Galeria de Personagens</h2>
             <p className="text-sm text-muted-foreground">

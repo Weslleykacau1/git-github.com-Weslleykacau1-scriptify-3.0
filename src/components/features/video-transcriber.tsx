@@ -61,12 +61,16 @@ export function VideoTranscriber() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <Youtube className="h-6 w-6 text-primary" />
-            <CardTitle className="m-0 text-xl font-bold font-headline">Utilitário de Vídeo do YouTube</CardTitle>
+            <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <Youtube className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+                <CardTitle className="m-0 text-xl font-bold font-headline">Utilitário de Vídeo do YouTube</CardTitle>
+                 <p className="text-sm text-muted-foreground">
+                    Cole um URL do YouTube para descarregar o vídeo e usá-lo na secção de transcrição abaixo.
+                </p>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Cole um URL do YouTube para descarregar o vídeo e usá-lo na secção de transcrição abaixo.
-          </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -93,12 +97,16 @@ export function VideoTranscriber() {
       <Card>
         <CardHeader>
             <div className="flex items-center gap-3">
-                <Video className="h-6 w-6 text-primary" />
-                <CardTitle className="m-0 text-xl font-bold font-headline">Transcrever Vídeo Anexado</CardTitle>
+                <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Video className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                    <CardTitle className="m-0 text-xl font-bold font-headline">Transcrever Vídeo Anexado</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Anexe um ficheiro de vídeo do seu computador para obter a transcrição em português com timestamps.
+                    </p>
+                </div>
             </div>
-             <p className="text-sm text-muted-foreground">
-                Anexe um ficheiro de vídeo do seu computador para obter a transcrição em português com timestamps.
-            </p>
         </CardHeader>
         <CardContent>
             <div className="flex flex-col md:flex-row gap-4 mb-4">

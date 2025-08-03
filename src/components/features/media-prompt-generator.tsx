@@ -57,12 +57,16 @@ export function MediaPromptGenerator() {
     <Card className="bg-transparent border-none shadow-none">
         <CardHeader className="px-0">
             <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
                 <FileInput className="h-6 w-6 text-primary" />
+              </div>
+              <div>
                 <CardTitle className="m-0 text-xl font-bold font-headline">Analisador de Roteiro Existente</CardTitle>
+                <CardDescription>
+                    Cole um roteiro pronto para que a IA extraia prompts de imagem e vídeo para cada cena, além de gerar SEO e ideias de thumbnail.
+                </CardDescription>
+              </div>
             </div>
-            <CardDescription>
-                Cole um roteiro pronto para que a IA extraia prompts de imagem e vídeo para cada cena, além de gerar SEO e ideias de thumbnail.
-            </CardDescription>
         </CardHeader>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

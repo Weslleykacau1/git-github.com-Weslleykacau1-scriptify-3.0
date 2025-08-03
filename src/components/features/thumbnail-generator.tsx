@@ -51,10 +51,14 @@ export function ThumbnailGenerator() {
       {/* Step 1: Reference Image */}
       <div className="flex flex-col space-y-4">
         <div className='flex items-center gap-3'>
-          <ImageIcon className="h-6 w-6 text-primary" />
-          <h3 className="font-semibold text-lg">Passo 1: Imagem de Referência</h3>
+          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <ImageIcon className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg">Passo 1: Imagem de Referência</h3>
+            <p className="text-sm text-muted-foreground">Anexe imagens de referência e digite um tema para gerar ideias de thumbnail.</p>
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground">Anexe imagens de referência e digite um tema para gerar ideias de thumbnail.</p>
         
         <div className="space-y-2">
             <Label className="flex items-center gap-2"><Camera className="h-4 w-4" /> Imagem Principal</Label>

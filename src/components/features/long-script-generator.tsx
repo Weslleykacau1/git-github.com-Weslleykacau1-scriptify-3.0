@@ -24,12 +24,16 @@ export function LongScriptGenerator() {
     <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="px-0">
         <div className="flex items-center gap-3">
-          <BookOpen className="h-6 w-6 text-primary" />
-          <CardTitle className="m-0 text-xl font-bold font-headline">Gerador de Roteiro de Vídeo Longo</CardTitle>
+          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <BookOpen className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="m-0 text-xl font-bold font-headline">Gerador de Roteiro de Vídeo Longo</CardTitle>
+            <CardDescription>
+              Crie roteiros completos para vídeos mais longos. Opcionalmente, carregue um influenciador e um cenário para dar contexto à IA.
+            </CardDescription>
+          </div>
         </div>
-        <CardDescription>
-          Crie roteiros completos para vídeos mais longos. Opcionalmente, carregue um influenciador e um cenário para dar contexto à IA.
-        </CardDescription>
       </CardHeader>
       <CardContent className="px-0 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
