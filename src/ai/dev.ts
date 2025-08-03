@@ -16,3 +16,4 @@ import '@/ai/flows/script-generation/generate-json-script';
 import '@/ai/flows/content-assistance/suggest-content';
 
 import '@/ai/flows/media-generation/generate-media-prompts';
+import '@/ai/flows/media-generation/generate-thumbnail-ideas';

@@ -8,7 +8,10 @@ import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Image as ImageIcon, Sparkles, Loader2, Camera, Film } from 'lucide-react';
+import { Image as ImageIcon, Sparkles, Loader2, Camera, Film, Copy } from 'lucide-react';
+import { generateThumbnailIdeas, GenerateThumbnailIdeasOutput } from '@/ai/flows/media-generation/generate-thumbnail-ideas';
+import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 export function ThumbnailGenerator() {
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -16,35 +19,47 @@ export function ThumbnailGenerator() {
   const [theme, setTheme] = useState('');
   const [style, setStyle] = useState('default');
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<GenerateThumbnailIdeasOutput | null>(null);
   const { toast } = useToast();
 
   const handleGenerate = async () => {
     if (!mainImage || !theme) {
       toast({
         title: 'Campos obrigatórios',
-        description: 'Por favor, carregue la imagem principal e defina um tema.',
+        description: 'Por favor, carregue a imagem principal e defina um tema.',
         variant: 'destructive',
       });
       return;
     }
     setIsLoading(true);
     setResult(null);
+    toast({ title: 'Gerando ideias para thumbnail...', description: 'A IA está a trabalhar. Isto pode demorar um pouco.' });
     try {
-      // Placeholder for AI call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setResult('Resultado da IA aqui...');
+      const generatedResult = await generateThumbnailIdeas({
+        mainImageUri: mainImage,
+        backgroundImageUri: backgroundImage || undefined,
+        theme,
+        style,
+      });
+      setResult(generatedResult);
       toast({ title: 'Ideias de thumbnail geradas com sucesso!' });
     } catch (error) {
       console.error(error);
       toast({
         title: 'Erro ao gerar ideias',
+        description: 'Ocorreu um erro ao comunicar com a IA.',
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
   };
+  
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: 'Texto copiado!' });
+  };
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full w-full">
@@ -122,8 +137,22 @@ export function ThumbnailGenerator() {
           {isLoading && <Loader2 className="h-8 w-8 animate-spin text-primary" />}
           {!isLoading && !result && <p className="text-muted-foreground text-center">Aguardando a geração de ideias...</p>}
           {result && (
-            // This will be replaced with the actual thumbnail images
-            <div className="text-white">{result}</div>
+            <div className="w-full space-y-4">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base">Ideias de Texto</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-sm">
+                        <p><strong>Título:</strong> {result.title} <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(result.title)}><Copy className="h-4 w-4"/></Button></p>
+                        <p><strong>Texto Sobreposto:</strong> {result.overlayText} <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(result.overlayText)}><Copy className="h-4 w-4"/></Button></p>
+                        <p><strong>Emoji:</strong> {result.emoji}</p>
+                    </CardContent>
+                </Card>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Image src={result.thumbnailImage1Uri} alt="Thumbnail 1" width={512} height={288} className="rounded-lg object-cover" />
+                    <Image src={result.thumbnailImage2Uri} alt="Thumbnail 2" width={512} height={288} className="rounded-lg object-cover" />
+                </div>
+            </div>
           )}
         </div>
       </div>
