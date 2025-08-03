@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive, FileText, Wand2 } from 'lucide-react';
 import { analyzeCharacterImage, AnalyzeCharacterImageOutput } from '@/ai/flows/analysis/analyze-character-image';
 import { analyzeTextProfile } from '@/ai/flows/analysis/analyze-text-profile';
+import { analyzeSceneBackground } from '@/ai/flows/analysis/analyze-scene-background';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -20,10 +21,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
+  const [scenePhotoDataUri, setScenePhotoDataUri] = useState<string | null>(null);
   const [textDescription, setTextDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingScene, setIsLoadingScene] = useState(false);
   const [profile, setProfile] = useState<Partial<AnalyzeCharacterImageOutput>>({});
-  const [sceneDescription, setSceneDescription] = useState('');
+  const [sceneDescription, setSceneDescription] = useState<string>('');
   const [scriptIdea, setScriptIdea] = useState('');
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const { toast } = useToast();
@@ -60,6 +63,28 @@ export function CharacterProfileGenerator() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const analyzeSceneImage = async () => {
+    if (!scenePhotoDataUri) {
+      toast({ title: 'Erro', description: 'Por favor, envie uma imagem de cenário.', variant: 'destructive' });
+      return;
+    }
+    setIsLoadingScene(true);
+    try {
+      const result = await analyzeSceneBackground({ photoDataUri: scenePhotoDataUri });
+      setSceneDescription(result.sceneDescription);
+      toast({ title: 'Cena preenchida com sucesso!' });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Erro ao analisar com IA',
+        description: 'Ocorreu um erro ao gerar a descrição da cena.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingScene(false);
     }
   };
   
@@ -265,7 +290,14 @@ export function CharacterProfileGenerator() {
             </div>
             <div className="space-y-2">
                 <Label>Referência de Cenário (Opcional)</Label>
-                <FileUploader onFileChange={() => {}} file={null} />
+                <FileUploader onFileChange={setScenePhotoDataUri} file={scenePhotoDataUri}>
+                    {scenePhotoDataUri && (
+                        <Button onClick={analyzeSceneImage} disabled={isLoadingScene} className="mt-4 w-full">
+                            {isLoadingScene ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                            Gerar Cena com IA
+                        </Button>
+                    )}
+                </FileUploader>
             </div>
              <div className="space-y-2">
                 <Label htmlFor="sceneSetting">Cenário</Label>
