@@ -20,7 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ContentSuggester } from './content-suggester';
-import type { Character, Scene } from '@/lib/types';
+import type { Character, Scene, Product } from '@/lib/types';
 
 
 export function CharacterProfileGenerator() {
@@ -48,6 +48,10 @@ export function CharacterProfileGenerator() {
   const handleSceneChange = (field: keyof Scene, value: any) => {
     setScene(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleProductChange = (field: keyof Product, value: any) => {
+    setScene(prev => ({ ...prev, product: { ...prev.product, [field]: value } }));
+  };
   
   const generateRandomSeed = () => {
     const seed = Math.floor(100000 + Math.random() * 900000).toString();
@@ -73,8 +77,8 @@ export function CharacterProfileGenerator() {
     toast({ title: "Nova Cena", description: "Campos da cena reiniciados." });
   }
 
-  const loadFromGallery = (type: 'character' | 'scene') => {
-    const key = type === 'character' ? 'fg-characters' : 'fg-scenes';
+  const loadFromGallery = (type: 'character' | 'scene' | 'product') => {
+    const key = type === 'character' ? 'fg-characters' : type === 'scene' ? 'fg-scenes' : 'fg-products';
     const data = JSON.parse(localStorage.getItem(key) || '[]');
     const name = prompt(`Qual ${type} quer carregar?\n\nDisponível:\n` + data.map((item: any) => item.name || item.title).join('\n'));
     if (name) {
@@ -82,8 +86,10 @@ export function CharacterProfileGenerator() {
       if (item) {
         if (type === 'character') {
           setProfile(item);
-        } else {
+        } else if (type === 'scene') {
           setScene(item);
+        } else if (type === 'product') {
+            setScene(prev => ({ ...prev, product: item }));
         }
         toast({ title: `${type.charAt(0).toUpperCase() + type.slice(1)} carregado(a)!`, description: `Os dados de "${name}" foram carregados.` });
       } else {
@@ -92,30 +98,47 @@ export function CharacterProfileGenerator() {
     }
   };
   
-  const saveToGallery = (type: 'character' | 'scene') => {
-    const key = type === 'character' ? 'fg-characters' : 'fg-scenes';
-    const dataToSave = type === 'character' ? profile : scene;
-    const itemName = type === 'character' ? profile.name : scene.title;
+  const saveToGallery = (type: 'character' | 'scene' | 'product') => {
+    let key, dataToSave, itemName;
+    
+    switch(type) {
+        case 'character':
+            key = 'fg-characters';
+            dataToSave = profile;
+            itemName = profile.name;
+            break;
+        case 'scene':
+            key = 'fg-scenes';
+            dataToSave = scene;
+            itemName = scene.title;
+            break;
+        case 'product':
+            key = 'fg-products';
+            dataToSave = scene.product;
+            itemName = scene.product?.name;
+            break;
+    }
+
 
     if (!itemName) {
-        toast({ title: `Por favor, defina um ${type === 'character' ? 'nome para o personagem' : 'título para a cena'}.`, variant: 'destructive'});
+        toast({ title: `Por favor, defina um ${type === 'character' ? 'nome para o personagem' : type === 'scene' ? 'título para a cena' : 'nome para o produto'}.`, variant: 'destructive'});
         return;
     }
 
     try {
         const existingData = JSON.parse(localStorage.getItem(key) || '[]');
-        const existingIndex = existingData.findIndex((item: any) => item.id === dataToSave.id);
+        const existingIndex = existingData.findIndex((item: any) => item.id === (dataToSave as any).id);
 
         if (existingIndex > -1) {
             existingData[existingIndex] = dataToSave; // Update existing
         } else {
-            existingData.push(dataToSave); // Add new
+            existingData.push({ ...dataToSave, id: `${type}_${Date.now()}` }); // Add new with id
         }
 
         localStorage.setItem(key, JSON.stringify(existingData));
         window.dispatchEvent(new Event('storage')); // Notify other components
         toast({
-            title: `${type === 'character' ? 'Personagem' : 'Cena'} guardado(a)!`,
+            title: `${type.charAt(0).toUpperCase() + type.slice(1)} guardado(a)!`,
             description: `"${itemName}" foi guardado(a) na sua galeria.`,
         });
     } catch (error) {
@@ -530,11 +553,11 @@ export function CharacterProfileGenerator() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <Label htmlFor="productName">Nome do Produto</Label>
-                        <Input id="productName" value={scene.product?.name || ''} onChange={(e) => setScene(p => ({...p, product: {...p?.product, name: e.target.value}}))} />
+                        <Input id="productName" value={scene.product?.name || ''} onChange={(e) => handleProductChange('name', e.target.value)} />
                     </div>
                     <div className="space-y-1">
                         <Label htmlFor="partnerBrand">Marca Parceira</Label>
-                        <Input id="partnerBrand" value={scene.product?.brand || ''} onChange={(e) => setScene(p => ({...p, product: {...p?.product, brand: e.target.value}}))} />
+                        <Input id="partnerBrand" value={scene.product?.brand || ''} onChange={(e) => handleProductChange('brand', e.target.value)} />
                     </div>
                 </div>
                 <div className="space-y-2">
@@ -549,9 +572,13 @@ export function CharacterProfileGenerator() {
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="productDescription">Descrição do Produto</Label>
-                    <Textarea id="productDescription" placeholder="Descrição detalhada do produto..." value={scene.product?.description || ''} onChange={(e) => setScene(p => ({...p, product: {...p?.product, description: e.target.value}}))} />
+                    <Textarea id="productDescription" placeholder="Descrição detalhada do produto..." value={scene.product?.description || ''} onChange={(e) => handleProductChange('description', e.target.value)} />
                 </div>
-                <div className="flex items-center space-x-2">
+                 <div className="flex flex-wrap gap-2 justify-start pt-2">
+                    <Button variant="outline" size="sm" onClick={() => loadFromGallery('product')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
+                    <Button size="sm" onClick={() => saveToGallery('product')}><Save className="mr-2 h-4 w-4"/> Guardar Produto</Button>
+                </div>
+                <div className="flex items-center space-x-2 pt-4">
                     <RadioGroup defaultValue="no" id="sponsored" className="flex">
                         <div className="flex items-center space-x-2">
                              <RadioGroupItem value="yes" id="sponsored-yes" />
