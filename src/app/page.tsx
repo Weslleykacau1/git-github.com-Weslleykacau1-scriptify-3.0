@@ -78,13 +78,6 @@ const items = [
     component: <ThumbnailGenerator />,
   },
   {
-    title: 'Gerador de Roteiro Detalhado',
-    description: 'Crie roteiros completos, segundo a segundo, para seus vídeos.',
-    className: 'md:col-span-2',
-    icon: <FileText className="h-6 w-6 text-primary" />,
-    component: <ContentSuggester />,
-  },
-  {
     title: 'Analisador de Roteiro',
     description: 'Cole um roteiro para extrair prompts de mídia, SEO e ideias de thumbnail.',
     className: 'md:col-span-1',

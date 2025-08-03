@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive } from 'lucide-react';
+import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive, FileText } from 'lucide-react';
 import { generateCharacterProfile, GenerateCharacterProfileOutput } from '@/ai/flows/generate-character-profile';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
@@ -18,6 +18,7 @@ export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
   const [textDescription, setTextDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const [profile, setProfile] = useState<Partial<GenerateCharacterProfileOutput>>({});
   const { toast } = useToast();
 
@@ -66,6 +67,21 @@ export function CharacterProfileGenerator() {
       return;
     }
     analyzeWithAI({ textDescription });
+  };
+  
+  const handleGenerateScript = async (format: 'markdown' | 'json') => {
+    setIsGeneratingScript(true);
+    toast({
+      title: 'Gerando roteiro...',
+      description: `O roteiro está sendo gerado em formato ${format}.`,
+    });
+    // Simular chamada de API
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsGeneratingScript(false);
+    toast({
+      title: 'Roteiro Gerado!',
+      description: 'Seu roteiro foi gerado com sucesso.',
+    });
   };
   
   return (
@@ -342,6 +358,37 @@ export function CharacterProfileGenerator() {
                 <Button><Save className="mr-2"/> Guardar Cena</Button>
             </div>
         </div>
+        
+        <div className="flex flex-col h-full w-full space-y-6 pt-8">
+            <div className="flex items-center gap-3">
+              <FileText className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-bold font-headline">3. Gere o Roteiro Detalhado</h2>
+            </div>
+            <p className="text-muted-foreground">
+              Use o influenciador e a cena definidos para gerar um roteiro detalhado para um vídeo.
+            </p>
+
+            <div className="flex flex-col space-y-4 flex-grow justify-center">
+              <Button onClick={() => handleGenerateScript('markdown')} disabled={isGeneratingScript} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold text-lg">
+                {isGeneratingScript && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Gerar Roteiro (Markdown)
+              </Button>
+              <Button onClick={() => handleGenerateScript('json')} disabled={isGeneratingScript} variant="ghost" className="text-lg">
+                {isGeneratingScript ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <span className="font-mono mr-2">{'{ }'}</span>
+                )}
+                Gerar Roteiro (JSON)
+              </Button>
+            </div>
+
+            <Alert>
+              <AlertDescription className="text-xs text-center">
+                Para gerar, é preciso carregar ou guardar um influenciador e preencher o campo 'Cenário' na cena.
+              </AlertDescription>
+            </Alert>
+          </div>
     </div>
   );
 }
