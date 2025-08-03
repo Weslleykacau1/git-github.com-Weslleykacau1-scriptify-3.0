@@ -4,6 +4,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LongScriptGenerator } from './long-script-generator';
 import { MediaPromptGenerator } from './media-prompt-generator';
+import { WebDocGenerator } from './web-doc-generator';
 
 export function AdvancedScriptingTools() {
   return (
@@ -17,7 +18,7 @@ export function AdvancedScriptingTools() {
         <LongScriptGenerator />
       </TabsContent>
       <TabsContent value="web-doc">
-        <div className='w-full h-48 flex items-center justify-center text-xs text-center'>Em breve...</div>
+        <WebDocGenerator />
       </TabsContent>
       <TabsContent value="script-analyzer">
         <MediaPromptGenerator />
