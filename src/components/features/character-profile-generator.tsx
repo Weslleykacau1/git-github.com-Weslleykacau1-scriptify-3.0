@@ -8,6 +8,7 @@ import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Sa
 import { analyzeCharacterImage, AnalyzeCharacterImageOutput } from '@/ai/flows/analysis/analyze-character-image';
 import { analyzeTextProfile } from '@/ai/flows/analysis/analyze-text-profile';
 import { analyzeSceneBackground } from '@/ai/flows/analysis/analyze-scene-background';
+import { analyzeProductImage } from '@/ai/flows/analysis/analyze-product-image';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -22,11 +23,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
   const [scenePhotoDataUri, setScenePhotoDataUri] = useState<string | null>(null);
+  const [productPhotoDataUri, setProductPhotoDataUri] = useState<string | null>(null);
   const [textDescription, setTextDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingScene, setIsLoadingScene] = useState(false);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(false);
   const [profile, setProfile] = useState<Partial<AnalyzeCharacterImageOutput>>({});
   const [sceneDescription, setSceneDescription] = useState<string>('');
+  const [productName, setProductName] = useState('');
+  const [partnerBrand, setPartnerBrand] = useState('');
+  const [productDescription, setProductDescription] = useState('');
   const [scriptIdea, setScriptIdea] = useState('');
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const { toast } = useToast();
@@ -85,6 +91,30 @@ export function CharacterProfileGenerator() {
       });
     } finally {
       setIsLoadingScene(false);
+    }
+  };
+
+  const analyzeProduct = async () => {
+    if (!productPhotoDataUri) {
+        toast({ title: 'Erro', description: 'Por favor, envie uma imagem do produto.', variant: 'destructive' });
+        return;
+    }
+    setIsLoadingProduct(true);
+    try {
+        const result = await analyzeProductImage({ photoDataUri: productPhotoDataUri });
+        setProductName(result.productName);
+        setPartnerBrand(result.brand);
+        setProductDescription(result.description);
+        toast({ title: 'Dados do produto preenchidos com sucesso!' });
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: 'Erro ao analisar imagem do produto',
+            description: 'Ocorreu um erro ao extrair os dados do produto.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsLoadingProduct(false);
     }
   };
   
@@ -401,23 +431,30 @@ export function CharacterProfileGenerator() {
                     <Box className="h-6 w-6 text-green-400" />
                     <h3 className="font-semibold text-lg text-green-400">Integração de Produto (Opcional)</h3>
                 </div>
+                <div className="space-y-2">
+                    <Label>Carregue a imagem do produto</Label>
+                    <FileUploader onFileChange={setProductPhotoDataUri} file={productPhotoDataUri}>
+                        {productPhotoDataUri && (
+                            <Button onClick={analyzeProduct} disabled={isLoadingProduct} className="mt-4 w-full">
+                                {isLoadingProduct ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                                Analisar Imagem do Produto
+                            </Button>
+                        )}
+                    </FileUploader>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                         <Label htmlFor="productName">Nome do Produto</Label>
-                        <Input id="productName" />
+                        <Input id="productName" value={productName} onChange={(e) => setProductName(e.target.value)} />
                     </div>
                     <div className="space-y-1">
                         <Label htmlFor="partnerBrand">Marca Parceira</Label>
-                        <Input id="partnerBrand" />
+                        <Input id="partnerBrand" value={partnerBrand} onChange={(e) => setPartnerBrand(e.target.value)} />
                     </div>
                 </div>
                 <div className="space-y-1">
-                    <Label>carregue o video ou a imagem do produto</Label>
-                    <Button variant="outline" className="w-full justify-start"><FileArchive className="mr-2 h-4 w-4" /> Escolher ficheiro</Button>
-                </div>
-                <div className="space-y-1">
                     <Label htmlFor="productDescription">Descrição do Produto</Label>
-                    <Textarea id="productDescription" placeholder="Descrição detalhada do produto..." />
+                    <Textarea id="productDescription" placeholder="Descrição detalhada do produto..." value={productDescription} onChange={(e) => setProductDescription(e.target.value)} />
                 </div>
                 <div className="flex items-center space-x-2">
                     <RadioGroup defaultValue="no" id="sponsored" className="flex">

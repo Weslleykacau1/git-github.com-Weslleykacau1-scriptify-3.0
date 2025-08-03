@@ -5,6 +5,7 @@ config();
 import '@/ai/flows/analysis/analyze-character-image';
 import '@/ai/flows/analysis/analyze-text-profile';
 import '@/ai/flows/analysis/analyze-scene-background';
+import '@/ai/flows/analysis/analyze-product-image';
 
 import '@/ai/flows/script-generation/generate-script-ideas';
 import '@/ai/flows/script-generation/generate-long-script';
