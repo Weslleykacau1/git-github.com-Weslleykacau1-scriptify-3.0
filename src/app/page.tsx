@@ -6,6 +6,7 @@ import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator
 import { ContentSuggester } from '@/components/features/content-suggester';
 import { MediaPromptGenerator } from '@/components/features/media-prompt-generator';
 import { ThumbnailGenerator } from '@/components/features/thumbnail-generator';
+import { CharacterGallery } from '@/components/features/character-gallery';
 
 export default function Home() {
   return (
@@ -66,7 +67,7 @@ const items = [
     description: 'Acesse e gerencie todos os seus personagens criados.',
     className: 'md:col-span-1',
     icon: <Users className="h-6 w-6 text-primary" />,
-    component: <div className='w-full h-full flex items-center justify-center text-xs text-center'>Em breve...</div>,
+    component: <CharacterGallery />,
   },
   {
     title: 'Gerador de Thumbnail',
