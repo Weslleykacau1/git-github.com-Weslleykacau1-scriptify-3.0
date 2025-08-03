@@ -39,20 +39,35 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
   
   // States for Character Profile
-  const [profile, setProfile] = useState<Partial<Character>>(initialCharacter || { id: `char_${Date.now()}` });
+  const [profile, setProfile] = useState<Partial<Character>>(initialCharacter || {});
   
   // States for Scene
-  const [scene, setScene] = useState<Partial<Scene>>(initialScene || { id: `scene_${Date.now()}`});
+  const [scene, setScene] = useState<Partial<Scene>>(initialScene || {});
 
   const { toast } = useToast();
 
+  const generateRandomSeed = () => {
+    const seed = Math.floor(100000 + Math.random() * 900000).toString();
+    handleProfileChange('generationSeed', seed);
+  };
+
   useEffect(() => {
+    // This runs only on the client, after hydration
+    if (initialCharacter) {
+        setProfile(initialCharacter);
+    } else {
+        setProfile({ id: `char_${Date.now()}` });
+        generateRandomSeed(); // Also generate seed for new characters
+    }
+
+    if (initialScene) {
+        setScene(initialScene);
+    } else {
+        setScene({ id: `scene_${Date.now()}`});
+    }
+
     if (initialProduct) {
         setScene(prev => ({...prev, product: initialProduct}));
-    }
-    // Only generate a new seed if it's a completely new character
-    if (!initialCharacter?.generationSeed) {
-        generateRandomSeed();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCharacter, initialScene, initialProduct]);
@@ -68,11 +83,6 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
 
   const handleProductChange = (field: keyof Product, value: any) => {
     setScene(prev => ({ ...prev, product: { ...prev.product, [field]: value } }));
-  };
-  
-  const generateRandomSeed = () => {
-    const seed = Math.floor(100000 + Math.random() * 900000).toString();
-    handleProfileChange('generationSeed', seed);
   };
   
   const resetCharacter = () => {
