@@ -31,8 +31,8 @@ export default function Home() {
 
 const items = [
   {
-    title: 'Personagem a Partir de Imagem',
-    description: 'Gere um perfil de personagem a partir de uma imagem.',
+    title: 'Gerador de Perfil de Personagem',
+    description: 'Gere um perfil a partir de uma imagem ou texto.',
     component: <CharacterProfileGenerator />,
     className: 'md:col-span-2',
     icon: <Bot className="h-6 w-6 text-primary" />,

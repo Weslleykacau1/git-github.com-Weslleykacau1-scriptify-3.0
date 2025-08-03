@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Um agente de IA gerador de perfil de personagem que analisa uma imagem e preenche os detalhes do personagem.
+ * @fileOverview Um agente de IA gerador de perfil de personagem que analisa uma imagem ou texto e preenche os detalhes do personagem.
  *
  * - generateCharacterProfile - Uma função que lida com o processo de geração de perfil de personagem.
  * - GenerateCharacterProfileInput - O tipo de entrada para a função generateCharacterProfile.
@@ -14,9 +14,14 @@ import {z} from 'genkit';
 const GenerateCharacterProfileInputSchema = z.object({
   photoDataUri: z
     .string()
+    .optional()
     .describe(
       "Uma foto de um personagem, como um data URI que deve incluir um tipo MIME e usar codificação Base64. Formato esperado: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  textDescription: z
+    .string()
+    .optional()
+    .describe('Uma descrição em texto do personagem.'),
 });
 export type GenerateCharacterProfileInput = z.infer<typeof GenerateCharacterProfileInputSchema>;
 
@@ -40,7 +45,7 @@ const prompt = ai.definePrompt({
   name: 'generateCharacterProfilePrompt',
   input: {schema: GenerateCharacterProfileInputSchema},
   output: {schema: GenerateCharacterProfileOutputSchema},
-  prompt: `Você é um gerador de perfil de personagem de IA. Você analisará a imagem do personagem e extrairá as seguintes informações para preencher o perfil do personagem:
+  prompt: `Você é um gerador de perfil de personagem de IA. Você analisará a imagem ou o texto do personagem e extrairá as seguintes informações para preencher o perfil do personagem:
 
 - Nome: O nome do personagem.
 - Nicho: O nicho do personagem.
@@ -51,9 +56,14 @@ const prompt = ai.definePrompt({
 - Traços Únicos: Traços únicos do personagem.
 - Sotaque: O sotaque do personagem (em português do Brasil).
 
-Analise a imagem a seguir para extrair as informações acima:
+Analise a imagem ou texto a seguir para extrair as informações acima:
 
-{{media url=photoDataUri}}
+{{#if photoDataUri}}
+Imagem: {{media url=photoDataUri}}
+{{/if}}
+{{#if textDescription}}
+Descrição em Texto: {{{textDescription}}}
+{{/if}}
 
 Certifique-se de produzir todos os campos em português.`,
 });
