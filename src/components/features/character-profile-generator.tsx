@@ -140,6 +140,16 @@ export function CharacterProfileGenerator() {
   const handleAction = (action: string) => {
     toast({ title: `Ação: ${action}`, description: 'Esta funcionalidade será implementada em breve.' });
   };
+
+  const handleSaveToGallery = () => {
+    // Here you would typically send the data to a server/API to be saved.
+    // For now, we'll just show a toast notification.
+    console.log("Saving character to gallery:", profile);
+    toast({
+        title: "Personagem Guardado!",
+        description: `"${profile.name}" foi adicionado à sua galeria.`,
+    });
+  };
   
   const getCharacterProfileAsString = () => {
     return Object.entries(profile)
@@ -282,7 +292,7 @@ export function CharacterProfileGenerator() {
         <div className="flex flex-wrap gap-2 justify-end pt-4">
             <Button variant="outline" onClick={() => handleAction('Novo Influenciador')}><Plus /> Novo Influenciador</Button>
             <Button variant="outline" onClick={() => handleAction('Carregar da Galeria')}><Library /> Carregar da Galeria</Button>
-            <Button onClick={() => handleAction('Adicionar à Galeria')}><Save /> Adicionar à Galeria</Button>
+            <Button onClick={handleSaveToGallery}><Save /> Adicionar à Galeria</Button>
         </div>
 
         <div className="flex items-center gap-3 pt-8">

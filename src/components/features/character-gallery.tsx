@@ -4,19 +4,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, UploadCloud, Clapperboard, FileText, Trash2, Palette } from 'lucide-react';
+import db from '@/data/db.json';
 
-const characters = [
-  {
-    name: 'Dr. Saúde',
-    niche: 'Saúde e bem-estar',
-    bio: 'O Dr. Saúde, seu guia confiável para uma vida mais longa e feliz!',
-  },
-  {
-    name: 'Lucas Mendes',
-    niche: 'Viagens e Estilo de Vida',
-    bio: 'Vivendo aventuras pelo mundo e compartilhando cada momento com você!',
-  },
-];
+const characters = db.characters;
 
 export function CharacterGallery() {
   return (
