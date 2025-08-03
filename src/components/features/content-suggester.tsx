@@ -19,8 +19,8 @@ export function ContentSuggester() {
     e.preventDefault();
     if (!characterProfile || !sceneDescription) {
       toast({
-        title: 'Error',
-        description: 'Please fill in both fields.',
+        title: 'Erro',
+        description: 'Por favor, preencha ambos os campos.',
         variant: 'destructive',
       });
       return;
@@ -34,8 +34,8 @@ export function ContentSuggester() {
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Error getting suggestions',
-        description: 'An error occurred while getting suggestions.',
+        title: 'Erro ao obter sugestões',
+        description: 'Ocorreu um erro ao obter as sugestões.',
         variant: 'destructive',
       });
     } finally {
@@ -45,7 +45,7 @@ export function ContentSuggester() {
   
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast({ title: 'Copied to clipboard!' });
+    toast({ title: 'Copiado para a área de transferência!' });
   }
 
   return (
@@ -53,20 +53,20 @@ export function ContentSuggester() {
       <form onSubmit={handleSubmit} className="flex-grow flex flex-col gap-4">
         <div className="grid md:grid-cols-2 gap-4">
             <div className='space-y-1'>
-              <Label htmlFor="char-profile-suggester">Character Profile</Label>
+              <Label htmlFor="char-profile-suggester">Perfil do Personagem</Label>
               <Textarea
                 id="char-profile-suggester"
-                placeholder="e.g., A witty food critic..."
+                placeholder="Ex: Um crítico de comida espirituoso..."
                 value={characterProfile}
                 onChange={(e) => setCharacterProfile(e.target.value)}
                 className="h-24"
               />
             </div>
             <div className='space-y-1'>
-              <Label htmlFor="scene-desc-suggester">Scene Description</Label>
+              <Label htmlFor="scene-desc-suggester">Descrição da Cena</Label>
               <Textarea
                 id="scene-desc-suggester"
-                placeholder="e.g., Reviewing a new spicy ramen challenge..."
+                placeholder="Ex: Analisando um novo desafio de ramen picante..."
                 value={sceneDescription}
                 onChange={(e) => setSceneDescription(e.target.value)}
                 className="h-24"
@@ -75,14 +75,14 @@ export function ContentSuggester() {
         </div>
         <Button type="submit" disabled={isLoading} className="mt-auto">
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Get Suggestions
+          Obter Sugestões
         </Button>
       </form>
 
       {suggestions && (
         <div className="mt-4 grid md:grid-cols-2 gap-4 overflow-y-auto">
           <div className="space-y-2">
-            <h4 className="font-semibold">Video Titles</h4>
+            <h4 className="font-semibold">Títulos de Vídeo</h4>
             <div className="space-y-2">
               {suggestions.videoTitles.map((title, i) => (
                 <div key={i} className="flex items-center justify-between p-2 rounded-md bg-secondary/50 text-sm">
@@ -95,7 +95,7 @@ export function ContentSuggester() {
             </div>
           </div>
           <div className="space-y-2">
-            <h4 className="font-semibold">Dialogues</h4>
+            <h4 className="font-semibold">Diálogos</h4>
             <div className="space-y-2">
               {suggestions.dialogues.map((dialogue, i) => (
                  <div key={i} className="flex items-center justify-between p-2 rounded-md bg-secondary/50 text-sm">

@@ -1,25 +1,25 @@
 'use server';
 
 /**
- * @fileOverview AI-powered content suggestion flow for video titles and dialogues.
+ * @fileOverview Fluxo de sugestão de conteúdo com IA para títulos e diálogos de vídeo.
  *
- * - suggestContent - A function that suggests video titles and dialogues based on a scene description and character profile.
- * - SuggestContentInput - The input type for the suggestContent function.
- * - SuggestContentOutput - The return type for the suggestContent function.
+ * - suggestContent - Uma função que sugere títulos e diálogos de vídeo com base na descrição de uma cena e no perfil de um personagem.
+ * - SuggestContentInput - O tipo de entrada para a função suggestContent.
+ * - SuggestContentOutput - O tipo de retorno para a função suggestContent.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SuggestContentInputSchema = z.object({
-  sceneDescription: z.string().describe('The description of the scene.'),
-  characterProfile: z.string().describe('The profile of the character.'),
+  sceneDescription: z.string().describe('A descrição da cena.'),
+  characterProfile: z.string().describe('O perfil do personagem.'),
 });
 export type SuggestContentInput = z.infer<typeof SuggestContentInputSchema>;
 
 const SuggestContentOutputSchema = z.object({
-  videoTitles: z.array(z.string()).describe('Suggested video titles.'),
-  dialogues: z.array(z.string()).describe('Suggested dialogues.'),
+  videoTitles: z.array(z.string()).describe('Títulos de vídeo sugeridos.'),
+  dialogues: z.array(z.string()).describe('Diálogos sugeridos.'),
 });
 export type SuggestContentOutput = z.infer<typeof SuggestContentOutputSchema>;
 
@@ -31,15 +31,15 @@ const prompt = ai.definePrompt({
   name: 'suggestContentPrompt',
   input: {schema: SuggestContentInputSchema},
   output: {schema: SuggestContentOutputSchema},
-  prompt: `You are a creative content strategist. Given the scene description and character profile, suggest engaging video titles and dialogues.
+  prompt: `Você é um estrategista de conteúdo criativo. Dada a descrição da cena e o perfil do personagem, sugira títulos de vídeo e diálogos envolventes. A saída deve ser em português.
 
-Scene Description: {{{sceneDescription}}}
-Character Profile: {{{characterProfile}}}
+Descrição da Cena: {{{sceneDescription}}}
+Perfil do Personagem: {{{characterProfile}}}
 
-Suggest at least 3 video titles and 3 dialogues.
+Sugira pelo menos 3 títulos de vídeo e 3 diálogos.
 
-Format your response as a JSON object with 'videoTitles' and 'dialogues' arrays.
-`, // Removed JSON delimiters from the prompt
+Formate sua resposta como um objeto JSON com os arrays 'videoTitles' e 'dialogues'.
+`, 
 });
 
 const suggestContentFlow = ai.defineFlow(

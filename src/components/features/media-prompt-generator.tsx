@@ -13,11 +13,11 @@ import { generateMediaPrompts, GenerateMediaPromptsOutput } from '@/ai/flows/gen
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 const formSchema = z.object({
-  sceneTitle: z.string().min(1, 'Scene title is required.'),
-  sceneSetting: z.string().min(1, 'Scene setting is required.'),
-  sceneAction: z.string().min(1, 'Scene action is required.'),
-  cameraAngle: z.string().min(1, 'Camera angle is required.'),
-  videoDuration: z.string().min(1, 'Video duration is required.'),
+  sceneTitle: z.string().min(1, 'O título da cena é obrigatório.'),
+  sceneSetting: z.string().min(1, 'O cenário da cena é obrigatório.'),
+  sceneAction: z.string().min(1, 'A ação da cena é obrigatória.'),
+  cameraAngle: z.string().min(1, 'O ângulo da câmera é obrigatório.'),
+  videoDuration: z.string().min(1, 'A duração do vídeo é obrigatória.'),
   productDetails: z.string().optional(),
 });
 
@@ -49,8 +49,8 @@ export function MediaPromptGenerator() {
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Error generating media prompts',
-        description: 'An error occurred while generating media prompts.',
+        title: 'Erro ao gerar prompts de mídia',
+        description: 'Ocorreu um erro ao gerar os prompts de mídia.',
         variant: 'destructive',
       });
     } finally {
@@ -60,7 +60,7 @@ export function MediaPromptGenerator() {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast({ title: 'Copied to clipboard!' });
+    toast({ title: 'Copiado para a área de transferência!' });
   };
 
   return (
@@ -69,33 +69,33 @@ export function MediaPromptGenerator() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex-grow flex flex-col gap-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
             <FormField control={form.control} name="sceneTitle" render={({ field }) => (
-                <FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="My New Setup" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Título</FormLabel><FormControl><Input placeholder="Meu Novo Setup" {...field} /></FormControl><FormMessage /></FormItem>
               )}
             />
             <FormField control={form.control} name="sceneSetting" render={({ field }) => (
-                <FormItem><FormLabel>Setting</FormLabel><FormControl><Input placeholder="Minimalist desk" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Cenário</FormLabel><FormControl><Input placeholder="Mesa minimalista" {...field} /></FormControl><FormMessage /></FormItem>
               )}
             />
             <FormField control={form.control} name="sceneAction" render={({ field }) => (
-                <FormItem><FormLabel>Action</FormLabel><FormControl><Input placeholder="Assembling keyboard" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Ação</FormLabel><FormControl><Input placeholder="Montando teclado" {...field} /></FormControl><FormMessage /></FormItem>
               )}
             />
              <FormField control={form.control} name="cameraAngle" render={({ field }) => (
-                <FormItem><FormLabel>Camera Angle</FormLabel><FormControl><Input placeholder="Top-down" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Ângulo da Câmera</FormLabel><FormControl><Input placeholder="De cima para baixo" {...field} /></FormControl><FormMessage /></FormItem>
               )}
             />
             <FormField control={form.control} name="videoDuration" render={({ field }) => (
-                <FormItem><FormLabel>Duration</FormLabel><FormControl><Input placeholder="30 seconds" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Duração</FormLabel><FormControl><Input placeholder="30 segundos" {...field} /></FormControl><FormMessage /></FormItem>
               )}
             />
             <FormField control={form.control} name="productDetails" render={({ field }) => (
-                <FormItem><FormLabel>Product (Optional)</FormLabel><FormControl><Input placeholder="Keychron Q1" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Produto (Opcional)</FormLabel><FormControl><Input placeholder="Keychron Q1" {...field} /></FormControl><FormMessage /></FormItem>
               )}
             />
           </div>
           <Button type="submit" disabled={isLoading} className="mt-auto">
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Generate Prompts
+            Gerar Prompts
           </Button>
         </form>
       </Form>

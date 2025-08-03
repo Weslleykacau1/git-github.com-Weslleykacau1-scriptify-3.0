@@ -19,8 +19,8 @@ export function ScriptIdeaGenerator() {
     e.preventDefault();
     if (!characterProfile || !sceneDescription) {
       toast({
-        title: 'Error',
-        description: 'Please fill in both character profile and scene description.',
+        title: 'Erro',
+        description: 'Por favor, preencha o perfil do personagem e a descrição da cena.',
         variant: 'destructive',
       });
       return;
@@ -34,8 +34,8 @@ export function ScriptIdeaGenerator() {
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Error generating script idea',
-        description: 'An error occurred while generating the script idea.',
+        title: 'Erro ao gerar ideia de roteiro',
+        description: 'Ocorreu um erro ao gerar a ideia de roteiro.',
         variant: 'destructive',
       });
     } finally {
@@ -48,20 +48,20 @@ export function ScriptIdeaGenerator() {
       <form onSubmit={handleSubmit} className="flex-grow flex flex-col gap-4">
         <div className="grid grid-cols-1 gap-4 flex-grow">
           <div className='space-y-1'>
-            <Label htmlFor="char-profile">Character Profile</Label>
+            <Label htmlFor="char-profile">Perfil do Personagem</Label>
             <Textarea
               id="char-profile"
-              placeholder="e.g., A charismatic vlogger..."
+              placeholder="Ex: Um vlogger carismático..."
               value={characterProfile}
               onChange={(e) => setCharacterProfile(e.target.value)}
               className="h-24"
             />
           </div>
           <div className='space-y-1'>
-            <Label htmlFor="scene-desc">Scene Description</Label>
+            <Label htmlFor="scene-desc">Descrição da Cena</Label>
             <Textarea
               id="scene-desc"
-              placeholder="e.g., An unboxing video..."
+              placeholder="Ex: Um vídeo de unboxing..."
               value={sceneDescription}
               onChange={(e) => setSceneDescription(e.target.value)}
               className="h-24"
@@ -70,12 +70,12 @@ export function ScriptIdeaGenerator() {
         </div>
         <Button type="submit" disabled={isLoading} className="mt-auto">
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Generate Idea
+          Gerar Ideia
         </Button>
       </form>
       {scriptIdea && (
         <div className="mt-4 space-y-2">
-            <Label>Generated Idea</Label>
+            <Label>Ideia Gerada</Label>
           <Textarea readOnly value={scriptIdea} className="h-32 text-sm" />
         </div>
       )}

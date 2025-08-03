@@ -1,11 +1,11 @@
 'use server';
 
 /**
- * @fileOverview A script idea generator that combines a character and a scene to produce creative content.
+ * @fileOverview Um gerador de ideias de roteiro que combina um personagem e uma cena para produzir conteúdo criativo.
  *
- * - generateScriptIdeas - A function that generates script ideas.
- * - GenerateScriptIdeasInput - The input type for the generateScriptIdeas function.
- * - GenerateScriptIdeasOutput - The return type for the generateScriptIdeas function.
+ * - generateScriptIdeas - Uma função que gera ideias de roteiro.
+ * - GenerateScriptIdeasInput - O tipo de entrada para a função generateScriptIdeas.
+ * - GenerateScriptIdeasOutput - O tipo de retorno para a função generateScriptIdeas.
  */
 
 import {ai} from '@/ai/genkit';
@@ -14,15 +14,15 @@ import {z} from 'genkit';
 const GenerateScriptIdeasInputSchema = z.object({
   characterProfile: z
     .string()
-    .describe('A detailed description of the character, including name, niche, personality, appearance, and backstory.'),
+    .describe('Uma descrição detalhada do personagem, incluindo nome, nicho, personalidade, aparência e história de fundo.'),
   sceneDescription: z
     .string()
-    .describe('A detailed description of the scene, including setting, action, and mood.'),
+    .describe('Uma descrição detalhada da cena, incluindo cenário, ação e clima.'),
 });
 export type GenerateScriptIdeasInput = z.infer<typeof GenerateScriptIdeasInputSchema>;
 
 const GenerateScriptIdeasOutputSchema = z.object({
-  scriptIdea: z.string().describe('A creative script idea combining the character and scene.'),
+  scriptIdea: z.string().describe('Uma ideia de roteiro criativa combinando o personagem e a cena.'),
 });
 export type GenerateScriptIdeasOutput = z.infer<typeof GenerateScriptIdeasOutputSchema>;
 
@@ -34,15 +34,15 @@ const prompt = ai.definePrompt({
   name: 'generateScriptIdeasPrompt',
   input: {schema: GenerateScriptIdeasInputSchema},
   output: {schema: GenerateScriptIdeasOutputSchema},
-  prompt: `You are a creative scriptwriter. Generate a script idea based on the provided character and scene descriptions.
+  prompt: `Você é um roteirista criativo. Gere uma ideia de roteiro com base nas descrições de personagem e cena fornecidas. A saída deve ser em português.
 
-Character Profile:
+Perfil do Personagem:
 {{characterProfile}}
 
-Scene Description:
+Descrição da Cena:
 {{sceneDescription}}
 
-Script Idea:`,
+Ideia de Roteiro:`,
 });
 
 const generateScriptIdeasFlow = ai.defineFlow(

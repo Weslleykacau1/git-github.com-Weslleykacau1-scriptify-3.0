@@ -19,8 +19,8 @@ export function CharacterProfileGenerator() {
     e.preventDefault();
     if (!photoDataUri) {
       toast({
-        title: 'Error',
-        description: 'Please upload an image.',
+        title: 'Erro',
+        description: 'Por favor, envie uma imagem.',
         variant: 'destructive',
       });
       return;
@@ -34,8 +34,8 @@ export function CharacterProfileGenerator() {
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Error generating profile',
-        description: 'An error occurred while generating the character profile.',
+        title: 'Erro ao gerar perfil',
+        description: 'Ocorreu um erro ao gerar o perfil do personagem.',
         variant: 'destructive',
       });
     } finally {
@@ -45,7 +45,7 @@ export function CharacterProfileGenerator() {
   
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast({ title: 'Copied to clipboard!' });
+    toast({ title: 'Copiado para a área de transferência!' });
   }
 
   return (
@@ -54,7 +54,7 @@ export function CharacterProfileGenerator() {
         <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} />
         <Button type="submit" disabled={isLoading || !photoDataUri} className="w-full">
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Generate Profile
+          Gerar Perfil
         </Button>
       </form>
 

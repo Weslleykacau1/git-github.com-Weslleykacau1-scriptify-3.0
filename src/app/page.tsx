@@ -31,29 +31,29 @@ export default function Home() {
 
 const items = [
   {
-    title: 'Character From Image',
-    description: 'Generate a character profile from an image.',
+    title: 'Personagem a Partir de Imagem',
+    description: 'Gere um perfil de personagem a partir de uma imagem.',
     component: <CharacterProfileGenerator />,
     className: 'md:col-span-2',
     icon: <Bot className="h-6 w-6 text-primary" />,
   },
   {
-    title: 'Script Idea Generator',
-    description: 'Brainstorm fresh script ideas.',
+    title: 'Gerador de Ideias de Roteiro',
+    description: 'Brainstorm de novas ideias para roteiros.',
     component: <ScriptIdeaGenerator />,
     className: 'md:col-span-1',
     icon: <FileText className="h-6 w-6 text-primary" />,
   },
   {
-    title: 'Media Prompt Generator',
-    description: 'Generate prompts for images and videos.',
+    title: 'Gerador de Prompts de Mídia',
+    description: 'Gere prompts para imagens e vídeos.',
     component: <MediaPromptGenerator />,
     className: 'md:col-span-1',
     icon: <ImageIcon className="h-6 w-6 text-primary" />,
   },
   {
-    title: 'Content Suggester',
-    description: 'Get AI suggestions for titles and dialogue.',
+    title: 'Sugestão de Conteúdo',
+    description: 'Obtenha sugestões de IA para títulos e diálogos.',
     component: <ContentSuggester />,
     className: 'md:col-span-2',
     icon: <Clapperboard className="h-6 w-6 text-primary" />,

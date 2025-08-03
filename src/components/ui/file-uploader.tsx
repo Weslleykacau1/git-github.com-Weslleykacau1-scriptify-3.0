@@ -58,7 +58,7 @@ export function FileUploader({ onFileChange, file }: FileUploaderProps) {
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <UploadCloud className="h-10 w-10" />
           <p className="font-medium">
-            {isDragActive ? 'Drop the image here...' : 'Drag & drop an image, or click to select'}
+            {isDragActive ? 'Solte a imagem aqui...' : 'Arraste e solte uma imagem ou clique para selecionar'}
           </p>
           <p className="text-xs">PNG, JPG, WEBP, etc.</p>
         </div>
