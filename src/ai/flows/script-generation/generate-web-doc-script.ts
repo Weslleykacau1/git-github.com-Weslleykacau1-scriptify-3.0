@@ -13,7 +13,7 @@ import {z} from 'genkit';
 
 const SceneSchema = z.object({
   sceneTitle: z.string().describe('The title of the scene.'),
-  narration: z.string().describe('The narration script for this scene in Portuguese.'),
+  narration: z.string().describe('The narration script for this scene in Brazilian Portuguese.'),
   imagePrompt: z.string().describe('A detailed prompt in English to generate an image for the scene.'),
   videoPrompt: z.string().describe('A detailed prompt in English to generate a video for the scene.'),
 });
@@ -49,11 +49,11 @@ The documentary should cover the following topics: {{topicsToCover}}.
 Your task is to:
 1.  Create a compelling title for the documentary.
 2.  Break the documentary down into a series of logical scenes.
-3.  For each scene, write the narration in Portuguese.
+3.  For each scene, write the narration in Brazilian Portuguese.
 4.  For each scene, create a detailed image generation prompt (in English).
 5.  For each scene, create a detailed video generation prompt (in English).
 
-The final output should be a complete storyboard, ready for production. The narration must be in Portuguese, but the image and video prompts must be in English.
+The final output should be a complete storyboard, ready for production. The narration must be in Brazilian Portuguese, but the image and video prompts must be in English.
 `,
 });
 

@@ -21,7 +21,7 @@ const GenerateViralScriptInputSchema = z.object({
 export type GenerateViralScriptInput = z.infer<typeof GenerateViralScriptInputSchema>;
 
 const GenerateViralScriptOutputSchema = z.object({
-  script: z.string().describe('A script designed for virality, including setup, hook, escalation, climax, and CTA.'),
+  script: z.string().describe('A script designed for virality, including setup, hook, escalation, climax, and CTA. Dialogue must be in Portuguese, visual descriptions in English.'),
 });
 export type GenerateViralScriptOutput = z.infer<typeof GenerateViralScriptOutputSchema>;
 
@@ -51,7 +51,7 @@ The script structure for Shorts must be:
 4. Climax/Punchline: The high point or the final joke.
 5. CTA: The call to action.
 
-Generate a compelling script in Portuguese based on these instructions.
+Generate a compelling script. All dialogue must be in Brazilian Portuguese. All visual descriptions and scene directions must be in English.
 `,
 });
 

@@ -1,4 +1,3 @@
-// src/ai/flows/script-generation/generate-video-script.ts
 'use server';
 
 /**
@@ -34,14 +33,14 @@ const prompt = ai.definePrompt({
   name: 'generateVideoScriptPrompt',
   input: {schema: GenerateVideoScriptInputSchema},
   output: {schema: GenerateVideoScriptOutputSchema},
-  prompt: `You are a creative director and screenwriter for short-form videos. Your task is to create a detailed, second-by-second script based on the provided character and scene information.
+  prompt: `You are a creative director and screenwriter for short-form videos. Your task is to create a detailed, second-by-second script based on the provided character and scene information. Be absolutely faithful to all provided details.
 
 The output must be in MARKDOWN format.
 The script should have a total duration of {{scene.duration}} seconds.
 For each second, describe the visual action and camera work in detail. Visual descriptions and SFX must be in ENGLISH.
 The character's dialogue must be in BRAZILIAN PORTUGUESE, matching their personality and the specified accent.
 
-**Character Profile:**
+**Character Profile (Be Faithful):**
 - Name: {{character.name}}
 - Personality: {{character.personality}}
 - Physical Appearance: {{character.physicalAppearance}}
@@ -51,7 +50,7 @@ The character's dialogue must be in BRAZILIAN PORTUGUESE, matching their persona
 - Generation Seed (for visual consistency): {{character.generationSeed}}
 - Negative Prompt (what to avoid in visuals): {{character.negativePrompt}}
 
-**Scene Details:**
+**Scene Details (Be Faithful):**
 - Title: {{scene.title}}
 - Setting Description: {{scene.setting}}
 - Main Action: {{scene.mainAction}}

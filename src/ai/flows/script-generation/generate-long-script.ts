@@ -26,7 +26,7 @@ const GenerateLongScriptInputSchema = z.object({
 export type GenerateLongScriptInput = z.infer<typeof GenerateLongScriptInputSchema>;
 
 const GenerateLongScriptOutputSchema = z.object({
-  script: z.string().describe('A complete, detailed script for a long-form video, structured for viewer retention.'),
+  script: z.string().describe('A complete, detailed script for a long-form video, structured for viewer retention. All dialogue/narration must be in Brazilian Portuguese. All visual descriptions must be in English.'),
 });
 export type GenerateLongScriptOutput = z.infer<typeof GenerateLongScriptOutputSchema>;
 
@@ -40,19 +40,21 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateLongScriptOutputSchema},
   prompt: `You are a creative screenwriter specializing in long-form video content for platforms like YouTube. Your goal is to create a detailed script of approximately {{duration}} minutes on the topic of "{{topic}}".
 
-The script should be engaging and structured to maximize viewer retention. Break it down into sections like introduction, development, climax, and conclusion. Include suggestions for visuals, pacing, and tone.
+The script should be engaging and structured to maximize viewer retention. Break it down into sections like introduction, development, climax, and conclusion. 
+All dialogue and narration must be in Brazilian Portuguese, respecting the character's accent if provided.
+All visual descriptions, camera directions, and SFX must be in English.
 
 {{#if characterProfile}}
-Consider the following character for the video:
+Be faithful to the following character profile:
 {{{characterProfile}}}
 {{/if}}
 
 {{#if sceneDescription}}
-And the following scene description:
+And be faithful to the following scene description:
 {{{sceneDescription}}}
 {{/if}}
 
-Generate the full script in Portuguese.
+Generate the full script now.
 `,
 });
 

@@ -38,7 +38,7 @@ const prompt = ai.definePrompt({
   name: 'generateJsonScriptPrompt',
   input: {schema: GenerateJsonScriptInputSchema},
   output: {schema: GenerateJsonScriptOutputSchema},
-  prompt: `You are a screenwriter. Create a script in JSON format based on the character and scene provided.
+  prompt: `You are a screenwriter. Create a script in JSON format based on the character and scene provided. Be faithful to all characteristics of the character and scene.
 
 Character Profile:
 {{{characterProfile}}}
@@ -46,7 +46,7 @@ Character Profile:
 Scene Description:
 {{{sceneDescription}}}
 
-Generate a title and at least one scene with narration (in Portuguese) and image/video prompts (in English).`,
+Generate a title and at least one scene. The narration must be in Portuguese. The image and video prompts must be in English.`,
 });
 
 const generateJsonScriptFlow = ai.defineFlow(
