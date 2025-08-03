@@ -1,28 +1,30 @@
+// src/components/features/character-profile-generator.tsx
 'use client';
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles } from 'lucide-react';
 import { generateCharacterProfile, GenerateCharacterProfileOutput } from '@/ai/flows/generate-character-profile';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '../ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
   const [textDescription, setTextDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [profile, setProfile] = useState<GenerateCharacterProfileOutput | null>(null);
+  const [profile, setProfile] = useState<Partial<GenerateCharacterProfileOutput>>({});
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('image');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (activeTab === 'image' && !photoDataUri) {
+  const handleProfileChange = (field: keyof GenerateCharacterProfileOutput, value: string) => {
+    setProfile(prev => ({ ...prev, [field]: value }));
+  };
+
+  const analyzeImage = async () => {
+    if (!photoDataUri) {
       toast({
         title: 'Erro',
         description: 'Por favor, envie uma imagem.',
@@ -30,8 +32,25 @@ export function CharacterProfileGenerator() {
       });
       return;
     }
+    setIsLoading(true);
+    try {
+      const result = await generateCharacterProfile({ photoDataUri });
+      setProfile(result);
+      toast({ title: 'Perfil preenchido com sucesso!' });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Erro ao analisar imagem',
+        description: 'Ocorreu um erro ao gerar o perfil a partir da imagem.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    if (activeTab === 'text' && !textDescription) {
+  const analyzeText = async () => {
+    if (!textDescription) {
         toast({
           title: 'Erro',
           description: 'Por favor, insira uma descrição de texto.',
@@ -39,79 +58,101 @@ export function CharacterProfileGenerator() {
         });
         return;
       }
-
     setIsLoading(true);
-    setProfile(null);
-
     try {
-      const input = activeTab === 'image' 
-        ? { photoDataUri: photoDataUri! }
-        : { textDescription };
-      const result = await generateCharacterProfile(input);
+      const result = await generateCharacterProfile({ textDescription });
       setProfile(result);
+      toast({ title: 'Perfil preenchido com sucesso!' });
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Erro ao gerar perfil',
-        description: 'Ocorreu um erro ao gerar o perfil do personagem.',
+        title: 'Erro ao analisar texto',
+        description: 'Ocorreu um erro ao gerar o perfil a partir do texto.',
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
   };
-  
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({ title: 'Copiado para a área de transferência!' });
-  }
-
-  const isSubmitDisabled = 
-    (activeTab === 'image' && !photoDataUri) || 
-    (activeTab === 'text' && !textDescription) || 
-    isLoading;
-
 
   return (
-    <div className="flex flex-col h-full">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="image">Imagem</TabsTrigger>
-            <TabsTrigger value="text">Texto</TabsTrigger>
-        </TabsList>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
-            <TabsContent value="image" className="m-0">
-                <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} />
-            </TabsContent>
-            <TabsContent value="text" className="m-0">
-                <Textarea
-                    placeholder="Cole a descrição do personagem aqui..."
-                    value={textDescription}
-                    onChange={(e) => setTextDescription(e.target.value)}
-                    className="h-[214px]"
-                />
-            </TabsContent>
-            <Button type="submit" disabled={isSubmitDisabled} className="w-full">
+    <div className="flex flex-col h-full w-full space-y-6">
+      <div className="flex items-center gap-3">
+        <User className="h-6 w-6 text-primary" />
+        <h2 className="text-2xl font-bold font-headline">1. Defina o seu Influenciador</h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Image Analysis Section */}
+        <div className="bg-card border rounded-xl p-6 space-y-4 flex flex-col">
+            <div className="flex items-center gap-3">
+                <UploadCloud className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold text-lg">Carregar Foto de Referência</h3>
+            </div>
+            <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} />
+            <Alert>
+                <Sparkles className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                A análise será detalhada, incluindo características faciais, cabelo, estilo e personalidade.
+                </AlertDescription>
+            </Alert>
+            <Button onClick={analyzeImage} disabled={isLoading || !photoDataUri}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Gerar Perfil
+                Analisar Imagem
             </Button>
-        </form>
-      </Tabs>
-
-
-      {profile && (
-        <div className="mt-4 overflow-y-auto space-y-4">
-            {Object.entries(profile).map(([key, value]) => (
-                 <div key={key} className="space-y-1 relative">
-                    <Label htmlFor={key} className="capitalize text-xs text-muted-foreground">{key.replace(/([A-Z])/g, ' $1')}</Label>
-                    <Input id={key} readOnly value={value} className="pr-10"/>
-                    <Button variant="ghost" size="icon" className="absolute right-1 top-5 h-7 w-7" onClick={() => handleCopy(value)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                    </Button>
-                 </div>
-            ))}
         </div>
-      )}
+
+        {/* Text Analysis Section */}
+        <div className="bg-card border rounded-xl p-6 space-y-4 flex flex-col">
+            <div className="flex items-center gap-3">
+                <ClipboardPaste className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold text-lg">Cole as Características</h3>
+            </div>
+            <Textarea
+                placeholder="Cole aqui um texto com as características do influenciador..."
+                value={textDescription}
+                onChange={(e) => setTextDescription(e.target.value)}
+                className="flex-grow min-h-[150px]"
+            />
+             <Button onClick={analyzeText} disabled={isLoading || !textDescription}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Analisar Texto e Preencher
+            </Button>
+        </div>
+      </div>
+
+        {/* Profile Details Section */}
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <Label htmlFor="name">Nome</Label>
+                    <Input id="name" placeholder="Ex: Luna Silva" value={profile.name || ''} onChange={e => handleProfileChange('name', e.target.value)} />
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="niche">Nicho</Label>
+                    <Input id="niche" placeholder="Ex: Moda, Jogos" value={profile.niche || ''} onChange={e => handleProfileChange('niche', e.target.value)} />
+                </div>
+            </div>
+            <div className="space-y-1">
+                <Label htmlFor="personality">Traços de Personalidade</Label>
+                <Textarea id="personality" placeholder="Carismática, engraçada, expert em seu nicho..." value={profile.personality || ''} onChange={e => handleProfileChange('personality', e.target.value)} />
+            </div>
+            <div className="space-y-1">
+                <Label htmlFor="physicalAppearance">Detalhes de Aparência</Label>
+                <Textarea id="physicalAppearance" placeholder="Descreva a aparência física em detalhe extremo..." value={profile.physicalAppearance || ''} onChange={e => handleProfileChange('physicalAppearance', e.target.value)} />
+                <Alert>
+                    <Sparkles className="h-4 w-4" />
+                    <AlertDescription className="text-xs">
+                    Seja detalhado - formato do rosto, cor dos olhos, textura do cabelo, etc. para melhor geração de vídeo.
+                    </AlertDescription>
+                </Alert>
+            </div>
+            <div className="space-y-1">
+                <Label htmlFor="clothingStyle">Vestuário</Label>
+                <Textarea id="clothingStyle" placeholder="Descreva as roupas, sapatos e acessórios que o personagem está a usar..." value={profile.clothingStyle || ''} onChange={e => handleProfileChange('clothingStyle', e.target.value)} />
+            </div>
+            {/* Adicione outros campos como biografia, traços únicos, sotaque se necessário */}
+        </div>
     </div>
   );
 }
