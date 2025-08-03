@@ -82,7 +82,7 @@ export default function Home() {
       id: 'advanced_script' as ActiveView,
       title: 'Ferramentas de Roteiro Avançadas',
       description: 'Gere roteiros longos, para web docs, e transforme roteiros prontos em prompts de imagem e video.',
-      className: 'md:col-span-1',
+      className: 'md:col-span-2',
       icon: <Zap className="h-6 w-6 text-primary" />,
       component: <AdvancedScriptingTools />,
     },
