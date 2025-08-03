@@ -8,10 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, FileInput } from 'lucide-react';
+import { Loader2, FileInput, Image as ImageIcon, Video, Copy, Download, Search, Film } from 'lucide-react';
 import { generateMediaPrompts, GenerateMediaPromptsOutput } from '@/ai/flows/generate-media-prompts';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
 
 const formSchema = z.object({
   script: z.string().min(1, 'O roteiro é obrigatório.'),
@@ -21,7 +21,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export function MediaPromptGenerator() {
   const [isLoading, setIsLoading] = useState(false);
-  const [prompts, setPrompts] = useState<GenerateMediaPromptsOutput | null>(null);
+  const [result, setResult] = useState<GenerateMediaPromptsOutput | null>(null);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -33,17 +33,10 @@ export function MediaPromptGenerator() {
 
   async function onSubmit(values: FormData) {
     setIsLoading(true);
-    setPrompts(null);
+    setResult(null);
     try {
-        // This is a placeholder for the actual AI call which is not yet implemented.
-        // We will replace this with a call to a new Genkit flow in the future.
-      const result: GenerateMediaPromptsOutput = await new Promise(resolve => setTimeout(() => resolve({
-        imagePrompt: `An image prompt based on: ${values.script.substring(0, 50)}...`,
-        videoPrompt: `A video prompt based on: ${values.script.substring(0, 50)}...`,
-        seoKeywords: "keyword1, keyword2, keyword3",
-        thumbnailIdeas: `A thumbnail idea based on the script.`
-      }), 1000));
-      setPrompts(result);
+      const generatedResult = await generateMediaPrompts(values);
+      setResult(generatedResult);
     } catch (error) {
       console.error(error);
       toast({
@@ -97,17 +90,73 @@ export function MediaPromptGenerator() {
             </Button>
             </form>
         </Form>
-        {prompts && (
-            <div className="mt-6 space-y-4">
-            {Object.entries(prompts).map(([key, value]) => (
-                <div key={key} className="space-y-1 relative">
-                <Label htmlFor={key} className="capitalize text-xs text-muted-foreground">{key.replace(/([A-Z])/g, ' $1')}</Label>
-                <Textarea id={key} readOnly value={value} className="h-24 pr-10" />
-                <Button variant="ghost" size="icon" className="absolute right-1 top-6 h-7 w-7" onClick={() => handleCopy(value)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                </Button>
+        {isLoading && (
+            <div className="mt-6 flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )}
+        {result && (
+            <div className="mt-6 space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className='text-lg'>Prompts Gerados por Cena</CardTitle>
+                        <div className="flex gap-2">
+                           <Button variant="outline" size="sm"><Search className="mr-2"/>Gerar SEO</Button>
+                           <Button variant="outline" size="sm"><Film className="mr-2"/>Gerar Thumbnail</Button>
+                           <Button variant="outline" size="sm"><Download className="mr-2"/>Exportar</Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {result.scenes.map((scene, index) => (
+                            <div key={index} className="border bg-card p-4 rounded-lg space-y-4">
+                                <h4 className="font-semibold">{scene.sceneTitle}</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 text-sm font-medium">
+                                            <ImageIcon className="h-4 w-4 text-primary" />
+                                            <span>Prompt de Imagem (EN)</span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
+                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt)}>
+                                            <Copy className="mr-2 h-4 w-4" />
+                                            Copiar
+                                        </Button>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 text-sm font-medium">
+                                            <Video className="h-4 w-4 text-primary" />
+                                            <span>Prompt de Vídeo (EN)</span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
+                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt)}>
+                                            <Copy className="mr-2 h-4 w-4" />
+                                            Copiar
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className='text-lg'>Ideias para Thumbnail</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className='text-lg'>Palavras-chave de SEO</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
+                        </CardContent>
+                    </Card>
                 </div>
-            ))}
             </div>
         )}
     </Card>
