@@ -95,23 +95,26 @@ export default function Home() {
   const renderContent = () => {
     if (activeView === 'home') {
       return (
-        <BentoGrid>
-          {items.map((item, i) => (
-             <div key={i} className={item.className} onClick={() => handleNavigate(item.id)}>
-                <BentoGridItem
-                title={item.title}
-                description={item.description}
-                icon={item.icon}
-                className="h-full"
-                >
-                <div className="flex-grow flex items-center justify-center text-muted-foreground opacity-0">
-                    {/* Placeholder content to maintain layout */}
-                    Placeholder
-                </div>
-                </BentoGridItem>
-            </div>
-          ))}
-        </BentoGrid>
+        <div className="relative">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-48 bg-primary/30 blur-[100px] pointer-events-none -z-10" />
+          <BentoGrid>
+            {items.map((item, i) => (
+               <div key={i} className={item.className} onClick={() => handleNavigate(item.id)}>
+                  <BentoGridItem
+                  title={item.title}
+                  description={item.description}
+                  icon={item.icon}
+                  className="h-full"
+                  >
+                  <div className="flex-grow flex items-center justify-center text-muted-foreground opacity-0">
+                      {/* Placeholder content to maintain layout */}
+                      Placeholder
+                  </div>
+                  </BentoGridItem>
+              </div>
+            ))}
+          </BentoGrid>
+        </div>
       );
     }
     return (
