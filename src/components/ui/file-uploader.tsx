@@ -56,7 +56,6 @@ export function FileUploader({ onFileChange, file, children }: FileUploaderProps
                     <X className="h-4 w-4" />
                 </Button>
             </div>
-            {children}
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2 text-muted-foreground">

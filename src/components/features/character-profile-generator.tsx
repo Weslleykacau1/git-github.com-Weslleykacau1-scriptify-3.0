@@ -273,14 +273,13 @@ export function CharacterProfileGenerator() {
                 <UploadCloud className="h-6 w-6 text-primary" />
                 <h3 className="font-semibold text-lg">Carregar Foto de Referência</h3>
             </div>
-            <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri}>
-                {photoDataUri && (
-                    <Button onClick={analyzeImage} disabled={isLoading} className="mt-4 w-full">
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                        Analisar Imagem
-                    </Button>
-                )}
-            </FileUploader>
+            <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} />
+             {photoDataUri && (
+                <Button onClick={analyzeImage} disabled={isLoading} className="w-full">
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Analisar Imagem
+                </Button>
+            )}
             <Alert>
                 <Sparkles className="h-4 w-4" />
                 <AlertDescription className="text-xs">
@@ -411,14 +410,13 @@ export function CharacterProfileGenerator() {
             </div>
             <div className="space-y-2">
                 <Label>Referência de Cenário (Opcional)</Label>
-                <FileUploader onFileChange={setScenePhotoDataUri} file={scenePhotoDataUri}>
-                    {scenePhotoDataUri && (
-                        <Button onClick={analyzeSceneImage} disabled={isLoadingScene} className="mt-4 w-full">
-                            {isLoadingScene ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            Gerar Cena com IA
-                        </Button>
-                    )}
-                </FileUploader>
+                <FileUploader onFileChange={setScenePhotoDataUri} file={scenePhotoDataUri} />
+                 {scenePhotoDataUri && (
+                    <Button onClick={analyzeSceneImage} disabled={isLoadingScene} className="mt-4 w-full">
+                        {isLoadingScene ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Gerar Cena com IA
+                    </Button>
+                )}
             </div>
              <div className="space-y-2">
                 <Label htmlFor="sceneSetting">Cenário</Label>
@@ -531,14 +529,13 @@ export function CharacterProfileGenerator() {
                 </div>
                 <div className="space-y-2">
                     <Label>Carregue a imagem do produto</Label>
-                    <FileUploader onFileChange={setProductPhotoDataUri} file={productPhotoDataUri}>
-                        {productPhotoDataUri && (
-                            <Button onClick={analyzeProduct} disabled={isLoadingProduct} className="mt-4 w-full">
-                                {isLoadingProduct ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                                Analisar Imagem do Produto
-                            </Button>
-                        )}
-                    </FileUploader>
+                    <FileUploader onFileChange={setProductPhotoDataUri} file={productPhotoDataUri} />
+                    {productPhotoDataUri && (
+                        <Button onClick={analyzeProduct} disabled={isLoadingProduct} className="mt-4 w-full">
+                            {isLoadingProduct ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                            Analisar Imagem do Produto
+                        </Button>
+                    )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
