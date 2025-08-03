@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Generates a structured script in JSON format.
+ * @fileOverview Generates a structured script in JSON format compatible with Veo 3.
  *
  * - generateJsonScript - A function that generates the script.
  * - GenerateJsonScriptInput - The input type for the function.
@@ -14,8 +14,8 @@ import {z} from 'genkit';
 const SceneSchema = z.object({
   sceneTitle: z.string().describe('The title of the scene.'),
   narration: z.string().describe('The narration script for this scene in Portuguese.'),
-  imagePrompt: z.string().describe('A detailed prompt in English to generate an image for the scene.'),
-  videoPrompt: z.string().describe('A detailed prompt in English to generate a video for the scene.'),
+  imagePrompt: z.string().describe('A detailed prompt in English to generate a static image for the scene.'),
+  videoPrompt: z.string().describe('A detailed prompt in English for the Veo 3 model to generate a video for the scene, including visual and audio descriptions (e.g., "sound of keyboard typing").'),
 });
 
 const GenerateJsonScriptInputSchema = z.object({
@@ -38,7 +38,7 @@ const prompt = ai.definePrompt({
   name: 'generateJsonScriptPrompt',
   input: {schema: GenerateJsonScriptInputSchema},
   output: {schema: GenerateJsonScriptOutputSchema},
-  prompt: `You are a screenwriter. Create a script in JSON format based on the character and scene provided. Be faithful to all characteristics of the character and scene.
+  prompt: `You are a screenwriter creating a script for the Veo 3 video generation model. Create a script in JSON format based on the character and scene provided. Be faithful to all characteristics of the character and scene.
 
 Character Profile:
 {{{characterProfile}}}
@@ -46,7 +46,10 @@ Character Profile:
 Scene Description:
 {{{sceneDescription}}}
 
-Generate a title and at least one scene. The narration must be in Portuguese. The image and video prompts must be in English.`,
+Generate a title and at least one scene.
+- The narration must be in Portuguese.
+- The image and video prompts must be in English.
+- The video prompt must be highly detailed and include descriptions of sound effects and ambient audio to be compatible with Veo 3's sound generation capabilities.`,
 });
 
 const generateJsonScriptFlow = ai.defineFlow(
