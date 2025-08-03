@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'ContentForge AI',
+  title: 'Scriptify Studio AI',
   description: 'Ferramentas de IA para criadores de conteúdo.',
 };
 

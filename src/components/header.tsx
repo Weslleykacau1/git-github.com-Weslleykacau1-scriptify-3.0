@@ -6,7 +6,7 @@ export function Header({children}: {children?: React.ReactNode}) {
       <div className="mx-auto max-w-7xl flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BrainCircuit className="h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold font-headline text-white">ContentForge AI</h1>
+          <h1 className="text-2xl font-bold font-headline text-white">Scriptify Studio AI</h1>
         </div>
         <div>
             {children}
