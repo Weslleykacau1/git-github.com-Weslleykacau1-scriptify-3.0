@@ -104,7 +104,7 @@ export function WebDocGenerator() {
            <p className="text-xs text-muted-foreground">Separe os tópicos com vírgulas.</p>
         </div>
         <div className="space-y-2">
-          <Label className="flex items-center gap-2"><Clock className="h-4 w-4" /> Duração do Vídeo</Label>
+          <Label className="flex items-center gap-2"><Clock className="h-4 w-4" /> Duração do Roteiro</Label>
           <Select value={String(duration)} onValueChange={(v) => setDuration(parseInt(v))}>
             <SelectTrigger>
               <SelectValue />
@@ -144,12 +144,12 @@ export function WebDocGenerator() {
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm font-medium">
                                             <FileInput className="h-4 w-4 text-primary" />
-                                            <span>Roteiro (PT-BR)</span>
+                                            <span>Narração (PT-BR)</span>
                                         </div>
                                         <p className="text-sm text-muted-foreground">{scene.narration}</p>
-                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.narration, 'Roteiro')}>
+                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.narration, 'Narração')}>
                                             <Copy className="mr-2 h-4 w-4" />
-                                            Copiar Roteiro
+                                            Copiar Narração
                                         </Button>
                                     </div>
                                     <div className="space-y-4">
