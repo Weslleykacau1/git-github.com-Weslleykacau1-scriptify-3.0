@@ -22,8 +22,13 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ContentSuggester } from './content-suggester';
 import type { Character, Scene, Product } from '@/lib/types';
 
+interface CharacterProfileGeneratorProps {
+    initialCharacter?: Character | null;
+    initialScene?: Scene | null;
+    initialProduct?: Product | null;
+}
 
-export function CharacterProfileGenerator() {
+export function CharacterProfileGenerator({ initialCharacter, initialScene, initialProduct }: CharacterProfileGeneratorProps) {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
   const [scenePhotoDataUri, setScenePhotoDataUri] = useState<string | null>(null);
   const [productPhotoDataUri, setProductPhotoDataUri] = useState<string | null>(null);
@@ -34,12 +39,24 @@ export function CharacterProfileGenerator() {
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
   
   // States for Character Profile
-  const [profile, setProfile] = useState<Partial<Character>>({ id: `char_${Date.now()}` });
+  const [profile, setProfile] = useState<Partial<Character>>(initialCharacter || { id: `char_${Date.now()}` });
   
   // States for Scene
-  const [scene, setScene] = useState<Partial<Scene>>({ id: `scene_${Date.now()}`});
+  const [scene, setScene] = useState<Partial<Scene>>(initialScene || { id: `scene_${Date.now()}`});
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (initialProduct) {
+        setScene(prev => ({...prev, product: initialProduct}));
+    }
+    // Only generate a new seed if it's a completely new character
+    if (!initialCharacter?.generationSeed) {
+        generateRandomSeed();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCharacter, initialScene, initialProduct]);
+
 
   const handleProfileChange = (field: keyof Character, value: any) => {
     setProfile(prev => ({ ...prev, [field]: value }));
@@ -57,10 +74,6 @@ export function CharacterProfileGenerator() {
     const seed = Math.floor(100000 + Math.random() * 900000).toString();
     handleProfileChange('generationSeed', seed);
   };
-
-  useEffect(() => {
-    generateRandomSeed();
-  }, []);
   
   const resetCharacter = () => {
     setProfile({ id: `char_${Date.now()}` });
@@ -113,15 +126,22 @@ export function CharacterProfileGenerator() {
             itemName = scene.title;
             break;
         case 'product':
+            if (!scene.product?.name) {
+                 toast({ title: `Por favor, defina um nome para o produto.`, variant: 'destructive'});
+                 return;
+            }
             key = 'fg-products';
             dataToSave = scene.product;
             itemName = scene.product?.name;
+            if (!(dataToSave as any).id) {
+                (dataToSave as any).id = `prod_${Date.now()}`;
+            }
             break;
     }
 
 
-    if (!itemName) {
-        toast({ title: `Por favor, defina um ${type === 'character' ? 'nome para o personagem' : type === 'scene' ? 'título para a cena' : 'nome para o produto'}.`, variant: 'destructive'});
+    if (!itemName && type !== 'product') {
+        toast({ title: `Por favor, defina um ${type === 'character' ? 'nome para o personagem' : 'título para a cena'}.`, variant: 'destructive'});
         return;
     }
 
@@ -132,7 +152,10 @@ export function CharacterProfileGenerator() {
         if (existingIndex > -1) {
             existingData[existingIndex] = dataToSave; // Update existing
         } else {
-            existingData.push({ ...dataToSave, id: `${type}_${Date.now()}` }); // Add new with id
+            if (!(dataToSave as any).id) {
+                 (dataToSave as any).id = `${type}_${Date.now()}`;
+            }
+            existingData.push(dataToSave); // Add new
         }
 
         localStorage.setItem(key, JSON.stringify(existingData));
@@ -203,6 +226,7 @@ export function CharacterProfileGenerator() {
         setScene(prev => ({
             ...prev,
             product: {
+                ...prev.product,
                 name: result.productName,
                 brand: result.brand,
                 description: result.description,
@@ -414,7 +438,7 @@ export function CharacterProfileGenerator() {
         <div className="flex flex-wrap gap-2 justify-end pt-4">
             <Button variant="outline" onClick={resetCharacter}><Plus /> Novo Influenciador</Button>
             <Button variant="outline" onClick={() => loadFromGallery('character')}><Library /> Carregar da Galeria</Button>
-            <Button onClick={() => saveToGallery('character')}><Save /> Adicionar à Galeria</Button>
+            <Button onClick={() => saveToGallery('character')}><Save /> Guardar Personagem</Button>
         </div>
 
         <div className="flex items-center gap-3 pt-8">

@@ -1,7 +1,7 @@
 // src/app/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
 import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box } from 'lucide-react';
@@ -15,15 +15,50 @@ import { Button } from '@/components/ui/button';
 import { VideoTranscriber } from '@/components/features/video-transcriber';
 import { ArrowLeft } from 'lucide-react';
 import { ProductGallery } from '@/components/features/product-gallery';
+import type { Character, Scene, Product } from '@/lib/types';
 
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script' | 'product_gallery';
 
 export default function Home() {
   const [activeView, setActiveView] = useState<ActiveView>('home');
+  const [loadedCharacter, setLoadedCharacter] = useState<Character | null>(null);
+  const [loadedScene, setLoadedScene] = useState<Scene | null>(null);
+  const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    const handleLoadCharacter = (event: Event) => {
+        const customEvent = event as CustomEvent<Character>;
+        setLoadedCharacter(customEvent.detail);
+        setActiveView('home'); 
+    };
+
+    const handleLoadScene = (event: Event) => {
+        const customEvent = event as CustomEvent<Scene>;
+        setLoadedScene(customEvent.detail);
+        setActiveView('home');
+    };
+
+    const handleLoadProduct = (event: Event) => {
+        const customEvent = event as CustomEvent<Product>;
+        setLoadedProduct(customEvent.detail);
+        setActiveView('home'); 
+    };
+    
+    window.addEventListener('loadCharacter', handleLoadCharacter);
+    window.addEventListener('loadScene', handleLoadScene);
+    window.addEventListener('loadProduct', handleLoadProduct);
+
+    return () => {
+        window.removeEventListener('loadCharacter', handleLoadCharacter);
+        window.removeEventListener('loadScene', handleLoadScene);
+        window.removeEventListener('loadProduct', handleLoadProduct);
+    };
+  }, []);
+
 
   const featureComponents: Record<Exclude<ActiveView, 'home'>, React.ReactNode> = {
-    creator: <CharacterProfileGenerator />,
+    creator: <CharacterProfileGenerator key={`${loadedCharacter?.id}-${loadedScene?.id}-${loadedProduct?.id}`} initialCharacter={loadedCharacter} initialScene={loadedScene} initialProduct={loadedProduct} />,
     viral: <ScriptIdeaGenerator />,
     transcribe: <VideoTranscriber />,
     scene_gallery: <SceneGallery />,
@@ -93,6 +128,12 @@ export default function Home() {
   ];
 
   const handleNavigate = (view: ActiveView) => {
+    // When navigating away from the creator, clear the loaded data
+    if (activeView === 'creator') {
+      setLoadedCharacter(null);
+      setLoadedScene(null);
+      setLoadedProduct(null);
+    }
     setActiveView(view);
   };
 

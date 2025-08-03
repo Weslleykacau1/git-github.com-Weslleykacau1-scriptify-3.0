@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { UploadCloud, FileText, Trash2, Download, Box } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
+import { convertJsonToCsv } from '@/lib/utils';
 
 
 export function ProductGallery() {
@@ -27,35 +28,48 @@ export function ProductGallery() {
     };
     loadProducts();
     
-    window.addEventListener('storage', loadProducts);
-    return () => window.removeEventListener('storage', loadProducts);
+    const handleStorageChange = () => loadProducts();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [toast]);
 
   const handleExport = (product: Product) => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(product, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${product.name}.json`);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    toast({ title: `"${product.name}" exportado com sucesso!` });
+    try {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(product, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `${product.name || 'product'}.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        toast({ title: `"${product.name}" exportado com sucesso!` });
+    } catch (error) {
+        console.error("Export failed:", error);
+        toast({ title: 'Erro ao exportar', variant: 'destructive' });
+    }
   };
   
   const handleDelete = (productId: string, productName?: string) => {
-    if (window.confirm(`Tem a certeza que quer eliminar o produto "${productName}"?`)) {
-      const updatedProducts = products.filter(p => p.id !== productId);
-      localStorage.setItem('fg-products', JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
-      toast({ title: `"${productName}" foi eliminado.` });
+    if (window.confirm(`Tem a certeza que quer eliminar o produto "${productName || 'este produto'}"?`)) {
+      try {
+        const updatedProducts = products.filter(p => p.id !== productId);
+        localStorage.setItem('fg-products', JSON.stringify(updatedProducts));
+        setProducts(updatedProducts);
+        window.dispatchEvent(new Event('storage'));
+        toast({ title: `"${productName}" foi eliminado.` });
+      } catch (error) {
+        console.error("Delete failed:", error);
+        toast({ title: 'Erro ao eliminar', variant: 'destructive' });
+      }
     }
   };
 
   const handleLoad = (product: Product) => {
-    console.log("Loading product:", product);
+    const event = new CustomEvent('loadProduct', { detail: product });
+    window.dispatchEvent(event);
     toast({
-      title: "Funcionalidade de Carregamento",
-      description: "Esta funcionalidade irá carregar o produto no Criador de Cenas. A implementação completa requer gestão de estado global.",
+      title: `Produto "${product.name}" carregado!`,
+      description: 'Volte ao editor e o produto estará na seção de integração.',
     });
   };
   
@@ -65,14 +79,19 @@ export function ProductGallery() {
        return;
      }
 
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `products_backup.json`);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    toast({ title: `Todos os produtos foram exportados!` });
+    try {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `products_backup.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        toast({ title: `Todos os produtos foram exportados!` });
+    } catch (error) {
+        console.error("Export all failed:", error);
+        toast({ title: 'Erro ao exportar tudo', variant: 'destructive' });
+    }
   }
 
   return (
@@ -102,7 +121,7 @@ export function ProductGallery() {
           {products.map((product) => (
             <Card key={product.id} className="flex flex-col">
               <CardHeader>
-                <CardTitle>{product.name}</CardTitle>
+                <CardTitle>{product.name || "Produto Sem Nome"}</CardTitle>
                 <CardDescription>{product.brand}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">

@@ -4,9 +4,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, UploadCloud, FileText, Trash2, Download, Clapperboard } from 'lucide-react';
+import { UploadCloud, FileText, Trash2, Download, Clapperboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Scene } from '@/lib/types';
+import { convertJsonToCsv } from '@/lib/utils';
 
 
 export function SceneGallery() {
@@ -27,32 +28,27 @@ export function SceneGallery() {
     };
     loadScenes();
     
-    window.addEventListener('storage', loadScenes);
-    return () => window.removeEventListener('storage', loadScenes);
+    const handleStorageChange = () => loadScenes();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [toast]);
 
-  const handleExport = (scene: Scene, format: 'json' | 'csv') => {
-    let dataStr: string;
-    let fileName: string;
+  const handleExport = (scene: Scene) => {
+    try {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scene, null, 2));
+      const fileName = `${scene.title || 'scene'}.json`;
 
-    if (format === 'json') {
-      dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scene, null, 2));
-      fileName = `${scene.title}.json`;
-    } else {
-      // Basic CSV conversion
-      const headers = Object.keys(scene).join(',');
-      const values = Object.values(scene).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',');
-      dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(`${headers}\n${values}`);
-      fileName = `${scene.title}.csv`;
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", fileName);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      toast({ title: `"${scene.title}" exportado como JSON!` });
+    } catch(error) {
+        console.error("Export failed:", error);
+        toast({ title: 'Erro ao exportar', variant: 'destructive' });
     }
-
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", fileName);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    toast({ title: `"${scene.title}" exportado como ${format.toUpperCase()}!` });
   };
   
   const handleExportAll = (format: 'json' | 'csv') => {
@@ -61,43 +57,52 @@ export function SceneGallery() {
        return;
      }
 
-    let dataStr: string;
-    let fileName: string;
+    try {
+        let dataStr: string;
+        let fileName: string;
 
-    if (format === 'json') {
-      dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scenes, null, 2));
-      fileName = `scenes_backup.json`;
-    } else {
-      const headers = Object.keys(scenes[0]).join(',');
-      const rows = scenes.map(scene => Object.values(scene).map(val => `"${String(val).replace(/"/g, '""')}"`).join(','));
-      dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent([headers, ...rows].join('\n'));
-      fileName = `scenes_backup.csv`;
+        if (format === 'json') {
+          dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scenes, null, 2));
+          fileName = `scenes_backup.json`;
+        } else {
+          dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(convertJsonToCsv(scenes));
+          fileName = `scenes_backup.csv`;
+        }
+        
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", fileName);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        toast({ title: `Todas as cenas foram exportadas como ${format.toUpperCase()}!` });
+    } catch(error) {
+        console.error("Export all failed:", error);
+        toast({ title: 'Erro ao exportar tudo', variant: 'destructive' });
     }
-     
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", fileName);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    toast({ title: `Todas as cenas foram exportadas como ${format.toUpperCase()}!` });
   }
 
   const handleDelete = (sceneId: string, sceneTitle?: string) => {
-    if (window.confirm(`Tem a certeza que quer eliminar a cena "${sceneTitle}"?`)) {
-      const updatedScenes = scenes.filter(scene => scene.id !== sceneId);
-      localStorage.setItem('fg-scenes', JSON.stringify(updatedScenes));
-      setScenes(updatedScenes);
-      toast({ title: `"${sceneTitle}" foi eliminada.` });
+    if (window.confirm(`Tem a certeza que quer eliminar a cena "${sceneTitle || 'esta cena'}"?`)) {
+      try {
+        const updatedScenes = scenes.filter(scene => scene.id !== sceneId);
+        localStorage.setItem('fg-scenes', JSON.stringify(updatedScenes));
+        setScenes(updatedScenes);
+        window.dispatchEvent(new Event('storage'));
+        toast({ title: `"${sceneTitle}" foi eliminada.` });
+      } catch (error) {
+        console.error("Delete failed:", error);
+        toast({ title: 'Erro ao eliminar', variant: 'destructive' });
+      }
     }
   };
 
   const handleLoad = (scene: Scene) => {
-    // Placeholder for loading scene into creator view
-    console.log("Loading scene:", scene);
+    const event = new CustomEvent('loadScene', { detail: scene });
+    window.dispatchEvent(event);
     toast({
-      title: "Funcionalidade de Carregamento",
-      description: "Esta funcionalidade irá carregar a cena no Criador de Cenas. A implementação completa requer gestão de estado global.",
+      title: `"${scene.title}" carregada!`,
+      description: 'Volte à tela inicial e clique em "Criador de Personagens e Cenas" para editar.',
     });
   };
 
@@ -134,18 +139,18 @@ export function SceneGallery() {
           {scenes.map((scene) => (
             <Card key={scene.id} className="flex flex-col">
               <CardHeader>
-                <CardTitle>{scene.title}</CardTitle>
+                <CardTitle>{scene.title || "Cena Sem Título"}</CardTitle>
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-3">{scene.setting}</p>
-                <p className="text-xs text-muted-foreground mt-2">{scene.duration} seg</p>
+                {scene.duration && <p className="text-xs text-muted-foreground mt-2">{scene.duration} seg</p>}
               </CardContent>
               <CardFooter className="flex flex-col items-start gap-2">
                 <div className="flex w-full gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(scene)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleExport(scene, 'json')}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleExport(scene)}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
                   <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="h-4 w-4"/></Button>
                 </div>
               </CardFooter>

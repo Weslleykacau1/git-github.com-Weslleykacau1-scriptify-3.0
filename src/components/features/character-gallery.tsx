@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, UploadCloud, Clapperboard, FileText, Trash2, Palette } from 'lucide-react';
+import { UploadCloud, FileText, Trash2, Palette } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Character } from '@/lib/types';
 
@@ -27,38 +27,50 @@ export function CharacterGallery() {
     loadCharacters();
     
     // Listen for storage changes to update gallery
-    window.addEventListener('storage', loadCharacters);
-    return () => window.removeEventListener('storage', loadCharacters);
+    const handleStorageChange = () => loadCharacters();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [toast]);
   
   const handleExport = (character: Character) => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(character, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${character.name}.json`);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-    toast({ title: `"${character.name}" exportado com sucesso!` });
+    try {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(character, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `${character.name || 'character'}.json`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      toast({ title: `"${character.name}" exportado com sucesso!` });
+    } catch (error) {
+       console.error("Export failed:", error);
+       toast({ title: 'Erro ao exportar', variant: 'destructive' });
+    }
   };
   
   const handleDelete = (charId: string, charName?: string) => {
-     if (window.confirm(`Tem a certeza que quer eliminar "${charName}"?`)) {
-       const updatedCharacters = characters.filter(char => char.id !== charId);
-       localStorage.setItem('fg-characters', JSON.stringify(updatedCharacters));
-       setCharacters(updatedCharacters);
-       toast({ title: `"${charName}" foi eliminado.` });
+     if (window.confirm(`Tem a certeza que quer eliminar "${charName || 'este personagem'}"?`)) {
+        try {
+            const updatedCharacters = characters.filter(char => char.id !== charId);
+            localStorage.setItem('fg-characters', JSON.stringify(updatedCharacters));
+            setCharacters(updatedCharacters); // Optimistic update
+            window.dispatchEvent(new Event('storage')); // Notify other components
+            toast({ title: `"${charName}" foi eliminado.` });
+        } catch(error) {
+            console.error("Delete failed:", error);
+            toast({ title: 'Erro ao eliminar', variant: 'destructive' });
+        }
      }
   };
 
   const handleLoad = (character: Character) => {
-    // This is a placeholder for loading the character into the creator view.
-    // The actual implementation would likely involve a shared state (like Zustand or Context).
-    // For now, we'll just show a toast.
-    console.log("Loading character:", character);
+    // This uses a custom event to notify the main page component to load the character.
+    // This avoids complex prop drilling or state management libraries for this specific action.
+    const event = new CustomEvent('loadCharacter', { detail: character });
+    window.dispatchEvent(event);
     toast({
-      title: "Funcionalidade de Carregamento",
-      description: "Esta funcionalidade irá carregar o personagem no Criador de Personagens. A implementação completa requer gestão de estado global.",
+      title: `"${character.name}" carregado!`,
+      description: 'Volte à tela inicial e clique em "Criador de Personagens e Cenas" para editar.',
     });
   };
 
@@ -85,7 +97,7 @@ export function CharacterGallery() {
           {characters.map((char) => (
             <Card key={char.id} className="flex flex-col">
               <CardHeader>
-                <CardTitle>{char.name}</CardTitle>
+                <CardTitle>{char.name || "Personagem Sem Nome"}</CardTitle>
                 <CardDescription>{char.niche}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
