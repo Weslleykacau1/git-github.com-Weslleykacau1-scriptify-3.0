@@ -38,7 +38,8 @@ const BentoGridItem = ({
   return (
     <div
       className={cn(
-        "relative rounded-xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-6 bg-card border border-transparent justify-between flex flex-col space-y-4 cursor-pointer overflow-hidden",
+        "relative rounded-xl group/bento transition duration-200 shadow-input dark:shadow-none p-6 bg-card border border-transparent justify-between flex flex-col space-y-4 cursor-pointer overflow-hidden",
+        "hover:border-primary",
         className
       )}
     >
@@ -49,7 +50,7 @@ const BentoGridItem = ({
       <div className="flex flex-col space-y-4 h-full z-10">
         <div className="space-y-2 mb-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
                   {icon}
               </div>
               <h3 className="font-headline text-xl font-bold text-white">

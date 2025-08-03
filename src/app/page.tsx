@@ -35,7 +35,7 @@ export default function Home() {
       title: 'Criador de Personagens e Cenas',
       description: 'A ferramenta principal para dar vida às suas ideias. Crie influenciadores e defina as cenas para os seus vídeos.',
       className: 'md:col-span-2 md:row-span-2',
-      icon: <Bot className="h-6 w-6 text-primary" />,
+      icon: <Bot className="h-6 w-6" />,
       component: <CharacterProfileGenerator />,
     },
     {
@@ -43,7 +43,7 @@ export default function Home() {
       title: 'Gerador de Roteiro Viral',
       description: 'Use a fórmula viral para criar roteiros curtos e de alto impacto para Shorts e TikTok.',
       className: 'md:col-span-1',
-      icon: <Rocket className="h-6 w-6 text-primary" />,
+      icon: <Rocket className="h-6 w-6" />,
       component: <ScriptIdeaGenerator />,
     },
     {
@@ -51,7 +51,7 @@ export default function Home() {
       title: 'Transcrever Vídeo',
       description: 'Transforme áudio de vídeos em texto para criar novos roteiros e conteúdos.',
       className: 'md:col-span-1',
-      icon: <FileText className="h-6 w-6 text-primary" />,
+      icon: <FileText className="h-6 w-6" />,
       component: <VideoTranscriber />,
     },
     {
@@ -59,7 +59,7 @@ export default function Home() {
       title: 'Galeria de Cenas',
       description: 'Acesse e gerencie todas as suas cenas criadas.',
       className: 'md:col-span-1',
-      icon: <Clapperboard className="h-6 w-6 text-primary" />,
+      icon: <Clapperboard className="h-6 w-6" />,
       component: <SceneGallery />,
     },
     {
@@ -67,7 +67,7 @@ export default function Home() {
       title: 'Galeria de Personagens',
       description: 'Acesse e gerencie todos os seus personagens criados.',
       className: 'md:col-span-1',
-      icon: <Users className="h-6 w-6 text-primary" />,
+      icon: <Users className="h-6 w-6" />,
       component: <CharacterGallery />,
     },
     {
@@ -75,7 +75,7 @@ export default function Home() {
       title: 'Gerador de Thumbnail',
       description: 'Crie thumbnails de alta qualidade para seus vídeos.',
       className: 'md:col-span-1',
-      icon: <ImageIcon className="h-6 w-6 text-primary" />,
+      icon: <ImageIcon className="h-6 w-6" />,
       component: <ThumbnailGenerator />,
     },
     {
@@ -83,7 +83,7 @@ export default function Home() {
       title: 'Ferramentas de Roteiro Avançadas',
       description: 'Gere roteiros longos, para web docs, e transforme roteiros prontos em prompts de imagem e video.',
       className: 'md:col-span-2',
-      icon: <Zap className="h-6 w-6 text-primary" />,
+      icon: <Zap className="h-6 w-6" />,
       component: <AdvancedScriptingTools />,
     },
   ];
