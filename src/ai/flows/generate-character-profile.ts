@@ -34,6 +34,10 @@ const GenerateCharacterProfileOutputSchema = z.object({
   biography: z.string().describe('Uma pequena biografia do personagem.'),
   uniqueTraits: z.string().describe('Traços únicos do personagem.'),
   accent: z.string().describe('O sotaque do personagem (em português do Brasil).'),
+  age: z.string().describe('A idade do personagem.'),
+  gender: z.string().describe('O gênero do personagem.'),
+  generationSeed: z.string().describe('Uma seed de geração numérica aleatória.'),
+  negativePrompt: z.string().optional().describe('Um prompt negativo do que deve ser evitado.'),
 });
 export type GenerateCharacterProfileOutput = z.infer<typeof GenerateCharacterProfileOutputSchema>;
 
@@ -55,6 +59,10 @@ const prompt = ai.definePrompt({
 - Biografia: Uma pequena biografia do personagem.
 - Traços Únicos: Traços únicos do personagem.
 - Sotaque: O sotaque do personagem (em português do Brasil).
+- Idade: A idade do personagem.
+- Gênero: O gênero do personagem.
+- Seed de Geração: Gere uma seed de geração numérica aleatória de 6 dígitos.
+- Prompt Negativo: Opcional, o que deve ser evitado na geração.
 
 Analise a imagem ou texto a seguir para extrair as informações acima:
 

@@ -1,16 +1,17 @@
 // src/components/features/character-profile-generator.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles } from 'lucide-react';
+import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw } from 'lucide-react';
 import { generateCharacterProfile, GenerateCharacterProfileOutput } from '@/ai/flows/generate-character-profile';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 export function CharacterProfileGenerator() {
   const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
@@ -22,59 +23,50 @@ export function CharacterProfileGenerator() {
   const handleProfileChange = (field: keyof GenerateCharacterProfileOutput, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
+  
+  const generateRandomSeed = () => {
+    const seed = Math.floor(100000 + Math.random() * 900000).toString();
+    handleProfileChange('generationSeed', seed);
+  };
 
-  const analyzeImage = async () => {
-    if (!photoDataUri) {
+  useEffect(() => {
+    generateRandomSeed();
+  }, []);
+
+  const analyzeWithAI = async (input: { photoDataUri?: string; textDescription?: string }) => {
+    setIsLoading(true);
+    try {
+      const result = await generateCharacterProfile(input);
+      setProfile(result);
+      toast({ title: 'Perfil preenchido com sucesso!' });
+    } catch (error) {
+      console.error(error);
       toast({
-        title: 'Erro',
-        description: 'Por favor, envie uma imagem.',
+        title: 'Erro ao analisar com IA',
+        description: 'Ocorreu um erro ao gerar o perfil.',
         variant: 'destructive',
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const analyzeImage = () => {
+    if (!photoDataUri) {
+      toast({ title: 'Erro', description: 'Por favor, envie uma imagem.', variant: 'destructive' });
       return;
     }
-    setIsLoading(true);
-    try {
-      const result = await generateCharacterProfile({ photoDataUri });
-      setProfile(result);
-      toast({ title: 'Perfil preenchido com sucesso!' });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao analisar imagem',
-        description: 'Ocorreu um erro ao gerar o perfil a partir da imagem.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    analyzeWithAI({ photoDataUri });
   };
-
-  const analyzeText = async () => {
+  
+  const analyzeText = () => {
     if (!textDescription) {
-        toast({
-          title: 'Erro',
-          description: 'Por favor, insira uma descrição de texto.',
-          variant: 'destructive',
-        });
-        return;
-      }
-    setIsLoading(true);
-    try {
-      const result = await generateCharacterProfile({ textDescription });
-      setProfile(result);
-      toast({ title: 'Perfil preenchido com sucesso!' });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao analisar texto',
-        description: 'Ocorreu um erro ao gerar o perfil a partir do texto.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
+      toast({ title: 'Erro', description: 'Por favor, insira uma descrição de texto.', variant: 'destructive' });
+      return;
     }
+    analyzeWithAI({ textDescription });
   };
-
+  
   return (
     <div className="flex flex-col h-full w-full space-y-6">
       <div className="flex items-center gap-3">
@@ -151,7 +143,63 @@ export function CharacterProfileGenerator() {
                 <Label htmlFor="clothingStyle">Vestuário</Label>
                 <Textarea id="clothingStyle" placeholder="Descreva as roupas, sapatos e acessórios que o personagem está a usar..." value={profile.clothingStyle || ''} onChange={e => handleProfileChange('clothingStyle', e.target.value)} />
             </div>
-            {/* Adicione outros campos como biografia, traços únicos, sotaque se necessário */}
+            <div className="space-y-1">
+                <Label htmlFor="biography">Biografia Curta</Label>
+                <Textarea id="biography" placeholder="Uma breve história sobre o personagem..." value={profile.biography || ''} onChange={e => handleProfileChange('biography', e.target.value)} />
+            </div>
+            <div className="space-y-1">
+                <Label htmlFor="uniqueTraits">Traço Único/Peculiar</Label>
+                <Input id="uniqueTraits" placeholder="Ex: Tem uma tatuagem de dragão no braço" value={profile.uniqueTraits || ''} onChange={e => handleProfileChange('uniqueTraits', e.target.value)} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <Label htmlFor="age">Idade</Label>
+                    <Input id="age" placeholder="Ex: 25" value={profile.age || ''} onChange={e => handleProfileChange('age', e.target.value)} />
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="gender">Gênero</Label>
+                    <Select value={profile.gender} onValueChange={value => handleProfileChange('gender', value)}>
+                        <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Masculino">Masculino</SelectItem>
+                            <SelectItem value="Feminino">Feminino</SelectItem>
+                            <SelectItem value="Não-binário">Não-binário</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <Label htmlFor="generationSeed">Seed de Geração</Label>
+                    <div className="flex items-center gap-2">
+                        <Input id="generationSeed" value={profile.generationSeed || ''} onChange={e => handleProfileChange('generationSeed', e.target.value)} />
+                        <Button variant="outline" size="icon" onClick={generateRandomSeed}><RefreshCw className="h-4 w-4" /></Button>
+                    </div>
+                </div>
+                <div className="space-y-1">
+                    <Label htmlFor="accent">Sotaque (Português do Brasil)</Label>
+                    <Select value={profile.accent} onValueChange={value => handleProfileChange('accent', value)}>
+                        <SelectTrigger><SelectValue placeholder="Padrão" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Padrão">Padrão</SelectItem>
+                            <SelectItem value="Carioca">Carioca</SelectItem>
+                            <SelectItem value="Paulista">Paulista</SelectItem>
+                            <SelectItem value="Mineiro">Mineiro</SelectItem>
+                            <SelectItem value="Gaúcho">Gaúcho</SelectItem>
+                            <SelectItem value="Baiano">Baiano</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+            <div className="space-y-1">
+                <Label htmlFor="negativePrompt">Prompt Negativo (o que evitar)</Label>
+                <Textarea id="negativePrompt" placeholder="Ex: Evitar roupas escuras, não sorrir..." value={profile.negativePrompt || ''} onChange={e => handleProfileChange('negativePrompt', e.target.value)} />
+            </div>
+        </div>
+        <div className="flex flex-wrap gap-2 justify-end pt-4">
+            <Button variant="outline"><Plus /> Novo Influenciador</Button>
+            <Button variant="outline"><Library /> Carregar da Galeria</Button>
+            <Button><Save /> Adicionar à Galeria</Button>
         </div>
     </div>
   );
