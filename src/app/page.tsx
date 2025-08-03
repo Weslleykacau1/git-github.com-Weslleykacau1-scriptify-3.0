@@ -7,7 +7,7 @@ import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
 import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Video, GalleryVertical, MicVocal, ArrowLeft } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
-import { MediaPromptGenerator } from '@/components/features/media-prompt-generator';
+import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
 import { ThumbnailGenerator } from '@/components/features/thumbnail-generator';
 import { CharacterGallery } from '@/components/features/character-gallery';
 import { SceneGallery } from '@/components/features/scene-gallery';
@@ -22,7 +22,7 @@ const featureComponents: Record<Exclude<ActiveView, 'home'>, React.ReactNode> = 
   scene_gallery: <SceneGallery />,
   character_gallery: <CharacterGallery />,
   thumbnail: <ThumbnailGenerator />,
-  advanced_script: <MediaPromptGenerator />,
+  advanced_script: <AdvancedScriptingTools />,
 };
 
 export default function Home() {
@@ -83,7 +83,7 @@ export default function Home() {
       description: 'Gere roteiros longos, para web docs, e transforme roteiros prontos em prompts de imagem e video.',
       className: 'md:col-span-1',
       icon: <GalleryVertical className="h-6 w-6 text-primary" />,
-      component: <MediaPromptGenerator />,
+      component: <AdvancedScriptingTools />,
     },
   ];
 

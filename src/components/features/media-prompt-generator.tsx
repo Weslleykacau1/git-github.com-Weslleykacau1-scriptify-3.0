@@ -8,17 +8,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileInput } from 'lucide-react';
 import { generateMediaPrompts, GenerateMediaPromptsOutput } from '@/ai/flows/generate-media-prompts';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
 
 const formSchema = z.object({
-  sceneTitle: z.string().min(1, 'O título da cena é obrigatório.'),
-  sceneSetting: z.string().min(1, 'O cenário da cena é obrigatório.'),
-  sceneAction: z.string().min(1, 'A ação da cena é obrigatória.'),
-  cameraAngle: z.string().min(1, 'O ângulo da câmera é obrigatório.'),
-  videoDuration: z.string().min(1, 'A duração do vídeo é obrigatória.'),
-  productDetails: z.string().optional(),
+  script: z.string().min(1, 'O roteiro é obrigatório.'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -31,12 +27,7 @@ export function MediaPromptGenerator() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      sceneTitle: '',
-      sceneSetting: '',
-      sceneAction: '',
-      cameraAngle: '',
-      videoDuration: '',
-      productDetails: '',
+      script: '',
     },
   });
 
@@ -44,13 +35,20 @@ export function MediaPromptGenerator() {
     setIsLoading(true);
     setPrompts(null);
     try {
-      const result = await generateMediaPrompts(values);
+        // This is a placeholder for the actual AI call which is not yet implemented.
+        // We will replace this with a call to a new Genkit flow in the future.
+      const result: GenerateMediaPromptsOutput = await new Promise(resolve => setTimeout(() => resolve({
+        imagePrompt: `An image prompt based on: ${values.script.substring(0, 50)}...`,
+        videoPrompt: `A video prompt based on: ${values.script.substring(0, 50)}...`,
+        seoKeywords: "keyword1, keyword2, keyword3",
+        thumbnailIdeas: `A thumbnail idea based on the script.`
+      }), 1000));
       setPrompts(result);
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Erro ao gerar prompts de mídia',
-        description: 'Ocorreu um erro ao gerar os prompts de mídia.',
+        title: 'Erro ao analisar roteiro',
+        description: 'Ocorreu um erro ao gerar os prompts e ideias.',
         variant: 'destructive',
       });
     } finally {
@@ -64,54 +62,54 @@ export function MediaPromptGenerator() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex-grow flex flex-col gap-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
-            <FormField control={form.control} name="sceneTitle" render={({ field }) => (
-                <FormItem><FormLabel>Título</FormLabel><FormControl><Input placeholder="Meu Novo Setup" {...field} /></FormControl><FormMessage /></FormItem>
-              )}
-            />
-            <FormField control={form.control} name="sceneSetting" render={({ field }) => (
-                <FormItem><FormLabel>Cenário</FormLabel><FormControl><Input placeholder="Mesa minimalista" {...field} /></FormControl><FormMessage /></FormItem>
-              )}
-            />
-            <FormField control={form.control} name="sceneAction" render={({ field }) => (
-                <FormItem><FormLabel>Ação</FormLabel><FormControl><Input placeholder="Montando teclado" {...field} /></FormControl><FormMessage /></FormItem>
-              )}
-            />
-             <FormField control={form.control} name="cameraAngle" render={({ field }) => (
-                <FormItem><FormLabel>Ângulo da Câmera</FormLabel><FormControl><Input placeholder="De cima para baixo" {...field} /></FormControl><FormMessage /></FormItem>
-              )}
-            />
-            <FormField control={form.control} name="videoDuration" render={({ field }) => (
-                <FormItem><FormLabel>Duração</FormLabel><FormControl><Input placeholder="30 segundos" {...field} /></FormControl><FormMessage /></FormItem>
-              )}
-            />
-            <FormField control={form.control} name="productDetails" render={({ field }) => (
-                <FormItem><FormLabel>Produto (Opcional)</FormLabel><FormControl><Input placeholder="Keychron Q1" {...field} /></FormControl><FormMessage /></FormItem>
-              )}
-            />
-          </div>
-          <Button type="submit" disabled={isLoading} className="mt-auto">
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Gerar Prompts
-          </Button>
-        </form>
-      </Form>
-      {prompts && (
-        <div className="mt-4 space-y-2 overflow-y-auto">
-          {Object.entries(prompts).map(([key, value]) => (
-            <div key={key} className="space-y-1 relative">
-              <Label htmlFor={key} className="capitalize text-xs text-muted-foreground">{key.replace(/([A-Z])/g, ' $1')}</Label>
-              <Textarea id={key} readOnly value={value} className="h-20 pr-10" />
-              <Button variant="ghost" size="icon" className="absolute right-1 top-6 h-7 w-7" onClick={() => handleCopy(value)}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              </Button>
+    <Card className="bg-transparent border-none shadow-none">
+        <CardHeader className="px-0">
+            <div className="flex items-center gap-3">
+                <FileInput className="h-6 w-6 text-primary" />
+                <CardTitle className="m-0 text-xl font-bold font-headline">Analisador de Roteiro Existente</CardTitle>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+            <CardDescription>
+                Cole um roteiro pronto para que a IA extraia prompts de imagem e vídeo para cada cena, além de gerar SEO e ideias de thumbnail.
+            </CardDescription>
+        </CardHeader>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+                control={form.control}
+                name="script"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Roteiro</FormLabel>
+                    <FormControl>
+                    <Textarea
+                        placeholder="Cole o seu roteiro aqui..."
+                        className="min-h-[150px]"
+                        {...field}
+                    />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <Button type="submit" disabled={isLoading} className="w-full">
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Analisar Roteiro e Gerar
+            </Button>
+            </form>
+        </Form>
+        {prompts && (
+            <div className="mt-6 space-y-4">
+            {Object.entries(prompts).map(([key, value]) => (
+                <div key={key} className="space-y-1 relative">
+                <Label htmlFor={key} className="capitalize text-xs text-muted-foreground">{key.replace(/([A-Z])/g, ' $1')}</Label>
+                <Textarea id={key} readOnly value={value} className="h-24 pr-10" />
+                <Button variant="ghost" size="icon" className="absolute right-1 top-6 h-7 w-7" onClick={() => handleCopy(value)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                </Button>
+                </div>
+            ))}
+            </div>
+        )}
+    </Card>
   );
 }
