@@ -1,19 +1,106 @@
 // src/components/features/scene-gallery.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, UploadCloud, FileText, Trash2, Download, Clapperboard } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import type { Scene } from '@/lib/types';
 
-const scenes = [
-  {
-    title: 'Cena Sem Título',
-    description: 'A cena se passa em um ambiente interno, possivelmente um estúdio ou escritório, com iluminação...',
-    duration: '8 seg',
-  },
-];
 
 export function SceneGallery() {
+  const [scenes, setScenes] = useState<Scene[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const loadScenes = () => {
+      try {
+        const storedScenes = localStorage.getItem('fg-scenes');
+        if (storedScenes) {
+          setScenes(JSON.parse(storedScenes));
+        }
+      } catch (error) {
+        console.error("Failed to load scenes from localStorage", error);
+        toast({ title: "Erro ao carregar cenas", variant: "destructive" });
+      }
+    };
+    loadScenes();
+    
+    window.addEventListener('storage', loadScenes);
+    return () => window.removeEventListener('storage', loadScenes);
+  }, [toast]);
+
+  const handleExport = (scene: Scene, format: 'json' | 'csv') => {
+    let dataStr: string;
+    let fileName: string;
+
+    if (format === 'json') {
+      dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scene, null, 2));
+      fileName = `${scene.title}.json`;
+    } else {
+      // Basic CSV conversion
+      const headers = Object.keys(scene).join(',');
+      const values = Object.values(scene).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',');
+      dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(`${headers}\n${values}`);
+      fileName = `${scene.title}.csv`;
+    }
+
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", fileName);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    toast({ title: `"${scene.title}" exportado como ${format.toUpperCase()}!` });
+  };
+  
+  const handleExportAll = (format: 'json' | 'csv') => {
+     if (scenes.length === 0) {
+       toast({ title: 'Nada para exportar', description: 'A sua galeria de cenas está vazia.', variant: 'destructive' });
+       return;
+     }
+
+    let dataStr: string;
+    let fileName: string;
+
+    if (format === 'json') {
+      dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scenes, null, 2));
+      fileName = `scenes_backup.json`;
+    } else {
+      const headers = Object.keys(scenes[0]).join(',');
+      const rows = scenes.map(scene => Object.values(scene).map(val => `"${String(val).replace(/"/g, '""')}"`).join(','));
+      dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent([headers, ...rows].join('\n'));
+      fileName = `scenes_backup.csv`;
+    }
+     
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", fileName);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    toast({ title: `Todas as cenas foram exportadas como ${format.toUpperCase()}!` });
+  }
+
+  const handleDelete = (sceneId: string, sceneTitle?: string) => {
+    if (window.confirm(`Tem a certeza que quer eliminar a cena "${sceneTitle}"?`)) {
+      const updatedScenes = scenes.filter(scene => scene.id !== sceneId);
+      localStorage.setItem('fg-scenes', JSON.stringify(updatedScenes));
+      setScenes(updatedScenes);
+      toast({ title: `"${sceneTitle}" foi eliminada.` });
+    }
+  };
+
+  const handleLoad = (scene: Scene) => {
+    // Placeholder for loading scene into creator view
+    console.log("Loading scene:", scene);
+    toast({
+      title: "Funcionalidade de Carregamento",
+      description: "Esta funcionalidade irá carregar a cena no Criador de Cenas. A implementação completa requer gestão de estado global.",
+    });
+  };
+
   return (
     <div className="flex flex-col h-full w-full space-y-4">
       <div className="flex justify-between items-start mb-2">
@@ -29,39 +116,43 @@ export function SceneGallery() {
           </div>
         </div>
         <div className="flex gap-2">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova Cena
-            </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => handleExportAll('csv')}>
                 <Download className="mr-2 h-4 w-4" />
-                Exportar para CSV
+                Exportar CSV
+            </Button>
+            <Button variant="outline" onClick={() => handleExportAll('json')}>
+                <Download className="mr-2 h-4 w-4" />
+                Exportar JSON
             </Button>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {scenes.map((scene, index) => (
-          <Card key={index} className="flex flex-col">
-            <CardHeader>
-              <CardTitle>{scene.title}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <p className="text-sm text-muted-foreground">{scene.description}</p>
-              <p className="text-xs text-muted-foreground mt-2">{scene.duration}</p>
-            </CardContent>
-            <CardFooter className="flex flex-col items-start gap-2">
-              <div className="flex w-full gap-2">
-                <Button className="flex-1"><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
-              </div>
-              <div className="flex w-full justify-between items-center mt-2">
-                <Button variant="ghost" size="sm"><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
-                <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive"><Trash2 className="h-4 w-4"/></Button>
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {scenes.length === 0 ? (
+        <p className="text-muted-foreground text-center py-8">A sua galeria de cenas está vazia.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {scenes.map((scene) => (
+            <Card key={scene.id} className="flex flex-col">
+              <CardHeader>
+                <CardTitle>{scene.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <p className="text-sm text-muted-foreground line-clamp-3">{scene.setting}</p>
+                <p className="text-xs text-muted-foreground mt-2">{scene.duration} seg</p>
+              </CardContent>
+              <CardFooter className="flex flex-col items-start gap-2">
+                <div className="flex w-full gap-2">
+                  <Button className="flex-1" onClick={() => handleLoad(scene)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
+                </div>
+                <div className="flex w-full justify-between items-center mt-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleExport(scene, 'json')}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
+                  <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="h-4 w-4"/></Button>
+                </div>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

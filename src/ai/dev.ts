@@ -2,18 +2,26 @@
 import { config } from 'dotenv';
 config();
 
+// Analysis
 import '@/ai/flows/analysis/analyze-character-image';
 import '@/ai/flows/analysis/analyze-text-profile';
 import '@/ai/flows/analysis/analyze-scene-background';
 import '@/ai/flows/analysis/analyze-product-image';
 
+// Script Generation
 import '@/ai/flows/script-generation/generate-script-ideas';
 import '@/ai/flows/script-generation/generate-long-script';
 import '@/ai/flows/script-generation/generate-web-doc-script';
 import '@/ai/flows/script-generation/generate-viral-script';
 import '@/ai/flows/script-generation/generate-json-script';
 
+// Content Assistance
 import '@/ai/flows/content-assistance/suggest-content';
+import '@/ai/flows/content-assistance/suggest-action';
+import '@/ai/flows/content-assistance/suggest-dialogue';
+import '@/ai/flows/content-assistance/suggest-title';
 
+
+// Media Generation
 import '@/ai/flows/media-generation/generate-media-prompts';
 import '@/ai/flows/media-generation/generate-thumbnail-ideas';
