@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
-import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap } from 'lucide-react';
+import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
@@ -14,8 +14,10 @@ import { SceneGallery } from '@/components/features/scene-gallery';
 import { Button } from '@/components/ui/button';
 import { VideoTranscriber } from '@/components/features/video-transcriber';
 import { ArrowLeft } from 'lucide-react';
+import { ProductGallery } from '@/components/features/product-gallery';
 
-type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script';
+
+type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script' | 'product_gallery';
 
 export default function Home() {
   const [activeView, setActiveView] = useState<ActiveView>('home');
@@ -26,6 +28,7 @@ export default function Home() {
     transcribe: <VideoTranscriber />,
     scene_gallery: <SceneGallery />,
     character_gallery: <CharacterGallery />,
+    product_gallery: <ProductGallery />,
     thumbnail: <ThumbnailGenerator />,
     advanced_script: <AdvancedScriptingTools />,
   };
@@ -65,6 +68,13 @@ export default function Home() {
       description: 'Acesse e gerencie todos os seus personagens criados.',
       className: 'md:col-span-1',
       icon: <Users className="h-6 w-6" />,
+    },
+    {
+      id: 'product_gallery' as ActiveView,
+      title: 'Galeria de Produtos',
+      description: 'Acesse e gerencie todos os seus produtos salvos.',
+      className: 'md:col-span-1',
+      icon: <Box className="h-6 w-6" />,
     },
     {
       id: 'thumbnail' as ActiveView,
