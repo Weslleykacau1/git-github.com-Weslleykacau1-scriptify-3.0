@@ -62,6 +62,12 @@ export function WebDocGenerator() {
     toast({ title: "Roteiro exportado como JSON!" });
   };
 
+  const handleActionClick = (featureName: string) => {
+    toast({
+        title: "Funcionalidade em desenvolvimento",
+        description: `A funcionalidade de "${featureName}" será implementada em breve!`,
+    });
+  };
 
   return (
     <Card className="bg-transparent border-none shadow-none">
@@ -142,37 +148,51 @@ export function WebDocGenerator() {
                                 <h4 className="font-semibold">{scene.sceneTitle}</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm font-medium">
-                                            <FileInput className="h-4 w-4 text-primary" />
-                                            <span>Narração (PT-BR)</span>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">{scene.narration}</p>
-                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.narration, 'Narração')}>
-                                            <Copy className="mr-2 h-4 w-4" />
-                                            Copiar Narração
-                                        </Button>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2 text-sm font-medium">
-                                                <ImageIcon className="h-4 w-4 text-primary" />
-                                                <span>Prompt de Imagem (EN)</span>
+                                        <div className="flex items-center justify-between text-sm font-medium">
+                                            <div className="flex items-center gap-2">
+                                                <FileInput className="h-4 w-4 text-primary" />
+                                                <span>Narração (PT-BR)</span>
                                             </div>
-                                            <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
-                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.narration, 'Narração')}>
                                                 <Copy className="mr-2 h-4 w-4" />
                                                 Copiar
                                             </Button>
                                         </div>
+                                        <p className="text-sm text-muted-foreground">{scene.narration}</p>
+                                    </div>
+                                    <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <div className="flex items-center gap-2 text-sm font-medium">
-                                                <Video className="h-4 w-4 text-primary" />
-                                                <span>Prompt de Vídeo (EN)</span>
+                                             <div className="flex items-center justify-between text-sm font-medium">
+                                                <div className="flex items-center gap-2">
+                                                    <ImageIcon className="h-4 w-4 text-primary" />
+                                                    <span>Prompt de Imagem (EN)</span>
+                                                </div>
+                                                <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                                    <Copy className="mr-2 h-4 w-4" />
+                                                    Copiar
+                                                </Button>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
+                                            <Button variant="outline" size="sm" className="w-full" onClick={() => handleActionClick("Gerar Imagem")}>
+                                              <ImageIcon className="mr-2 h-4 w-4" />
+                                              Gerar Imagem
+                                            </Button>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between text-sm font-medium">
+                                                <div className="flex items-center gap-2">
+                                                    <Video className="h-4 w-4 text-primary" />
+                                                    <span>Prompt de Vídeo (EN)</span>
+                                                </div>
+                                                <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
+                                                    <Copy className="mr-2 h-4 w-4" />
+                                                    Copiar
+                                                </Button>
                                             </div>
                                             <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
-                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
-                                                <Copy className="mr-2 h-4 w-4" />
-                                                Copiar
+                                            <Button variant="outline" size="sm" className="w-full" onClick={() => handleActionClick("Gerar Vídeo")}>
+                                                <Video className="mr-2 h-4 w-4" />
+                                                Gerar Vídeo
                                             </Button>
                                         </div>
                                     </div>
@@ -189,7 +209,7 @@ export function WebDocGenerator() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
-                            <Button variant="outline" size="sm" className='mt-2'><Film className="mr-2 h-4 w-4"/>Gerar Thumbnail</Button>
+                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Gerar Thumbnail")}><Film className="mr-2 h-4 w-4"/>Gerar Thumbnail</Button>
                         </CardContent>
                     </Card>
                     <Card>
@@ -198,7 +218,7 @@ export function WebDocGenerator() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
-                            <Button variant="outline" size="sm" className='mt-2'><Search className="mr-2 h-4 w-4"/>Otimizar para SEO</Button>
+                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Otimizar para SEO")}><Search className="mr-2 h-4 w-4"/>Otimizar para SEO</Button>
                         </CardContent>
                     </Card>
                 </div>
