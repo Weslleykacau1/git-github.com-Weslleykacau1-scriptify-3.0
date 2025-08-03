@@ -1,3 +1,4 @@
+// src/ai/flows/script-generation/generate-long-script.ts
 'use server';
 
 /**
@@ -26,7 +27,12 @@ const GenerateLongScriptInputSchema = z.object({
 export type GenerateLongScriptInput = z.infer<typeof GenerateLongScriptInputSchema>;
 
 const GenerateLongScriptOutputSchema = z.object({
-  script: z.string().describe('A complete, detailed script for a long-form video, structured for viewer retention. All dialogue/narration must be in Brazilian Portuguese. All visual descriptions must be in English.'),
+    title: z.string().describe('The title of the video script.'),
+    script: z.string().describe('A complete, detailed script for a long-form video, structured for viewer retention. All dialogue/narration must be in Brazilian Portuguese.'),
+    imagePrompt: z.string().describe('A detailed prompt in English to generate a representative image for the video.'),
+    videoPrompt: z.string().describe('A detailed prompt in English to generate a representative video for the script.'),
+    thumbnailIdeas: z.string().describe('Ideas for creating a thumbnail for the video.'),
+    seoKeywords: z.string().describe('SEO keywords relevant to the script as a whole.'),
 });
 export type GenerateLongScriptOutput = z.infer<typeof GenerateLongScriptOutputSchema>;
 
@@ -40,9 +46,16 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateLongScriptOutputSchema},
   prompt: `You are a creative screenwriter specializing in long-form video content for platforms like YouTube. Your goal is to create a detailed script of approximately {{duration}} minutes on the topic of "{{topic}}".
 
-The script should be engaging and structured to maximize viewer retention. Break it down into sections like introduction, development, climax, and conclusion. 
-All dialogue and narration must be in Brazilian Portuguese, respecting the character's accent if provided.
-All visual descriptions, camera directions, and SFX must be in English.
+Your tasks are to:
+1.  Create a compelling title for the video.
+2.  Write a complete and detailed script. It should be engaging and structured to maximize viewer retention (e.g., introduction, development, climax, conclusion).
+3.  Generate a detailed image prompt (in English) that visually represents the core theme of the script.
+4.  Generate a detailed video prompt (in English) that could be used to create a trailer or a key scene.
+5.  Provide some creative ideas for the video's thumbnail.
+6.  Generate relevant SEO keywords for the video.
+
+The script's dialogue and narration must be in Brazilian Portuguese.
+All other outputs (prompts, ideas, keywords) should be in the language appropriate for their use (Prompts in English, others in Portuguese).
 
 {{#if characterProfile}}
 Be faithful to the following character profile:
@@ -54,7 +67,7 @@ And be faithful to the following scene description:
 {{{sceneDescription}}}
 {{/if}}
 
-Generate the full script now.
+Generate the full content now.
 `,
 });
 

@@ -7,10 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { Textarea } from '../ui/textarea';
-import { FileText, User, Clapperboard, Clock, BookOpen, Loader2 } from 'lucide-react';
+import { FileText, User, Clapperboard, Clock, BookOpen, Loader2, Copy, Image as ImageIcon, Video, Search, Film } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { generateLongScript } from '@/ai/flows/script-generation/generate-long-script';
+import { generateLongScript, GenerateLongScriptOutput } from '@/ai/flows/script-generation/generate-long-script';
 import type { Character, Scene } from '@/lib/types';
 
 
@@ -22,7 +21,7 @@ export function LongScriptGenerator() {
   const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
   const [topic, setTopic] = useState('');
   const [duration, setDuration] = useState(5);
-  const [generatedScript, setGeneratedScript] = useState('');
+  const [result, setResult] = useState<GenerateLongScriptOutput | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -45,7 +44,7 @@ export function LongScriptGenerator() {
         return;
     }
     setIsLoading(true);
-    setGeneratedScript('');
+    setResult(null);
     toast({title: 'Gerando roteiro longo...'});
     try {
         const result = await generateLongScript({
@@ -54,7 +53,7 @@ export function LongScriptGenerator() {
             topic,
             duration,
         });
-        setGeneratedScript(result.script);
+        setResult(result);
         toast({title: 'Roteiro gerado com sucesso!'});
     } catch (error) {
         console.error(error);
@@ -73,6 +72,12 @@ export function LongScriptGenerator() {
     const scene = scenes.find(s => s.id === sceneId);
     setSelectedScene(scene || null);
   }
+
+  const handleCopy = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: `${type} copiado para a área de transferência!` });
+  };
+
 
   return (
     <Card className="bg-transparent border-none shadow-none">
@@ -146,10 +151,80 @@ export function LongScriptGenerator() {
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}
           Gerar Roteiro Longo
         </Button>
-        {generatedScript && (
-            <div className="space-y-2">
-                <Label>Roteiro Gerado</Label>
-                <Textarea value={generatedScript} readOnly className="min-h-[250px] bg-muted"/>
+        {isLoading && (
+            <div className="mt-6 flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )}
+        {result && (
+             <div className="mt-6 space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className='text-lg'>{result.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="border bg-card p-4 rounded-lg space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-sm font-medium">
+                                        <FileText className="h-4 w-4 text-primary" />
+                                        <span>Roteiro (PT-BR)</span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{result.script}</p>
+                                    <Button variant="ghost" size="sm" onClick={() => handleCopy(result.script, 'Roteiro')}>
+                                        <Copy className="mr-2 h-4 w-4" />
+                                        Copiar Roteiro
+                                    </Button>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 text-sm font-medium">
+                                            <ImageIcon className="h-4 w-4 text-primary" />
+                                            <span>Prompt de Imagem (EN)</span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{result.imagePrompt}</p>
+                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(result.imagePrompt, 'Prompt de Imagem')}>
+                                            <Copy className="mr-2 h-4 w-4" />
+                                            Copiar
+                                        </Button>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 text-sm font-medium">
+                                            <Video className="h-4 w-4 text-primary" />
+                                            <span>Prompt de Vídeo (EN)</span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{result.videoPrompt}</p>
+                                        <Button variant="ghost" size="sm" onClick={() => handleCopy(result.videoPrompt, 'Prompt de Vídeo')}>
+                                            <Copy className="mr-2 h-4 w-4" />
+                                            Copiar
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className='text-lg'>Ideias para Thumbnail</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
+                            <Button variant="outline" size="sm" className='mt-2'><Film className="mr-2 h-4 w-4"/>Gerar Thumbnail</Button>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className='text-lg'>Palavras-chave de SEO</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
+                            <Button variant="outline" size="sm" className='mt-2'><Search className="mr-2 h-4 w-4"/>Otimizar para SEO</Button>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         )}
       </CardFooter>
