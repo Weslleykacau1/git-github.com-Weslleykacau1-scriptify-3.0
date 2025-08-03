@@ -44,11 +44,11 @@ const prompt = ai.definePrompt({
   name: 'generateLongScriptPrompt',
   input: {schema: GenerateLongScriptInputSchema},
   output: {schema: GenerateLongScriptOutputSchema},
-  prompt: `You are a creative screenwriter specializing in long-form video content for platforms like YouTube. Your goal is to create a detailed script of approximately {{duration}} minutes on the topic of "{{topic}}".
+  prompt: `You are a creative screenwriter specializing in long-form video content for platforms like YouTube. Your goal is to create a detailed script with a strict duration of {{duration}} minutes on the topic of "{{topic}}".
 
 Your tasks are to:
 1.  Create a compelling title for the video.
-2.  Write a complete and detailed script. It should be engaging and structured to maximize viewer retention (e.g., introduction, development, climax, conclusion).
+2.  Write a complete and detailed script. It should be engaging and structured to maximize viewer retention (e.g., introduction, development, climax, conclusion), strictly adhering to the {{duration}}-minute length.
 3.  Generate a detailed image prompt (in English) that visually represents the core theme of the script.
 4.  Generate a detailed video prompt (in English) that could be used to create a trailer or a key scene.
 5.  Provide some creative ideas for the video's thumbnail.
