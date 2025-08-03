@@ -1,0 +1,69 @@
+'use server';
+
+/**
+ * @fileOverview A script generator specializing in creating scripts for long-form videos (5 to 20 minutes), focusing on viewer retention.
+ *
+ * - generateLongScript - A function that generates a long-form video script.
+ * - GenerateLongScriptInput - The input type for the generateLongScript function.
+ * - GenerateLongScriptOutput - The return type for the generateLongScript function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+
+const GenerateLongScriptInputSchema = z.object({
+  characterProfile: z
+    .string()
+    .optional()
+    .describe('A detailed description of the character, including name, niche, personality, appearance, and backstory.'),
+  sceneDescription: z
+    .string()
+    .optional()
+    .describe('A detailed description of the scene, including setting, action, and mood.'),
+  topic: z.string().describe('The main topic or theme of the video script.'),
+  duration: z.number().describe('The desired duration of the video in minutes (e.g., 5, 10, 15, 20).'),
+});
+export type GenerateLongScriptInput = z.infer<typeof GenerateLongScriptInputSchema>;
+
+const GenerateLongScriptOutputSchema = z.object({
+  script: z.string().describe('A complete, detailed script for a long-form video, structured for viewer retention.'),
+});
+export type GenerateLongScriptOutput = z.infer<typeof GenerateLongScriptOutputSchema>;
+
+export async function generateLongScript(input: GenerateLongScriptInput): Promise<GenerateLongScriptOutput> {
+  return generateLongScriptFlow(input);
+}
+
+const prompt = ai.definePrompt({
+  name: 'generateLongScriptPrompt',
+  input: {schema: GenerateLongScriptInputSchema},
+  output: {schema: GenerateLongScriptOutputSchema},
+  prompt: `You are a creative screenwriter specializing in long-form video content for platforms like YouTube. Your goal is to create a detailed script of approximately {{duration}} minutes on the topic of "{{topic}}".
+
+The script should be engaging and structured to maximize viewer retention. Break it down into sections like introduction, development, climax, and conclusion. Include suggestions for visuals, pacing, and tone.
+
+{{#if characterProfile}}
+Consider the following character for the video:
+{{{characterProfile}}}
+{{/if}}
+
+{{#if sceneDescription}}
+And the following scene description:
+{{{sceneDescription}}}
+{{/if}}
+
+Generate the full script in Portuguese.
+`,
+});
+
+const generateLongScriptFlow = ai.defineFlow(
+  {
+    name: 'generateLongScriptFlow',
+    inputSchema: GenerateLongScriptInputSchema,
+    outputSchema: GenerateLongScriptOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);

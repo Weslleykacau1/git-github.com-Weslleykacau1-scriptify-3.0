@@ -1,32 +1,26 @@
 'use server';
 
 /**
- * @fileOverview DEPRECATED: This file is deprecated and will be removed. Use analyze-character-image.ts or analyze-text-profile.ts instead.
- * An AI character profile generator agent that analyzes an image or text and fills in the character's details.
+ * @fileOverview An AI agent that analyzes a character image and automatically extracts their characteristics.
  *
- * - generateCharacterProfile - A function that handles the character profile generation process.
- * - GenerateCharacterProfileInput - The input type for the generateCharacterProfile function.
- * - GenerateCharacterProfileOutput - The return type for the generateCharacterProfile function.
+ * - analyzeCharacterImage - A function that handles the character image analysis process.
+ * - AnalyzeCharacterImageInput - The input type for the analyzeCharacterImage function.
+ * - AnalyzeCharacterImageOutput - The return type for the analyzeCharacterImage function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenerateCharacterProfileInputSchema = z.object({
+const AnalyzeCharacterImageInputSchema = z.object({
   photoDataUri: z
     .string()
-    .optional()
     .describe(
       "A photo of a character, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  textDescription: z
-    .string()
-    .optional()
-    .describe('A text description of the character.'),
 });
-export type GenerateCharacterProfileInput = z.infer<typeof GenerateCharacterProfileInputSchema>;
+export type AnalyzeCharacterImageInput = z.infer<typeof AnalyzeCharacterImageInputSchema>;
 
-const GenerateCharacterProfileOutputSchema = z.object({
+const AnalyzeCharacterImageOutputSchema = z.object({
   name: z.string().describe("The character's name."),
   niche: z.string().describe("The character's niche."),
   personality: z.string().describe("The character's personality."),
@@ -40,17 +34,17 @@ const GenerateCharacterProfileOutputSchema = z.object({
   generationSeed: z.string().describe('A random numerical generation seed.'),
   negativePrompt: z.string().optional().describe('A negative prompt of what should be avoided.'),
 });
-export type GenerateCharacterProfileOutput = z.infer<typeof GenerateCharacterProfileOutputSchema>;
+export type AnalyzeCharacterImageOutput = z.infer<typeof AnalyzeCharacterImageOutputSchema>;
 
-export async function generateCharacterProfile(input: GenerateCharacterProfileInput): Promise<GenerateCharacterProfileOutput> {
-  return generateCharacterProfileFlow(input);
+export async function analyzeCharacterImage(input: AnalyzeCharacterImageInput): Promise<AnalyzeCharacterImageOutput> {
+  return analyzeCharacterImageFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateCharacterProfilePrompt',
-  input: {schema: GenerateCharacterProfileInputSchema},
-  output: {schema: GenerateCharacterProfileOutputSchema},
-  prompt: `You are an AI character profile generator. You will analyze the character's image or text and extract the following information to populate the character's profile:
+  name: 'analyzeCharacterImagePrompt',
+  input: {schema: AnalyzeCharacterImageInputSchema},
+  output: {schema: AnalyzeCharacterImageOutputSchema},
+  prompt: `You are an AI character profile generator. You will analyze the character's image and extract the following information to populate the character's profile:
 
 - Name: The character's name.
 - Niche: The character's niche.
@@ -65,23 +59,17 @@ const prompt = ai.definePrompt({
 - Generation Seed: Generate a 6-digit random numerical generation seed.
 - Negative Prompt: Optional, what should be avoided in generation.
 
-Analyze the following image or text to extract the above information:
-
-{{#if photoDataUri}}
+Analyze the following image to extract the above information:
 Image: {{media url=photoDataUri}}
-{{/if}}
-{{#if textDescription}}
-Text Description: {{{textDescription}}}
-{{/if}}
 
 Ensure you produce all fields in Portuguese.`,
 });
 
-const generateCharacterProfileFlow = ai.defineFlow(
+const analyzeCharacterImageFlow = ai.defineFlow(
   {
-    name: 'generateCharacterProfileFlow',
-    inputSchema: GenerateCharacterProfileInputSchema,
-    outputSchema: GenerateCharacterProfileOutputSchema,
+    name: 'analyzeCharacterImageFlow',
+    inputSchema: AnalyzeCharacterImageInputSchema,
+    outputSchema: AnalyzeCharacterImageOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);
