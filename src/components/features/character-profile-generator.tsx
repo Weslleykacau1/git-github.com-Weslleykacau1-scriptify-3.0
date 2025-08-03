@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw } from 'lucide-react';
+import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard } from 'lucide-react';
 import { generateCharacterProfile, GenerateCharacterProfileOutput } from '@/ai/flows/generate-character-profile';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
@@ -200,6 +200,45 @@ export function CharacterProfileGenerator() {
             <Button variant="outline"><Plus /> Novo Influenciador</Button>
             <Button variant="outline"><Library /> Carregar da Galeria</Button>
             <Button><Save /> Adicionar à Galeria</Button>
+        </div>
+
+        <div className="flex items-center gap-3 pt-8">
+            <Clapperboard className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold font-headline">2. Crie ou Edite uma Cena</h2>
+        </div>
+        <div className="space-y-6">
+            <div className="space-y-2">
+                <Label htmlFor="sceneTitle">Título da Cena</Label>
+                <Input id="sceneTitle" placeholder="Ex: Unboxing do Produto X" />
+                <Button variant="outline" size="sm" className="mt-2"><Sparkles className="mr-2 h-4 w-4" /> Gerar Título com IA</Button>
+            </div>
+            <div className="space-y-2">
+                <Label>Referência de Cenário (Opcional)</Label>
+                <FileUploader onFileChange={() => {}} file={null} />
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="sceneSetting">Cenário</Label>
+                <Textarea id="sceneSetting" placeholder="Descreva o ambiente em detalhes - iluminação, cores, objetos, atmosfera..." />
+                <Alert>
+                    <Sparkles className="h-4 w-4" />
+                    <AlertDescription className="text-xs">
+                        Dica: Seja específico sobre iluminação, cores dominantes, materiais, e atmosfera. Quanto mais detalhes, melhor o resultado.
+                    </AlertDescription>
+                </Alert>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="mainAction">Ação Principal</Label>
+                <Textarea id="mainAction" placeholder="O que o influenciador está a fazer..." />
+                <Button variant="outline" size="sm" className="mt-2"><Sparkles className="mr-2 h-4 w-4" /> Gerar Ação com IA</Button>
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="dialogue">Diálogo</Label>
+                <Textarea id="dialogue" placeholder="O que o influenciador diz (em Português do Brasil)..." />
+                <div className="flex gap-2 mt-2">
+                    <Button variant="outline" size="sm"><Sparkles className="mr-2 h-4 w-4" /> Gerar Diálogo</Button>
+                    <Button variant="outline" size="sm"><Sparkles className="mr-2 h-4 w-4" /> Gerar SEO</Button>
+                </div>
+            </div>
         </div>
     </div>
   );
