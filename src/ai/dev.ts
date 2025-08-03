@@ -11,6 +11,7 @@ import '@/ai/flows/script-generation/generate-script-ideas';
 import '@/ai/flows/script-generation/generate-long-script';
 import '@/ai/flows/script-generation/generate-web-doc-script';
 import '@/ai/flows/script-generation/generate-viral-script';
+import '@/ai/flows/script-generation/generate-json-script';
 
 import '@/ai/flows/content-assistance/suggest-content';
 

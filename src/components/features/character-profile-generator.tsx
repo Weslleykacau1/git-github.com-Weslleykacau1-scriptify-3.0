@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Package, Box, FileArchive, FileText, Wand2 } from 'lucide-react';
+import { Loader2, User, UploadCloud, ClipboardPaste, Sparkles, Plus, Library, Save, RefreshCw, Clapperboard, Text, Box } from 'lucide-react';
 import { analyzeCharacterImage, AnalyzeCharacterImageOutput } from '@/ai/flows/analysis/analyze-character-image';
 import { analyzeTextProfile } from '@/ai/flows/analysis/analyze-text-profile';
 import { analyzeSceneBackground } from '@/ai/flows/analysis/analyze-scene-background';
@@ -16,8 +16,7 @@ import { Textarea } from '../ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { generateScriptIdeas } from '@/ai/flows/generate-script-ideas';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { ContentSuggester } from './content-suggester';
 
 
 export function CharacterProfileGenerator() {
@@ -33,8 +32,6 @@ export function CharacterProfileGenerator() {
   const [productName, setProductName] = useState('');
   const [partnerBrand, setPartnerBrand] = useState('');
   const [productDescription, setProductDescription] = useState('');
-  const [scriptIdea, setScriptIdea] = useState('');
-  const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const { toast } = useToast();
 
   const handleProfileChange = (field: keyof AnalyzeCharacterImageOutput, value: string) => {
@@ -144,30 +141,10 @@ export function CharacterProfileGenerator() {
     toast({ title: `Ação: ${action}`, description: 'Esta funcionalidade será implementada em breve.' });
   };
   
-  const handleGenerateScript = async () => {
-    if (!profile.name || !sceneDescription) {
-      toast({ title: 'Erro', description: 'Por favor, preencha o perfil do influenciador e a descrição da cena.', variant: 'destructive' });
-      return;
-    }
-    setIsGeneratingScript(true);
-    try {
-      const characterProfile = Object.entries(profile)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join('\n');
-      
-      const result = await generateScriptIdeas({ characterProfile, sceneDescription });
-      setScriptIdea(result.scriptIdea);
-      toast({ title: 'Roteiro gerado com sucesso!' });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao gerar roteiro',
-        description: 'Ocorreu um erro ao gerar o roteiro.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsGeneratingScript(false);
-    }
+  const getCharacterProfileAsString = () => {
+    return Object.entries(profile)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
   };
 
   return (
@@ -473,46 +450,10 @@ export function CharacterProfileGenerator() {
             </div>
         </div>
         
-        <div className="flex flex-col h-full w-full space-y-6">
-      <div className="flex items-center gap-3">
-        <FileText className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold font-headline">3. Gere o Roteiro Detalhado</h2>
-      </div>
-      <p className="text-muted-foreground">
-        Use o influenciador e a cena definidos para gerar um roteiro detalhado para um vídeo.
-      </p>
-
-      <div className="flex flex-col space-y-4 flex-grow justify-center">
-        <Button onClick={handleGenerateScript} disabled={isGeneratingScript} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold text-lg">
-          {isGeneratingScript ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-          Gerar Roteiro
-        </Button>
-      </div>
-
-      {isGeneratingScript && (
-        <div className="flex items-center justify-center">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            <p>A IA está a criar o seu roteiro...</p>
-        </div>
-      )}
-
-      {scriptIdea && (
-        <Card>
-            <CardHeader>
-                <CardTitle>Roteiro Gerado</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Textarea value={scriptIdea} readOnly className="min-h-[200px] bg-muted" />
-            </CardContent>
-        </Card>
-      )}
-
-      <Alert>
-        <AlertDescription className="text-xs text-center">
-          Para gerar, é preciso carregar ou guardar um influenciador e preencher o campo 'Cenário' na cena.
-        </AlertDescription>
-      </Alert>
-    </div>
+        <ContentSuggester
+          characterProfile={getCharacterProfileAsString()}
+          sceneDescription={sceneDescription}
+        />
     </div>
   );
 }
