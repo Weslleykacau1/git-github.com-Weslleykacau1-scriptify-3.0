@@ -312,9 +312,10 @@ export function CharacterProfileGenerator() {
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="duration">Duração</Label>
-                    <Select>
-                        <SelectTrigger><SelectValue placeholder="8 seg" /></SelectTrigger>
+                    <Select defaultValue="8">
+                        <SelectTrigger><SelectValue placeholder="Selecione a duração..." /></SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="5">5 seg</SelectItem>
                             <SelectItem value="8">8 seg</SelectItem>
                         </SelectContent>
                     </Select>
