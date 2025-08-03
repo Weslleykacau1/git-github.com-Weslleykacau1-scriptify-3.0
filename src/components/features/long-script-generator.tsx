@@ -68,7 +68,11 @@ export function LongScriptGenerator() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="dynamic">Câmera Dinâmica (Criatividade da IA)</SelectItem>
-              {/* Other camera angles can be added here */}
+              <SelectItem value="vlog">Vlog (Conversacional)</SelectItem>
+              <SelectItem value="selfie">Selfie</SelectItem>
+              <SelectItem value="pov">Ponto de Vista</SelectItem>
+              <SelectItem value="medium_shot">Médio</SelectItem>
+              <SelectItem value="wide_shot">Plano Geral</SelectItem>
             </SelectContent>
           </Select>
         </div>
