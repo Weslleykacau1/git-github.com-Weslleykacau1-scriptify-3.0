@@ -64,13 +64,12 @@ export function CharacterGallery() {
   };
 
   const handleLoad = (character: Character) => {
-    // This uses a custom event to notify the main page component to load the character.
-    // This avoids complex prop drilling or state management libraries for this specific action.
+    // This uses a custom event to notify the main page component to load the character and switch views.
     const event = new CustomEvent('loadCharacter', { detail: character });
     window.dispatchEvent(event);
     toast({
       title: `"${character.name}" carregado!`,
-      description: 'O influenciador está pronto para ser editado ou usado para gerar roteiros.',
+      description: 'O influenciador está pronto no criador de personagens para ser editado.',
     });
   };
 
