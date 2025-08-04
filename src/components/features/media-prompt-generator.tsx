@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -13,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
 import { generateImage } from '@/ai/flows/media-generation/generate-image';
 import { ImagePreviewDialog } from './image-preview-dialog';
+import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 
 
 const formSchema = z.object({
@@ -26,8 +28,9 @@ export function MediaPromptGenerator() {
   const [result, setResult] = useState<GenerateMediaPromptsOutput | null>(null);
   const { toast } = useToast();
 
-  const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState<string | null>(null);
   const [generatedImageData, setGeneratedImageData] = useState<{ url: string; prompt: string } | null>(null);
+  const [generatedImageData2, setGeneratedImageData2] = useState<{ url: string; prompt: string } | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<FormData>({
@@ -73,7 +76,9 @@ export function MediaPromptGenerator() {
   };
   
   const handleGenerateImage = async (prompt: string, index: number) => {
-    setIsGeneratingImage(String(index));
+    setIsGenerating(`image-${index}`);
+    setGeneratedImageData(null);
+    setGeneratedImageData2(null);
     try {
       const { imageDataUri } = await generateImage({ prompt });
       setGeneratedImageData({ url: imageDataUri, prompt });
@@ -82,7 +87,28 @@ export function MediaPromptGenerator() {
       console.error('Image generation failed', error);
       toast({ title: 'Erro ao gerar imagem', variant: 'destructive' });
     } finally {
-      setIsGeneratingImage(null);
+      setIsGenerating(null);
+    }
+  };
+
+  const handleGenerateThumbnail = async () => {
+    if (!result || !result.scenes.length) return;
+    setIsGenerating('thumbnail');
+    setGeneratedImageData(null);
+    setGeneratedImageData2(null);
+    try {
+      const { thumbnailImage1Uri, thumbnailImage2Uri } = await generateThumbnailFromScript({
+        firstSceneImagePrompt: result.scenes[0].imagePrompt,
+        thumbnailIdeas: result.thumbnailIdeas,
+      });
+      setGeneratedImageData({ url: thumbnailImage1Uri, prompt: 'thumbnail_variation_1' });
+      setGeneratedImageData2({ url: thumbnailImage2Uri, prompt: 'thumbnail_variation_2' });
+      setIsDialogOpen(true);
+    } catch (error) {
+      console.error('Thumbnail generation failed', error);
+      toast({ title: 'Erro ao gerar thumbnails', variant: 'destructive' });
+    } finally {
+      setIsGenerating(null);
     }
   };
   
@@ -100,6 +126,7 @@ export function MediaPromptGenerator() {
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         imageData={generatedImageData}
+        imageData2={generatedImageData2}
       />
       <Card className="bg-transparent border-none shadow-none">
           <CardHeader className="px-0">
@@ -189,10 +216,10 @@ export function MediaPromptGenerator() {
                                                   variant="outline"
                                                   size="sm"
                                                   className="w-full"
-                                                  disabled={isGeneratingImage === String(index)}
+                                                  disabled={isGenerating === `image-${index}`}
                                                   onClick={() => handleGenerateImage(scene.imagePrompt, index)}
                                               >
-                                                  {isGeneratingImage === String(index) ? (
+                                                  {isGenerating === `image-${index}` ? (
                                                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                   ) : (
                                                       <ImageIcon className="mr-2 h-4 w-4" />
@@ -231,13 +258,16 @@ export function MediaPromptGenerator() {
                           </CardHeader>
                           <CardContent>
                               <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
-                              <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Gerar de acordo com a sugestão")}><Film className="mr-2"/>Gerar de acordo com a sugestão</Button>
+                              <Button variant="outline" size="sm" className='mt-2' onClick={handleGenerateThumbnail} disabled={isGenerating === 'thumbnail'}>
+                                {isGenerating === 'thumbnail' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Film className="mr-2 h-4 w-4"/>}
+                                Gerar Thumbnail
+                              </Button>
                           </CardContent>
                       </Card>
                       <Card>
                           <CardHeader>
                               <CardTitle className='text-lg'>Palavras-chave de SEO</CardTitle>
-                          </CardHeader>
+                          </Header>
                           <CardContent>
                               <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
                               <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Otimizar para SEO")}><Search className="mr-2"/>Otimizar para SEO</Button>

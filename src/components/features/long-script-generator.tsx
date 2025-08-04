@@ -12,6 +12,7 @@ import { generateLongScript, GenerateLongScriptOutput } from '@/ai/flows/script-
 import type { Character, Scene } from '@/lib/types';
 import { generateImage } from '@/ai/flows/media-generation/generate-image';
 import { ImagePreviewDialog } from './image-preview-dialog';
+import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 
 
 export function LongScriptGenerator() {
@@ -25,10 +26,11 @@ export function LongScriptGenerator() {
   const [result, setResult] = useState<GenerateLongScriptOutput | null>(null);
   const { toast } = useToast();
 
-  // Image Generation State
-  const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null); // scene index
+  const [isGenerating, setIsGenerating] = useState<string | null>(null);
   const [generatedImageData, setGeneratedImageData] = useState<{ url: string; prompt: string } | null>(null);
+  const [generatedImageData2, setGeneratedImageData2] = useState<{ url: string; prompt: string } | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
 
   useEffect(() => {
     try {
@@ -97,7 +99,9 @@ export function LongScriptGenerator() {
   };
 
   const handleGenerateImage = async (prompt: string, index: number) => {
-    setIsGeneratingImage(String(index));
+    setIsGenerating(`image-${index}`);
+    setGeneratedImageData(null);
+    setGeneratedImageData2(null);
     try {
       const { imageDataUri } = await generateImage({ prompt });
       setGeneratedImageData({ url: imageDataUri, prompt });
@@ -106,9 +110,31 @@ export function LongScriptGenerator() {
       console.error('Image generation failed', error);
       toast({ title: 'Erro ao gerar imagem', variant: 'destructive' });
     } finally {
-      setIsGeneratingImage(null);
+      setIsGenerating(null);
     }
   };
+
+  const handleGenerateThumbnail = async () => {
+    if (!result || !result.scenes.length) return;
+    setIsGenerating('thumbnail');
+    setGeneratedImageData(null);
+    setGeneratedImageData2(null);
+    try {
+      const { thumbnailImage1Uri, thumbnailImage2Uri } = await generateThumbnailFromScript({
+        firstSceneImagePrompt: result.scenes[0].imagePrompt,
+        thumbnailIdeas: result.thumbnailIdeas,
+      });
+      setGeneratedImageData({ url: thumbnailImage1Uri, prompt: 'thumbnail_variation_1' });
+      setGeneratedImageData2({ url: thumbnailImage2Uri, prompt: 'thumbnail_variation_2' });
+      setIsDialogOpen(true);
+    } catch (error) {
+      console.error('Thumbnail generation failed', error);
+      toast({ title: 'Erro ao gerar thumbnails', variant: 'destructive' });
+    } finally {
+      setIsGenerating(null);
+    }
+  };
+
 
   const handleActionClick = (featureName: string) => {
     toast({
@@ -124,6 +150,7 @@ export function LongScriptGenerator() {
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         imageData={generatedImageData}
+        imageData2={generatedImageData2}
     />
     <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="px-0">
@@ -246,10 +273,10 @@ export function LongScriptGenerator() {
                                                 variant="outline"
                                                 size="sm"
                                                 className="w-full"
-                                                disabled={isGeneratingImage === String(index)}
+                                                disabled={isGenerating === `image-${index}`}
                                                 onClick={() => handleGenerateImage(scene.imagePrompt, index)}
                                             >
-                                                {isGeneratingImage === String(index) ? (
+                                                {isGenerating === `image-${index}` ? (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                 ) : (
                                                 <ImageIcon className="mr-2 h-4 w-4" />
@@ -288,7 +315,10 @@ export function LongScriptGenerator() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
-                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Gerar de acordo com a sugestão")}><Film className="mr-2 h-4 w-4"/>Gerar de acordo com a sugestão</Button>
+                            <Button variant="outline" size="sm" className='mt-2' onClick={handleGenerateThumbnail} disabled={isGenerating === 'thumbnail'}>
+                                {isGenerating === 'thumbnail' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Film className="mr-2 h-4 w-4"/>}
+                                Gerar Thumbnail
+                            </Button>
                         </CardContent>
                     </Card>
                     <Card>

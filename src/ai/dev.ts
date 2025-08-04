@@ -16,7 +16,6 @@ import '@/ai/flows/script-generation/generate-viral-script';
 import '@/ai/flows/script-generation/generate-json-script';
 
 // Content Assistance
-import '@/ai/flows/content-assistance/suggest-content';
 import '@/ai/flows/content-assistance/suggest-action';
 import '@/ai/flows/content-assistance/suggest-dialogue';
 import '@/ai/flows/content-assistance/suggest-title';
@@ -26,3 +25,4 @@ import '@/ai/flows/content-assistance/suggest-title';
 import '@/ai/flows/generate-media-prompts';
 import '@/ai/flows/media-generation/generate-thumbnail-ideas';
 import '@/ai/flows/media-generation/generate-image';
+import '@/ai/flows/media-generation/generate-thumbnail-from-script';
