@@ -5,6 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 export const metadata: Metadata = {
   title: 'Scriptify Studio AI',
   description: 'Ferramentas de IA para criadores de conteúdo.',
+  icons: {
+    icon: '/icon.svg',
+  }
 };
 
 export default function RootLayout({
