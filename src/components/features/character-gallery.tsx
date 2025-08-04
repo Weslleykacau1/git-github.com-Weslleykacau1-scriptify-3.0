@@ -70,7 +70,7 @@ export function CharacterGallery() {
     window.dispatchEvent(event);
     toast({
       title: `"${character.name}" carregado!`,
-      description: 'Volte à tela inicial e clique em "Criador de Personagens e Cenas" para editar.',
+      description: 'O influenciador está pronto para ser editado ou usado para gerar roteiros.',
     });
   };
 

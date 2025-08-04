@@ -72,7 +72,7 @@ export function ProductGallery() {
     window.dispatchEvent(event);
     toast({
       title: `Produto "${product.name}" carregado!`,
-      description: 'Volte ao editor e o produto estará na seção de integração.',
+      description: 'O produto está pronto para ser integrado numa cena.',
     });
   };
   

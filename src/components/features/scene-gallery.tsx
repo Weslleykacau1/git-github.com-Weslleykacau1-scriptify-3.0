@@ -105,7 +105,7 @@ export function SceneGallery() {
     window.dispatchEvent(event);
     toast({
       title: `"${scene.title}" carregada!`,
-      description: 'Volte à tela inicial e clique em "Criador de Personagens e Cenas" para editar.',
+      description: 'A cena está pronta para ser editada ou usada para gerar roteiros.',
     });
   };
 

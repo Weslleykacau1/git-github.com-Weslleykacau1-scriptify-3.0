@@ -31,29 +31,36 @@ export default function Home() {
     const handleLoadCharacter = (event: Event) => {
         const customEvent = event as CustomEvent<Character>;
         setLoadedCharacter(customEvent.detail);
-        setActiveView('home'); 
+        setActiveView('creator'); 
     };
 
     const handleLoadScene = (event: Event) => {
         const customEvent = event as CustomEvent<Scene>;
         setLoadedScene(customEvent.detail);
-        setActiveView('home');
+        setActiveView('creator');
     };
 
     const handleLoadProduct = (event: Event) => {
         const customEvent = event as CustomEvent<Product>;
         setLoadedProduct(customEvent.detail);
-        setActiveView('home'); 
+        setActiveView('creator'); 
+    };
+
+    const handleNavigateToGallery = (event: Event) => {
+      const customEvent = event as CustomEvent<ActiveView>;
+      setActiveView(customEvent.detail);
     };
     
     window.addEventListener('loadCharacter', handleLoadCharacter);
     window.addEventListener('loadScene', handleLoadScene);
     window.addEventListener('loadProduct', handleLoadProduct);
+    window.addEventListener('navigateToGallery', handleNavigateToGallery);
 
     return () => {
         window.removeEventListener('loadCharacter', handleLoadCharacter);
         window.removeEventListener('loadScene', handleLoadScene);
         window.removeEventListener('loadProduct', handleLoadProduct);
+        window.removeEventListener('navigateToGallery', handleNavigateToGallery);
     };
   }, []);
 

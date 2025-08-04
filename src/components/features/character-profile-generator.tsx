@@ -1,4 +1,3 @@
-
 // src/components/features/character-profile-generator.tsx
 'use client';
 
@@ -104,25 +103,9 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
     toast({ title: "Nova Cena", description: "Campos da cena reiniciados." });
   }
 
-  const loadFromGallery = (type: 'character' | 'scene' | 'product') => {
-    const key = type === 'character' ? 'fg-characters' : type === 'scene' ? 'fg-scenes' : 'fg-products';
-    const data = JSON.parse(localStorage.getItem(key) || '[]');
-    const name = prompt(`Qual ${type} quer carregar?\n\nDisponível:\n` + data.map((item: any) => item.name || item.title).join('\n'));
-    if (name) {
-      const item = data.find((item: any) => (item.name || item.title) === name);
-      if (item) {
-        if (type === 'character') {
-          setProfile(item);
-        } else if (type === 'scene') {
-          setScene(item);
-        } else if (type === 'product') {
-            setScene(prev => ({ ...prev, product: item }));
-        }
-        toast({ title: `${type.charAt(0).toUpperCase() + type.slice(1)} carregado(a)!`, description: `Os dados de "${name}" foram carregados.` });
-      } else {
-        toast({ title: 'Não encontrado', variant: 'destructive' });
-      }
-    }
+  const navigateToGallery = (gallery: 'character_gallery' | 'scene_gallery' | 'product_gallery') => {
+    const event = new CustomEvent('navigateToGallery', { detail: gallery });
+    window.dispatchEvent(event);
   };
   
   const saveToGallery = (type: 'character' | 'scene' | 'product') => {
@@ -451,7 +434,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
         </div>
         <div className="flex flex-col sm:flex-row gap-2 justify-end pt-4">
             <Button variant="outline" className="w-full sm:w-auto" onClick={resetCharacter}><Plus className="mr-2 h-4 w-4" /> Novo</Button>
-            <Button variant="outline" className="w-full sm:w-auto" onClick={() => loadFromGallery('character')}><Library className="mr-2 h-4 w-4" /> Carregar</Button>
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigateToGallery('character_gallery')}><Library className="mr-2 h-4 w-4" /> Carregar da Galeria</Button>
             <Button onClick={() => saveToGallery('character')} className="w-full sm:w-auto"><Save className="mr-2 h-4 w-4" /> Guardar</Button>
         </div>
 
@@ -613,7 +596,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     <Textarea id="productDescription" placeholder="Descrição detalhada do produto..." value={scene.product?.description || ''} onChange={(e) => handleProductChange('description', e.target.value)} />
                 </div>
                  <div className="flex flex-col sm:flex-row gap-2 justify-start pt-2">
-                    <Button variant="outline" size={isMobile ? "default" : "sm"} className="w-full sm:w-auto" onClick={() => loadFromGallery('product')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
+                    <Button variant="outline" size={isMobile ? "default" : "sm"} className="w-full sm:w-auto" onClick={() => navigateToGallery('product_gallery')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
                     <Button size={isMobile ? "default" : "sm"} className="w-full sm:w-auto" onClick={() => saveToGallery('product')}><Save className="mr-2 h-4 w-4"/> Guardar Produto</Button>
                 </div>
                 <div className="flex items-center space-x-2 pt-4">
@@ -628,7 +611,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
             
             <div className="flex flex-col sm:flex-row gap-2 justify-start pt-4">
                 <Button variant="outline" className="w-full sm:w-auto" onClick={resetScene}><Plus className="mr-2 h-4 w-4"/> Nova Cena</Button>
-                <Button variant="outline" className="w-full sm:w-auto" onClick={() => loadFromGallery('scene')}><Library className="mr-2 h-4 w-4"/> Carregar</Button>
+                <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigateToGallery('scene_gallery')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
                 <Button className="w-full sm:w-auto" onClick={() => saveToGallery('scene')}><Save className="mr-2 h-4 w-4"/> Guardar Cena</Button>
             </div>
         </div>
