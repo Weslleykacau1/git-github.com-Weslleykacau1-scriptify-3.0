@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -40,7 +41,7 @@ export function SeoPreviewDialog({ isOpen, onOpenChange, seoData }: SeoPreviewDi
         <DialogHeader>
           <DialogTitle>Metadados de SEO Gerados</DialogTitle>
           <DialogDescription>
-            Use estes metadados para otimizar o seu vídeo no YouTube.
+            Use estes metadados para otimizar o seu vídeo no YouTube. Clique para copiar.
           </DialogDescription>
         </DialogHeader>
         <div className="my-4 space-y-4">
