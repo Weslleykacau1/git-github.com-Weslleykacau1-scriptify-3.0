@@ -8,7 +8,7 @@ import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Image as ImageIcon, Sparkles, Loader2, Camera, Film, Copy } from 'lucide-react';
+import { Image as ImageIcon, Sparkles, Loader2, Camera, Film, Copy, Download } from 'lucide-react';
 import { generateThumbnailIdeas, GenerateThumbnailIdeasOutput } from '@/ai/flows/media-generation/generate-thumbnail-ideas';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -26,7 +26,7 @@ export function ThumbnailGenerator() {
     if (!mainImage || !theme) {
       toast({
         title: 'Campos obrigatórios',
-        description: 'Por favor, carregue a imagem principal e defina um tema.',
+        description: 'Por favor, carregue la imagem principal e defina um tema.',
         variant: 'destructive',
       });
       return;
@@ -58,6 +58,15 @@ export function ThumbnailGenerator() {
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: 'Texto copiado!' });
+  };
+  
+  const handleDownload = (imageUrl: string) => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `thumbnail_${theme.replace(/\s/g, '_')}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
 
@@ -149,8 +158,14 @@ export function ThumbnailGenerator() {
                     </CardContent>
                 </Card>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Image src={result.thumbnailImage1Uri} alt="Thumbnail 1" width={512} height={288} className="rounded-lg object-cover" />
-                    <Image src={result.thumbnailImage2Uri} alt="Thumbnail 2" width={512} height={288} className="rounded-lg object-cover" />
+                    <div className="space-y-2">
+                        <Image src={result.thumbnailImage1Uri} alt="Thumbnail 1" width={512} height={288} className="rounded-lg object-cover" />
+                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage1Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 1</Button>
+                    </div>
+                    <div className="space-y-2">
+                        <Image src={result.thumbnailImage2Uri} alt="Thumbnail 2" width={512} height={288} className="rounded-lg object-cover" />
+                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage2Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 2</Button>
+                    </div>
                 </div>
             </div>
           )}

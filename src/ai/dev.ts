@@ -23,6 +23,6 @@ import '@/ai/flows/content-assistance/suggest-title';
 
 
 // Media Generation
-import '@/ai/flows/media-generation/generate-media-prompts';
+import '@/ai/flows/generate-media-prompts';
 import '@/ai/flows/media-generation/generate-thumbnail-ideas';
 import '@/ai/flows/media-generation/generate-image';
