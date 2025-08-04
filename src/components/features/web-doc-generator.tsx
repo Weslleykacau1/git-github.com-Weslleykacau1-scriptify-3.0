@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -65,14 +65,28 @@ export function WebDocGenerator() {
   
   const handleExport = () => {
     if (!result) return;
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result, null, 2));
+
+    let textContent = `Título: ${result.title}\n\n`;
+    textContent += `Palavras-chave de SEO: ${result.seoKeywords}\n\n`;
+    textContent += `Ideias para Thumbnail: ${result.thumbnailIdeas}\n\n`;
+    textContent += '---\n\n';
+
+    result.scenes.forEach((scene, index) => {
+      textContent += `Cena ${index + 1}: ${scene.sceneTitle}\n`;
+      textContent += `Narração (PT-BR):\n${scene.narration}\n\n`;
+      textContent += `Prompt de Imagem (EN):\n${scene.imagePrompt}\n\n`;
+      textContent += `Prompt de Vídeo (EN):\n${scene.videoPrompt}\n\n`;
+      textContent += '---\n\n';
+    });
+
+    const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(textContent);
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${result.title.replace(/\s/g, '_')}.json`);
+    downloadAnchorNode.setAttribute("download", `${result.title.replace(/\s/g, '_')}.txt`);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-    toast({ title: "Roteiro exportado como JSON!" });
+    toast({ title: "Roteiro exportado como TXT!" });
   };
   
   const handleGenerateThumbnail = async () => {
@@ -82,6 +96,7 @@ export function WebDocGenerator() {
       const { thumbnailImage1Uri, thumbnailImage2Uri } = await generateThumbnailFromScript({
         firstSceneImagePrompt: result.scenes[0].imagePrompt,
         thumbnailIdeas: result.thumbnailIdeas,
+        aspectRatio: '16:9'
       });
       // Logic to show images in a dialog will be needed here.
       toast({title: 'Thumbnails geradas, mas a visualização ainda não está implementada.'});
@@ -215,7 +230,7 @@ export function WebDocGenerator() {
                       <CardHeader>
                           <CardTitle className='text-lg'>{result.title}</CardTitle>
                           <div className="flex gap-2">
-                             <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar JSON</Button>
+                             <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar em .txt</Button>
                           </div>
                       </CardHeader>
                       <CardContent className="space-y-4">
@@ -303,3 +318,5 @@ export function WebDocGenerator() {
     </>
   );
 }
+
+    

@@ -2,7 +2,7 @@
 // src/components/features/media-prompt-generator.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -68,14 +68,28 @@ export function MediaPromptGenerator() {
   
   const handleExport = () => {
     if (!result) return;
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result, null, 2));
+    
+    let textContent = `Palavras-chave de SEO: ${result.seoKeywords}\n\n`;
+    textContent += `Ideias para Thumbnail: ${result.thumbnailIdeas}\n\n`;
+    textContent += '---\n\n';
+
+    result.scenes.forEach((scene, index) => {
+      textContent += `Cena ${index + 1}: ${scene.sceneTitle}\n`;
+      textContent += `Roteiro (PT-BR):\n${scene.script}\n\n`;
+      textContent += `Prompt de Imagem (EN):\n${scene.imagePrompt}\n\n`;
+      textContent += `Prompt de Vídeo (EN):\n${scene.videoPrompt}\n\n`;
+      textContent += '---\n\n';
+    });
+
+
+    const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(textContent);
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `analise_roteiro.json`);
+    downloadAnchorNode.setAttribute("download", `analise_roteiro.txt`);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-    toast({ title: "Análise exportada como JSON!" });
+    toast({ title: "Análise exportada como TXT!" });
   };
   
   const handleGenerateThumbnail = async () => {
@@ -85,6 +99,7 @@ export function MediaPromptGenerator() {
       const { thumbnailImage1Uri, thumbnailImage2Uri } = await generateThumbnailFromScript({
         firstSceneImagePrompt: result.scenes[0].imagePrompt,
         thumbnailIdeas: result.thumbnailIdeas,
+        aspectRatio: '16:9'
       });
       // Logic to show images in a dialog will be needed here.
       toast({title: 'Thumbnails geradas, mas a visualização ainda não está implementada.'});
@@ -172,7 +187,7 @@ export function MediaPromptGenerator() {
               <CardHeader>
                 <CardTitle className='text-lg'>Prompts Gerados por Cena</CardTitle>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar JSON</Button>
+                  <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar em .txt</Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -259,3 +274,5 @@ export function MediaPromptGenerator() {
     </>
   );
 }
+
+    

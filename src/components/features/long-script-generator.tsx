@@ -35,16 +35,21 @@ export function LongScriptGenerator() {
 
 
   useEffect(() => {
-    try {
-      const storedCharacters = localStorage.getItem('fg-characters');
-      if (storedCharacters) setCharacters(JSON.parse(storedCharacters));
-      
-      const storedScenes = localStorage.getItem('fg-scenes');
-      if (storedScenes) setScenes(JSON.parse(storedScenes));
-    } catch (error) {
-        console.error("Failed to load data from localStorage", error);
-        toast({ title: "Erro ao carregar dados locais", variant: "destructive" });
-    }
+    const loadData = () => {
+        try {
+          const storedCharacters = localStorage.getItem('fg-characters');
+          if (storedCharacters) setCharacters(JSON.parse(storedCharacters));
+          
+          const storedScenes = localStorage.getItem('fg-scenes');
+          if (storedScenes) setScenes(JSON.parse(storedScenes));
+        } catch (error) {
+            console.error("Failed to load data from localStorage", error);
+            toast({ title: "Erro ao carregar dados locais", variant: "destructive" });
+        }
+    };
+    loadData();
+    window.addEventListener('storage', loadData);
+    return () => window.removeEventListener('storage', loadData);
   }, [toast]);
   
 
@@ -94,14 +99,28 @@ export function LongScriptGenerator() {
   
   const handleExport = () => {
     if (!result) return;
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(result, null, 2));
+    
+    let textContent = `Título: ${result.title}\n\n`;
+    textContent += `Palavras-chave de SEO: ${result.seoKeywords}\n\n`;
+    textContent += `Ideias para Thumbnail: ${result.thumbnailIdeas}\n\n`;
+    textContent += '---\n\n';
+
+    result.scenes.forEach((scene, index) => {
+      textContent += `Cena ${index + 1}: ${scene.sceneTitle}\n`;
+      textContent += `Narração (PT-BR):\n${scene.narration}\n\n`;
+      textContent += `Prompt de Imagem (EN):\n${scene.imagePrompt}\n\n`;
+      textContent += `Prompt de Vídeo (EN):\n${scene.videoPrompt}\n\n`;
+      textContent += '---\n\n';
+    });
+
+    const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(textContent);
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${result.title.replace(/\s/g, '_')}.json`);
+    downloadAnchorNode.setAttribute("download", `${result.title.replace(/\s/g, '_')}.txt`);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-    toast({ title: "Roteiro exportado como JSON!" });
+    toast({ title: "Roteiro exportado como TXT!" });
   };
 
   const handleGenerateThumbnail = async () => {
@@ -111,6 +130,7 @@ export function LongScriptGenerator() {
       const { thumbnailImage1Uri, thumbnailImage2Uri } = await generateThumbnailFromScript({
         firstSceneImagePrompt: result.scenes[0].imagePrompt,
         thumbnailIdeas: result.thumbnailIdeas,
+        aspectRatio: '16:9'
       });
       // Logic to show images in a dialog will be needed here.
       toast({title: 'Thumbnails geradas, mas a visualização ainda não está implementada.'});
@@ -255,7 +275,7 @@ export function LongScriptGenerator() {
                     <CardHeader>
                         <CardTitle className='text-lg'>{result.title}</CardTitle>
                         <div className="flex gap-2">
-                           <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar JSON</Button>
+                           <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar em .txt</Button>
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -344,3 +364,5 @@ export function LongScriptGenerator() {
     </>
   );
 }
+
+    
