@@ -34,10 +34,26 @@ export function CharacterGallery() {
   
   const handleExport = (character: Character) => {
     try {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(character, null, 2));
+      // Format character data into a readable string
+      const characterDataString = `
+Nome: ${character.name || ''}
+Nicho: ${character.niche || ''}
+Personalidade: ${character.personality || ''}
+Aparência Física: ${character.physicalAppearance || ''}
+Estilo de Roupa: ${character.clothingStyle || ''}
+Biografia: ${character.biography || ''}
+Traços Únicos: ${character.uniqueTraits || ''}
+Sotaque: ${character.accent || ''}
+Idade: ${character.age || ''}
+Gênero: ${character.gender || ''}
+Seed de Geração: ${character.generationSeed || ''}
+Prompt Negativo: ${character.negativePrompt || ''}
+      `.trim();
+
+      const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(characterDataString);
       const downloadAnchorNode = document.createElement('a');
       downloadAnchorNode.setAttribute("href", dataStr);
-      downloadAnchorNode.setAttribute("download", `${character.name || 'character'}.json`);
+      downloadAnchorNode.setAttribute("download", `${character.name || 'character'}.txt`);
       document.body.appendChild(downloadAnchorNode);
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
@@ -107,7 +123,7 @@ export function CharacterGallery() {
                   <Button className="flex-1" onClick={() => handleLoad(char)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleExport(char)}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleExport(char)}><FileText className="mr-2 h-4 w-4"/>Exportar TXT</Button>
                   <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(char.id, char.name)}><Trash2 className="h-4 w-4"/></Button>
                 </div>
               </CardFooter>
