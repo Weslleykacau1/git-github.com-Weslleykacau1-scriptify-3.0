@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, RefreshCw, Youtube, Video, Image as ImageIcon, FileText, Bot } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 // A simplified file uploader for this component
 const FileUploadArea = ({ 
@@ -55,6 +56,27 @@ export function VideoTranscriber() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const { toast } = useToast();
+
+  const handleUrlConversion = () => {
+    if (!youtubeUrl) return;
+
+    if (youtubeUrl.includes('/shorts/')) {
+      const videoId = youtubeUrl.split('/shorts/')[1].split('?')[0];
+      const newUrl = `https://www.youtube.com/watch?v=${videoId}`;
+      setYoutubeUrl(newUrl);
+      toast({
+        title: 'URL Convertido!',
+        description: 'O link do YouTube Short foi convertido para o formato padrão.',
+      });
+    } else {
+      toast({
+        title: 'Nenhuma conversão necessária.',
+        description: 'O URL já está no formato de vídeo padrão.',
+      });
+    }
+  };
+
 
   return (
     <div className="flex flex-col h-full w-full space-y-6">
@@ -94,7 +116,7 @@ export function VideoTranscriber() {
                 value={youtubeUrl}
                 onChange={(e) => setYoutubeUrl(e.target.value)}
               />
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleUrlConversion}>
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>
