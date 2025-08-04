@@ -83,14 +83,21 @@ export function ProductGallery() {
      }
 
     try {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `products_backup.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-        toast({ title: `Todos os produtos foram exportados!` });
+      const allProductsText = products.map(p => 
+`Nome do Produto: ${p.name || ''}
+Marca: ${p.brand || ''}
+Descrição: ${p.description || ''}
+---------------------------------`
+      ).join('\n\n');
+
+      const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(allProductsText);
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", `todos_os_produtos.txt`);
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+      toast({ title: `Todos os produtos foram exportados para .txt!` });
     } catch (error) {
         console.error("Export all failed:", error);
         toast({ title: 'Erro ao exportar tudo', variant: 'destructive' });
@@ -113,7 +120,7 @@ export function ProductGallery() {
         </div>
         <Button variant="outline" onClick={handleExportAll} className="w-full md:w-auto">
             <Download className="mr-2 h-4 w-4" />
-            Exportar Tudo (JSON)
+            EXPORTA EM .TXT
         </Button>
       </div>
       
