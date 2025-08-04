@@ -31,9 +31,6 @@ export function MediaPromptGenerator() {
   const { toast } = useToast();
 
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
-  const [generatedImageData, setGeneratedImageData] = useState<{ url: string; prompt: string } | null>(null);
-  const [generatedImageData2, setGeneratedImageData2] = useState<{ url: string; prompt: string } | null>(null);
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
   const [isSeoDialogOpen, setIsSeoDialogOpen] = useState(false);
   const [seoData, setSeoData] = useState<GenerateSeoMetadataOutput | null>(null);
@@ -84,16 +81,14 @@ export function MediaPromptGenerator() {
   const handleGenerateThumbnail = async () => {
     if (!result || !result.scenes.length) return;
     setIsGenerating('thumbnail');
-    setGeneratedImageData(null);
-    setGeneratedImageData2(null);
     try {
       const { thumbnailImage1Uri, thumbnailImage2Uri } = await generateThumbnailFromScript({
         firstSceneImagePrompt: result.scenes[0].imagePrompt,
         thumbnailIdeas: result.thumbnailIdeas,
       });
-      setGeneratedImageData({ url: thumbnailImage1Uri, prompt: 'thumbnail_variation_1' });
-      setGeneratedImageData2({ url: thumbnailImage2Uri, prompt: 'thumbnail_variation_2' });
-      setIsImageDialogOpen(true);
+      // Logic to show images in a dialog will be needed here.
+      toast({title: 'Thumbnails geradas, mas a visualização ainda não está implementada.'});
+
     } catch (error) {
       console.error('Thumbnail generation failed', error);
       toast({ title: 'Erro ao gerar thumbnails', variant: 'destructive' });
@@ -118,13 +113,6 @@ export function MediaPromptGenerator() {
     } finally {
         setIsGenerating(null);
     }
-  };
-
-  const handleActionClick = (featureName: string) => {
-    toast({
-        title: "Funcionalidade em desenvolvimento",
-        description: `A funcionalidade de "${featureName}" será implementada em breve!`,
-    });
   };
 
   return (
@@ -231,10 +219,6 @@ export function MediaPromptGenerator() {
                             </Button>
                           </div>
                           <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
-                          <Button variant="outline" size="sm" className="w-full" onClick={() => handleActionClick("Gerar Vídeo")}>
-                            <Video className="mr-2 h-4 w-4" />
-                            Gerar Vídeo
-                          </Button>
                         </div>
                       </div>
                     </div>
