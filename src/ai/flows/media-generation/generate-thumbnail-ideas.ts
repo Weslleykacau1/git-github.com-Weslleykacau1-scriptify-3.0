@@ -24,6 +24,7 @@ const GenerateThumbnailIdeasInputSchema = z.object({
     .describe("An optional background image, as a data URI."),
   theme: z.string().describe('The theme of the video (e.g., "My skincare routine").'),
   style: z.string().describe('The visual style for the thumbnail (e.g., "MrBeast Style").'),
+  aspectRatio: z.enum(['16:9', '9:16']).optional().default('16:9').describe('The aspect ratio for the thumbnail.'),
 });
 export type GenerateThumbnailIdeasInput = z.infer<typeof GenerateThumbnailIdeasInputSchema>;
 
@@ -63,8 +64,8 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
 });
 
 
-async function generateImage(prompt: string, mainImageUri: string, backgroundImageUri?: string): Promise<string> {
-    const promptParts = [
+async function generateImage(prompt: string, mainImageUri: string, aspectRatio: '16:9' | '9:16', backgroundImageUri?: string): Promise<string> {
+    const promptParts: any[] = [
         { text: prompt },
         { media: { url: mainImageUri } },
     ];
@@ -77,6 +78,7 @@ async function generateImage(prompt: string, mainImageUri: string, backgroundIma
       prompt: promptParts,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
+        aspectRatio: aspectRatio,
       },
     });
 
@@ -93,7 +95,7 @@ const generateThumbnailIdeasFlow = ai.defineFlow(
     inputSchema: GenerateThumbnailIdeasInputSchema,
     outputSchema: GenerateThumbnailIdeasOutputSchema,
   },
-  async ({ mainImageUri, backgroundImageUri, theme, style }) => {
+  async ({ mainImageUri, backgroundImageUri, theme, style, aspectRatio }) => {
     // Step 1: Generate textual and SEO ideas
     const textAndSeoResult = await generateThumbnailAndSeoPrompt({ theme, style });
     const { youtubeTitle, overlayText, emoji, youtubeDescription, hashtags, tags } = textAndSeoResult.output!;
@@ -103,8 +105,8 @@ const generateThumbnailIdeasFlow = ai.defineFlow(
 
     // Step 3: Generate two image variations
     const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImage(`${imagePrompt} Variation 1.`, mainImageUri, backgroundImageUri),
-      generateImage(`${imagePrompt} Variation 2, slightly different composition.`, mainImageUri, backgroundImageUri),
+      generateImage(`${imagePrompt} Variation 1.`, mainImageUri, aspectRatio, backgroundImageUri),
+      generateImage(`${imagePrompt} Variation 2, slightly different composition.`, mainImageUri, aspectRatio, backgroundImageUri),
     ]);
     
     // Step 4: Return all results

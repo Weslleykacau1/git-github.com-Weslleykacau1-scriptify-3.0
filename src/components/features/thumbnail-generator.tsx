@@ -14,12 +14,14 @@ import { generateThumbnailIdeas, GenerateThumbnailIdeasOutput } from '@/ai/flows
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Textarea } from '../ui/textarea';
+import { Switch } from '../ui/switch';
 
 export function ThumbnailGenerator() {
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [theme, setTheme] = useState('');
   const [style, setStyle] = useState('default');
+  const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GenerateThumbnailIdeasOutput | null>(null);
   const { toast } = useToast();
@@ -42,6 +44,7 @@ export function ThumbnailGenerator() {
         backgroundImageUri: backgroundImage || undefined,
         theme,
         style,
+        aspectRatio,
       });
       setResult(generatedResult);
       toast({ title: 'Ideias de thumbnail e SEO geradas com sucesso!' });
@@ -101,38 +104,82 @@ export function ThumbnailGenerator() {
           <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Ex: Minha rotina de skincare..." />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="style">Estilo da Thumbnail</Label>
-          <Select value={style} onValueChange={setStyle}>
-            <SelectTrigger id="style">
-              <SelectValue placeholder="Selecione um estilo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="default">Estilo Padrão da IA</SelectItem>
-              <SelectItem value="shocked">Expressão Chocada + Fundo Caótico</SelectItem>
-              <SelectItem value="half-human">Metade Humano / Metade IA ou Vilão</SelectItem>
-              <SelectItem value="three-emotions">Três Emoções do Mesmo Rosto</SelectItem>
-              <SelectItem value="floating">Personagem Flutuando ou Fora da Realidade</SelectItem>
-              <SelectItem value="dramatic-close-up">Close no Rosto com Detalhe Dramático</SelectItem>
-              <SelectItem value="mysterious-object">Segurando um Objeto Misterioso ou Dossiê</SelectItem>
-              <SelectItem value="versus">Versus (Agente vs Inimigo / Empresa / Objeto)</SelectItem>
-              <SelectItem value="pop-color">Fundo Pop Colorido + Texto Impactante</SelectItem>
-              <SelectItem value="detective">Detetive no Escuro com Lupa / Pistas</SelectItem>
-              <SelectItem value="hacker">Estilo Hacker (Capuz + Código Refletido nos Óculos)</SelectItem>
-              <SelectItem value="extreme-zoom">Zoom Extremo nos Olhos / Expressão Facial</SelectItem>
-              <SelectItem value="arrows-circle">Setas Vermelhas + Circulo de Destaque</SelectItem>
-              <SelectItem value="before-after">Antes e Depois (divisão de tela com contraste)</SelectItem>
-              <SelectItem value="frozen-action">Mini Cena de Ação Congelada (tipo filme)</SelectItem>
-              <SelectItem value="neon-lighting">Iluminação Neon (Cyberpunk / Tech Vibe)</SelectItem>
-              <SelectItem value="mysterious-silhouette">Silhueta Misteriosa com "Quem é?"</SelectItem>
-              <SelectItem value="giant-text">Texto Gigante Coberto por Emojis / Censurado</SelectItem>
-              <SelectItem value="explosion-background">Explosão no Fundo com Personagem Central Calmo</SelectItem>
-              <SelectItem value="fire-ice">Rosto em Chamas / Gelo (efeitos extremos)</SelectItem>
-              <SelectItem value="movie-poster">Thumbnail Estilo Cartaz de Filme / Série</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">Deixe a IA decidir o melhor estilo com base no conteúdo.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="style">Estilo da Thumbnail</Label>
+              <Select value={style} onValueChange={setStyle}>
+                <SelectTrigger id="style">
+                  <SelectValue placeholder="Selecione um estilo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">Estilo Padrão da IA</SelectItem>
+                  <SelectItem value="shocked">Expressão Chocada + Fundo Caótico</SelectItem>
+                  <SelectItem value="half-human">Metade Humano / Metade IA ou Vilão</SelectItem>
+                  <SelectItem value="three-emotions">Três Emoções do Mesmo Rosto</SelectItem>
+                  <SelectItem value="floating">Personagem Flutuando ou Fora da Realidade</SelectItem>
+                  <SelectItem value="dramatic-close-up">Close no Rosto com Detalhe Dramático</SelectItem>
+                  <SelectItem value="mysterious-object">Segurando um Objeto Misterioso ou Dossiê</SelectItem>
+                  <SelectItem value="versus">Versus (Agente vs Inimigo / Empresa / Objeto)</SelectItem>
+                  <SelectItem value="pop-color">Fundo Pop Colorido + Texto Impactante</SelectItem>
+                  <SelectItem value="detective">Detetive no Escuro com Lupa / Pistas</SelectItem>
+                  <SelectItem value="hacker">Estilo Hacker (Capuz + Código Refletido nos Óculos)</SelectItem>
+                  <SelectItem value="extreme-zoom">Zoom Extremo nos Olhos / Expressão Facial</SelectItem>
+                  <SelectItem value="arrows-circle">Setas Vermelhas + Circulo de Destaque</SelectItem>
+                  <SelectItem value="before-after">Antes e Depois (divisão de tela com contraste)</SelectItem>
+                  <SelectItem value="frozen-action">Mini Cena de Ação Congelada (tipo filme)</SelectItem>
+                  <SelectItem value="neon-lighting">Iluminação Neon (Cyberpunk / Tech Vibe)</SelectItem>
+                  <SelectItem value="mysterious-silhouette">Silhueta Misteriosa com "Quem é?"</SelectItem>
+                  <SelectItem value="giant-text">Texto Gigante Coberto por Emojis / Censurado</SelectItem>
+                  <SelectItem value="explosion-background">Explosão no Fundo com Personagem Central Calmo</SelectItem>
+                  <SelectItem value="fire-ice">Rosto em Chamas / Gelo (efeitos extremos)</SelectItem>
+                  <SelectItem value="movie-poster">Thumbnail Estilo Cartaz de Filme / Série</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="aspectRatio">Aspect Ratio</Label>
+                <Select value={aspectRatio} onValueChange={(v) => setAspectRatio(v as any)}>
+                    <SelectTrigger id="aspectRatio">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="16:9">16:9 (Horizontal)</SelectItem>
+                        <SelectItem value="9:16">9:16 (Vertical)</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
         </div>
+        
+        <div className="border rounded-lg p-4 space-y-4">
+            <div className="flex items-center gap-3">
+                <Sparkles className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold text-lg">Melhorias de Qualidade</h3>
+            </div>
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label htmlFor="hyper-realism-thumb" className='font-medium'>Hiper-realismo</Label>
+                        <p className="text-xs text-muted-foreground">Vídeos com aparência realista e detalhes impressionantes.</p>
+                    </div>
+                    <Switch id="hyper-realism-thumb" />
+                </div>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label htmlFor="4k-thumb" className='font-medium'>4K</Label>
+                        <p className="text-xs text-muted-foreground">Qualidade ultra nítida em altíssima resolução.</p>
+                    </div>
+                    <Switch id="4k-thumb" />
+                </div>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label htmlFor="professional-camera-thumb" className='font-medium'>Câmera Profissional</Label>
+                        <p className="text-xs text-muted-foreground">Movimentos e enquadramentos cinematográficos.</p>
+                    </div>
+                    <Switch id="professional-camera-thumb" />
+                </div>
+            </div>
+        </div>
+
 
         <Button onClick={handleGenerate} disabled={isLoading} className="mt-auto">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}

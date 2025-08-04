@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2 } from 'lucide-react';
+import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Sparkles } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { FileUploader } from '../ui/file-uploader';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { generateViralScript } from '@/ai/flows/script-generation/generate-viral-script';
+import { Switch } from '../ui/switch';
 
 export function ScriptIdeaGenerator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -117,6 +118,36 @@ export function ScriptIdeaGenerator() {
               <SelectItem value="Compartilhe com um amigo!">Compartilhe com um amigo!</SelectItem>
             </SelectContent>
           </Select>
+      </div>
+
+      <div className="border rounded-lg p-4 space-y-4">
+          <div className="flex items-center gap-3">
+              <Sparkles className="h-6 w-6 text-primary" />
+              <h3 className="font-semibold text-lg">Melhorias de Qualidade</h3>
+          </div>
+          <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                  <div>
+                      <Label htmlFor="hyper-realism-viral" className='font-medium'>Hiper-realismo</Label>
+                      <p className="text-xs text-muted-foreground">Vídeos com aparência realista e detalhes impressionantes.</p>
+                  </div>
+                  <Switch id="hyper-realism-viral" />
+              </div>
+              <div className="flex items-center justify-between">
+                  <div>
+                      <Label htmlFor="4k-viral" className='font-medium'>4K</Label>
+                      <p className="text-xs text-muted-foreground">Qualidade ultra nítida em altíssima resolução.</p>
+                  </div>
+                  <Switch id="4k-viral" />
+              </div>
+              <div className="flex items-center justify-between">
+                  <div>
+                      <Label htmlFor="professional-camera-viral" className='font-medium'>Câmera Profissional</Label>
+                      <p className="text-xs text-muted-foreground">Movimentos e enquadramentos cinematográficos.</p>
+                  </div>
+                  <Switch id="professional-camera-viral" />
+              </div>
+          </div>
       </div>
 
       <Button onClick={handleGenerate} disabled={isLoading} size="lg" className="w-full">

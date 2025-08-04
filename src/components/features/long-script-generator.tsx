@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { FileText, User, Clapperboard, Clock, BookOpen, Loader2, Copy, Image as ImageIcon, Video, Search, Film, Download, List } from 'lucide-react';
+import { FileText, User, Clapperboard, Clock, BookOpen, Loader2, Copy, Image as ImageIcon, Video, Search, Film, Download, List, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateLongScript, GenerateLongScriptOutput } from '@/ai/flows/script-generation/generate-long-script';
 import type { Character, Scene } from '@/lib/types';
@@ -16,6 +16,7 @@ import { ImagePreviewDialog } from './image-preview-dialog';
 import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 import { SeoPreviewDialog } from './seo-preview-dialog';
 import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
+import { Switch } from '../ui/switch';
 
 
 export function LongScriptGenerator() {
@@ -113,7 +114,7 @@ export function LongScriptGenerator() {
     setGeneratedImageData(null);
     setGeneratedImageData2(null);
     try {
-      const { imageDataUri } = await generateImage({ prompt });
+      const { imageDataUri } = await generateImage({ prompt, aspectRatio: '16:9' });
       setGeneratedImageData({ url: imageDataUri, prompt });
       setIsImageDialogOpen(true);
     } catch (error) {
@@ -244,6 +245,35 @@ export function LongScriptGenerator() {
             onChange={(e) => setNumberOfScenes(parseInt(e.target.value) || 1)}
             min="1"
           />
+        </div>
+        <div className="border rounded-lg p-4 space-y-4">
+            <div className="flex items-center gap-3">
+                <Sparkles className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold text-lg">Melhorias de Qualidade</h3>
+            </div>
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label htmlFor="hyper-realism-long" className='font-medium'>Hiper-realismo</Label>
+                        <p className="text-xs text-muted-foreground">Vídeos com aparência realista e detalhes impressionantes.</p>
+                    </div>
+                    <Switch id="hyper-realism-long" />
+                </div>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label htmlFor="4k-long" className='font-medium'>4K</Label>
+                        <p className="text-xs text-muted-foreground">Qualidade ultra nítida em altíssima resolução.</p>
+                    </div>
+                    <Switch id="4k-long" />
+                </div>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label htmlFor="professional-camera-long" className='font-medium'>Câmera Profissional</Label>
+                        <p className="text-xs text-muted-foreground">Movimentos e enquadramentos cinematográficos.</p>
+                    </div>
+                    <Switch id="professional-camera-long" />
+                </div>
+            </div>
         </div>
       </CardContent>
       <CardFooter className="px-0 mt-4 flex-col items-stretch gap-4">
