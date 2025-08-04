@@ -99,9 +99,11 @@ export function VideoTranscriber() {
               </Button>
             </div>
           </div>
-          <Button className="mt-4">
-            <Download className="mr-2" />
-            Descarregar Vídeo
+          <Button className="mt-4" asChild>
+            <a href="https://savefrom.in.net/youtube-video-downloader" target="_blank" rel="noopener noreferrer">
+                <Download className="mr-2" />
+                Descarregar Vídeo
+            </a>
           </Button>
         </CardContent>
       </Card>
