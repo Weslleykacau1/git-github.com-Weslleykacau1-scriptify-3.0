@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { FileText, User, Clapperboard, Clock, BookOpen, Loader2, Copy, ImageIcon, Video, Search, Film, Download, List, Sparkles } from 'lucide-react';
+import { FileText, User, Clapperboard, BookOpen, Loader2, Copy, ImageIcon, Video, Search, Film, Download, List, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateLongScript, GenerateLongScriptOutput } from '@/ai/flows/script-generation/generate-long-script';
 import type { Character, Scene } from '@/lib/types';

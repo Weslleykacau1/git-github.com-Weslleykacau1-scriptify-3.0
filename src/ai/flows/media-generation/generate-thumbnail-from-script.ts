@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -9,12 +10,13 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import { generateImage } from './generate-image';
 
 const GenerateThumbnailFromScriptInputSchema = z.object({
   firstSceneImagePrompt: z.string().describe('The English image prompt from the first scene of the script.'),
   thumbnailIdeas: z.string().describe('The textual ideas or concepts for the thumbnail in Portuguese.'),
+  aspectRatio: z.enum(['16:9', '9:16']).optional().default('16:9'),
 });
 export type GenerateThumbnailFromScriptInput = z.infer<typeof GenerateThumbnailFromScriptInputSchema>;
 
@@ -24,7 +26,7 @@ const GenerateThumbnailFromScriptOutputSchema = z.object({
 });
 export type GenerateThumbnailFromScriptOutput = z.infer<typeof GenerateThumbnailFromScriptOutputSchema>;
 
-async function generateImageForThumbnail(prompt: string, referenceImageUri: string): Promise<string> {
+async function generateImageForThumbnail(prompt: string, referenceImageUri: string, aspectRatio: '16:9' | '9:16'): Promise<string> {
     const promptParts = [
         { text: prompt },
         { media: { url: referenceImageUri } },
@@ -35,6 +37,7 @@ async function generateImageForThumbnail(prompt: string, referenceImageUri: stri
       prompt: promptParts,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
+        aspectRatio: aspectRatio,
       },
     });
 
@@ -51,9 +54,9 @@ const generateThumbnailFromScriptFlow = ai.defineFlow(
     inputSchema: GenerateThumbnailFromScriptInputSchema,
     outputSchema: GenerateThumbnailFromScriptOutputSchema,
   },
-  async ({ firstSceneImagePrompt, thumbnailIdeas }) => {
+  async ({ firstSceneImagePrompt, thumbnailIdeas, aspectRatio }) => {
     // Step 1: Generate a reference image from the first scene's prompt.
-    const { imageDataUri: referenceImageUri } = await generateImage({ prompt: firstSceneImagePrompt });
+    const { imageDataUri: referenceImageUri } = await generateImage({ prompt: firstSceneImagePrompt, aspectRatio });
     
     // Step 2: Construct detailed prompts for the two thumbnail variations.
     const imagePrompt1 = `Create a highly clickable YouTube thumbnail based on this reference image. The video's theme is described by these ideas: "${thumbnailIdeas}". Make this thumbnail visually striking and compelling. Variation 1.`;
@@ -61,8 +64,8 @@ const generateThumbnailFromScriptFlow = ai.defineFlow(
 
     // Step 3: Generate two thumbnail variations using the reference image.
     const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImageForThumbnail(imagePrompt1, referenceImageUri),
-      generateImageForThumbnail(imagePrompt2, referenceImageUri),
+      generateImageForThumbnail(imagePrompt1, referenceImageUri, aspectRatio!),
+      generateImageForThumbnail(imagePrompt2, referenceImageUri, aspectRatio!),
     ]);
     
     // Step 4: Return the results.
