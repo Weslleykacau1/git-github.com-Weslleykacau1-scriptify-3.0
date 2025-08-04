@@ -22,7 +22,7 @@ const SceneSchema = z.object({
 const GenerateWebDocScriptInputSchema = z.object({
   topic: z.string().describe('The theme of the documentary.'),
   topicsToCover: z.string().optional().describe('A comma-separated list of specific topics to cover.'),
-  duration: z.number().describe('The desired duration of the video in minutes.'),
+  numberOfScenes: z.number().describe('The desired number of scenes for the documentary.'),
 });
 export type GenerateWebDocScriptInput = z.infer<typeof GenerateWebDocScriptInputSchema>;
 
@@ -43,7 +43,7 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateWebDocScriptInputSchema},
   output: {schema: GenerateWebDocScriptOutputSchema},
   prompt: `You are a documentary filmmaker and screenwriter. Create a complete script for a web documentary with the main theme of "{{topic}}".
-The total duration must be strictly {{duration}} minutes.
+The total number of scenes must be strictly {{numberOfScenes}}.
 
 {{#if topicsToCover}}
 The documentary should cover the following topics: {{topicsToCover}}.
@@ -51,7 +51,7 @@ The documentary should cover the following topics: {{topicsToCover}}.
 
 Your task is to:
 1.  Create a compelling title for the documentary.
-2.  Break the documentary down into a series of logical scenes that collectively meet the {{duration}}-minute duration.
+2.  Break the documentary down into a series of {{numberOfScenes}} logical scenes.
 3.  For each scene, write the narration in Brazilian Portuguese.
 4.  For each scene, create a detailed image generation prompt (in English).
 5.  For each scene, create a detailed video generation prompt (in English).

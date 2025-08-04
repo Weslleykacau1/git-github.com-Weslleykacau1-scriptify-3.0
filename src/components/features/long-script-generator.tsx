@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { FileText, User, Clapperboard, Clock, BookOpen, Loader2, Copy, Image as ImageIcon, Video, Search, Film, Download } from 'lucide-react';
+import { FileText, User, Clapperboard, Clock, BookOpen, Loader2, Copy, Image as ImageIcon, Video, Search, Film, Download, List } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateLongScript, GenerateLongScriptOutput } from '@/ai/flows/script-generation/generate-long-script';
 import type { Character, Scene } from '@/lib/types';
@@ -25,7 +25,7 @@ export function LongScriptGenerator() {
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [selectedScene, setSelectedScene] = useState<Scene | null>(null);
   const [topic, setTopic] = useState('');
-  const [duration, setDuration] = useState(5);
+  const [numberOfScenes, setNumberOfScenes] = useState(5);
   const [result, setResult] = useState<GenerateLongScriptOutput | null>(null);
   const { toast } = useToast();
 
@@ -57,6 +57,10 @@ export function LongScriptGenerator() {
         toast({ title: 'O tema é obrigatório', variant: 'destructive'});
         return;
     }
+    if (numberOfScenes < 1) {
+        toast({ title: 'O número de cenas deve ser pelo menos 1', variant: 'destructive'});
+        return;
+    }
     setIsLoading(true);
     setResult(null);
     toast({title: 'Gerando roteiro longo...'});
@@ -65,7 +69,7 @@ export function LongScriptGenerator() {
             characterProfile: selectedCharacter ? JSON.stringify(selectedCharacter) : undefined,
             sceneDescription: selectedScene ? JSON.stringify(selectedScene) : undefined,
             topic,
-            duration,
+            numberOfScenes: numberOfScenes,
         });
         setResult(result);
         toast({title: 'Roteiro gerado com sucesso!'});
@@ -232,18 +236,14 @@ export function LongScriptGenerator() {
           />
         </div>
         <div className="space-y-2">
-          <Label className="flex items-center gap-2"><Clock className="h-4 w-4" /> Duração do Roteiro</Label>
-          <Select value={String(duration)} onValueChange={(v) => setDuration(parseInt(v))}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5 minutos</SelectItem>
-              <SelectItem value="10">10 minutos</SelectItem>
-              <SelectItem value="15">15 minutos</SelectItem>
-              <SelectItem value="20">20 minutos</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label className="flex items-center gap-2"><List className="h-4 w-4" /> Quantidade de Cenas</Label>
+          <Input 
+            type="number"
+            placeholder="Ex: 5"
+            value={numberOfScenes}
+            onChange={(e) => setNumberOfScenes(parseInt(e.target.value) || 1)}
+            min="1"
+          />
         </div>
       </CardContent>
       <CardFooter className="px-0 mt-4 flex-col items-stretch gap-4">

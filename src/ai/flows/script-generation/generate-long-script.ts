@@ -29,7 +29,7 @@ const GenerateLongScriptInputSchema = z.object({
     .optional()
     .describe('A detailed description of the scene, including setting, action, and mood.'),
   topic: z.string().describe('The main topic or theme of the video script.'),
-  duration: z.number().describe('The desired duration of the video in minutes (e.g., 5, 10, 15, 20).'),
+  numberOfScenes: z.number().describe('The desired number of scenes for the script (e.g., 5, 10, 15).'),
 });
 export type GenerateLongScriptInput = z.infer<typeof GenerateLongScriptInputSchema>;
 
@@ -49,11 +49,11 @@ const prompt = ai.definePrompt({
   name: 'generateLongScriptPrompt',
   input: {schema: GenerateLongScriptInputSchema},
   output: {schema: GenerateLongScriptOutputSchema},
-  prompt: `You are a creative screenwriter specializing in long-form video content for platforms like YouTube. Your goal is to create a detailed script with a strict duration of {{duration}} minutes on the topic of "{{topic}}".
+  prompt: `You are a creative screenwriter specializing in long-form video content for platforms like YouTube. Your goal is to create a detailed script with exactly {{numberOfScenes}} scenes on the topic of "{{topic}}".
 
 Your tasks are to:
 1.  Create a compelling title for the video.
-2.  Break the script down into a series of logical scenes that collectively meet the {{duration}}-minute duration.
+2.  Break the script down into a series of {{numberOfScenes}} logical scenes.
 3.  For each scene, write the narration in Brazilian Portuguese.
 4.  For each scene, create a detailed image generation prompt (in English).
 5.  For each scene, create a detailed video generation prompt (in English).

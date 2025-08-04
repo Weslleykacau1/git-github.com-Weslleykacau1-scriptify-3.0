@@ -22,7 +22,7 @@ export function WebDocGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [topic, setTopic] = useState('');
   const [topicsToCover, setTopicsToCover] = useState('');
-  const [duration, setDuration] = useState(5);
+  const [numberOfScenes, setNumberOfScenes] = useState(5);
   const [result, setResult] = useState<GenerateWebDocScriptOutput | null>(null);
   const { toast } = useToast();
 
@@ -39,6 +39,10 @@ export function WebDocGenerator() {
         toast({ title: 'O tema é obrigatório', variant: 'destructive'});
         return;
     }
+    if (numberOfScenes < 1) {
+        toast({ title: 'O número de cenas deve ser pelo menos 1', variant: 'destructive'});
+        return;
+    }
     setIsLoading(true);
     setResult(null);
     toast({ title: 'Gerando roteiro de Web Doc...' });
@@ -46,7 +50,7 @@ export function WebDocGenerator() {
       const result = await generateWebDocScript({
         topic,
         topicsToCover: topicsToCover || undefined,
-        duration,
+        numberOfScenes: numberOfScenes,
       });
       setResult(result);
       toast({ title: 'Roteiro de Web Doc gerado com sucesso!' });
@@ -191,17 +195,14 @@ export function WebDocGenerator() {
             <p className="text-xs text-muted-foreground">Separe os tópicos com vírgulas.</p>
           </div>
           <div className="space-y-2">
-            <Label className="flex items-center gap-2"><Clock className="h-4 w-4" /> Duração do Roteiro</Label>
-            <Select value={String(duration)} onValueChange={(v) => setDuration(parseInt(v))}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5 minutos</SelectItem>
-                <SelectItem value="10">10 minutos</SelectItem>
-                <SelectItem value="15">15 minutos</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label className="flex items-center gap-2"><List className="h-4 w-4" /> Quantidade de Cenas</Label>
+            <Input 
+              type="number"
+              placeholder="Ex: 5"
+              value={numberOfScenes}
+              onChange={(e) => setNumberOfScenes(parseInt(e.target.value) || 1)}
+              min="1"
+            />
           </div>
           <Button onClick={handleGenerate} disabled={isLoading} className="w-full">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BookOpen className="mr-2 h-4 w-4" />}
