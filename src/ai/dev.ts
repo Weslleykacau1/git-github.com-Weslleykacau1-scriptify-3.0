@@ -19,6 +19,7 @@ import '@/ai/flows/script-generation/generate-json-script';
 import '@/ai/flows/content-assistance/suggest-action';
 import '@/ai/flows/content-assistance/suggest-dialogue';
 import '@/ai/flows/content-assistance/suggest-title';
+import '@/ai/flows/content-assistance/generate-seo-metadata';
 
 
 // Media Generation

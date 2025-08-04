@@ -13,6 +13,8 @@ import type { Character, Scene } from '@/lib/types';
 import { generateImage } from '@/ai/flows/media-generation/generate-image';
 import { ImagePreviewDialog } from './image-preview-dialog';
 import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
+import { SeoPreviewDialog } from './seo-preview-dialog';
+import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
 
 
 export function LongScriptGenerator() {
@@ -29,7 +31,10 @@ export function LongScriptGenerator() {
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
   const [generatedImageData, setGeneratedImageData] = useState<{ url: string; prompt: string } | null>(null);
   const [generatedImageData2, setGeneratedImageData2] = useState<{ url: string; prompt: string } | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+
+  const [isSeoDialogOpen, setIsSeoDialogOpen] = useState(false);
+  const [seoData, setSeoData] = useState<GenerateSeoMetadataOutput | null>(null);
 
 
   useEffect(() => {
@@ -105,7 +110,7 @@ export function LongScriptGenerator() {
     try {
       const { imageDataUri } = await generateImage({ prompt });
       setGeneratedImageData({ url: imageDataUri, prompt });
-      setIsDialogOpen(true);
+      setIsImageDialogOpen(true);
     } catch (error) {
       console.error('Image generation failed', error);
       toast({ title: 'Erro ao gerar imagem', variant: 'destructive' });
@@ -126,7 +131,7 @@ export function LongScriptGenerator() {
       });
       setGeneratedImageData({ url: thumbnailImage1Uri, prompt: 'thumbnail_variation_1' });
       setGeneratedImageData2({ url: thumbnailImage2Uri, prompt: 'thumbnail_variation_2' });
-      setIsDialogOpen(true);
+      setIsImageDialogOpen(true);
     } catch (error) {
       console.error('Thumbnail generation failed', error);
       toast({ title: 'Erro ao gerar thumbnails', variant: 'destructive' });
@@ -135,6 +140,23 @@ export function LongScriptGenerator() {
     }
   };
 
+  const handleGenerateSeo = async () => {
+    if (!result) return;
+    setIsGenerating('seo');
+    try {
+        const seoResult = await generateSeoMetadata({
+            topic: result.title,
+            keywords: result.seoKeywords,
+        });
+        setSeoData(seoResult);
+        setIsSeoDialogOpen(true);
+    } catch (error) {
+        console.error('SEO generation failed', error);
+        toast({ title: 'Erro ao otimizar para SEO', variant: 'destructive' });
+    } finally {
+        setIsGenerating(null);
+    }
+  };
 
   const handleActionClick = (featureName: string) => {
     toast({
@@ -147,10 +169,15 @@ export function LongScriptGenerator() {
   return (
     <>
     <ImagePreviewDialog
-        isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        isOpen={isImageDialogOpen}
+        onOpenChange={setIsImageDialogOpen}
         imageData={generatedImageData}
         imageData2={generatedImageData2}
+    />
+    <SeoPreviewDialog
+        isOpen={isSeoDialogOpen}
+        onOpenChange={setIsSeoDialogOpen}
+        seoData={seoData}
     />
     <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="px-0">
@@ -327,7 +354,10 @@ export function LongScriptGenerator() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
-                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Otimizar para SEO")}><Search className="mr-2 h-4 w-4"/>Otimizar para SEO</Button>
+                            <Button variant="outline" size="sm" className='mt-2' onClick={handleGenerateSeo} disabled={isGenerating === 'seo'}>
+                                {isGenerating === 'seo' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
+                                Otimizar para SEO
+                            </Button>
                         </CardContent>
                     </Card>
                 </div>
