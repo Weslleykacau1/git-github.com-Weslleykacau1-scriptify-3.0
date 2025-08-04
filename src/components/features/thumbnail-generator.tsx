@@ -9,10 +9,11 @@ import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Image as ImageIcon, Sparkles, Loader2, Camera, Film, Copy, Download } from 'lucide-react';
+import { Image as ImageIcon, Sparkles, Loader2, Camera, Film, Copy, Download, Tag, Hash, FileText, Type } from 'lucide-react';
 import { generateThumbnailIdeas, GenerateThumbnailIdeasOutput } from '@/ai/flows/media-generation/generate-thumbnail-ideas';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Textarea } from '../ui/textarea';
 
 export function ThumbnailGenerator() {
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export function ThumbnailGenerator() {
         style,
       });
       setResult(generatedResult);
-      toast({ title: 'Ideias de thumbnail geradas com sucesso!' });
+      toast({ title: 'Ideias de thumbnail e SEO geradas com sucesso!' });
     } catch (error) {
       console.error(error);
       toast({
@@ -56,9 +57,10 @@ export function ThumbnailGenerator() {
     }
   };
   
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string | undefined, fieldName: string) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
-    toast({ title: 'Texto copiado!' });
+    toast({ title: `${fieldName} copiado para a área de transferência!` });
   };
   
   const handleDownload = (imageUrl: string) => {
@@ -72,15 +74,15 @@ export function ThumbnailGenerator() {
 
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full w-full">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full w-full">
       <div className="flex flex-col space-y-4">
         <div className='flex items-center gap-3'>
           <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
             <ImageIcon className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-lg">Passo 1: Imagem de Referência</h3>
-            <p className="text-sm text-muted-foreground">Anexe imagens e digite um tema para gerar ideias.</p>
+            <h2 className="text-xl font-bold font-headline">Gerador de Thumbnails e SEO</h2>
+            <p className="text-sm text-muted-foreground">Anexe imagens, defina um tema e gere ideias.</p>
           </div>
         </div>
         
@@ -95,7 +97,7 @@ export function ThumbnailGenerator() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="theme">Tema para Thumbnail</Label>
+          <Label htmlFor="theme">Tema para Thumbnail e SEO</Label>
           <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Ex: Minha rotina de skincare..." />
         </div>
 
@@ -134,38 +136,70 @@ export function ThumbnailGenerator() {
 
         <Button onClick={handleGenerate} disabled={isLoading} className="mt-auto">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-          Gerar Ideias para Thumbnail
+          Gerar Ideias e SEO
         </Button>
       </div>
 
-      {/* Step 2: Thumbnail Result */}
       <div className="flex flex-col space-y-4">
-        <h3 className="font-semibold text-lg">Passo 2: Resultado da Thumbnail</h3>
-        <p className="text-sm text-muted-foreground">Aqui estão as sugestões da IA.</p>
-        <div className="flex-grow border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-card p-4 min-h-[300px]">
+        <h2 className="text-xl font-bold font-headline">Resultados Gerados</h2>
+        <div className="flex-grow border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-card p-4 min-h-[400px]">
           {isLoading && <Loader2 className="h-8 w-8 animate-spin text-primary" />}
           {!isLoading && !result && <p className="text-muted-foreground text-center">Aguardando a geração de ideias...</p>}
           {result && (
             <div className="w-full space-y-4">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">Ideias de Texto</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
-                        <p><strong>Título:</strong> {result.title} <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(result.title)}><Copy className="h-4 w-4"/></Button></p>
-                        <p><strong>Texto Sobreposto:</strong> {result.overlayText} <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(result.overlayText)}><Copy className="h-4 w-4"/></Button></p>
-                        <p><strong>Emoji:</strong> {result.emoji}</p>
-                    </CardContent>
-                </Card>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Image src={result.thumbnailImage1Uri} alt="Thumbnail 1" width={512} height={288} className="rounded-lg object-cover" />
-                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage1Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 1</Button>
-                    </div>
-                    <div className="space-y-2">
-                        <Image src={result.thumbnailImage2Uri} alt="Thumbnail 2" width={512} height={288} className="rounded-lg object-cover" />
-                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage2Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 2</Button>
-                    </div>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Thumbnails</CardTitle>
+                      </CardHeader>
+                      <CardContent className='space-y-4'>
+                          <div className="space-y-2">
+                              <p className="text-sm"><strong>Texto:</strong> {result.overlayText} {result.emoji}</p>
+                              <Image src={result.thumbnailImage1Uri} alt="Thumbnail 1" width={512} height={288} className="rounded-lg object-cover" />
+                              <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage1Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 1</Button>
+                          </div>
+                          <div className="space-y-2">
+                              <Image src={result.thumbnailImage2Uri} alt="Thumbnail 2" width={512} height={288} className="rounded-lg object-cover" />
+                              <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage2Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 2</Button>
+                          </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Metadados de SEO</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                          <div className="space-y-1">
+                              <Label htmlFor="youtube-title" className="flex items-center gap-2 text-xs"><Type className="h-3 w-3" /> Título do Vídeo</Label>
+                              <div className="flex items-start gap-1">
+                                <Textarea id="youtube-title" readOnly value={result.youtubeTitle} className="bg-muted text-xs h-16" />
+                                <Button variant="ghost" size="icon" onClick={() => handleCopy(result.youtubeTitle, 'Título')}><Copy className="h-4 w-4" /></Button>
+                              </div>
+                          </div>
+                           <div className="space-y-1">
+                              <Label htmlFor="youtube-desc" className="flex items-center gap-2 text-xs"><FileText className="h-3 w-3" /> Descrição</Label>
+                              <div className="flex items-start gap-1">
+                                <Textarea id="youtube-desc" readOnly value={result.youtubeDescription} className="bg-muted text-xs h-24" />
+                                <Button variant="ghost" size="icon" onClick={() => handleCopy(result.youtubeDescription, 'Descrição')}><Copy className="h-4 w-4" /></Button>
+                              </div>
+                          </div>
+                           <div className="space-y-1">
+                              <Label htmlFor="youtube-hashtags" className="flex items-center gap-2 text-xs"><Hash className="h-3 w-3" /> Hashtags</Label>
+                              <div className="flex items-start gap-1">
+                                <Input id="youtube-hashtags" readOnly value={result.hashtags} className="bg-muted text-xs" />
+                                <Button variant="ghost" size="icon" onClick={() => handleCopy(result.hashtags, 'Hashtags')}><Copy className="h-4 w-4" /></Button>
+                              </div>
+                          </div>
+                           <div className="space-y-1">
+                              <Label htmlFor="youtube-tags" className="flex items-center gap-2 text-xs"><Tag className="h-3 w-3" /> Tags</Label>
+                              <div className="flex items-start gap-1">
+                                <Textarea id="youtube-tags" readOnly value={result.tags} className="bg-muted text-xs h-20" />
+                                <Button variant="ghost" size="icon" onClick={() => handleCopy(result.tags, 'Tags')}><Copy className="h-4 w-4" /></Button>
+                              </div>
+                          </div>
+                      </CardContent>
+                    </Card>
                 </div>
             </div>
           )}
