@@ -28,7 +28,11 @@ export function CharacterGallery() {
     loadCharacters();
     
     // Listen for storage changes to update gallery
-    const handleStorageChange = () => loadCharacters();
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'fg-characters') {
+        loadCharacters();
+      }
+    };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [toast]);
@@ -69,10 +73,11 @@ Prompt Negativo: ${character.negativePrompt || ''}
      if (!charId) return;
      if (window.confirm(`Tem a certeza que quer eliminar "${charName || 'este personagem'}"?`)) {
         try {
-            const updatedCharacters = characters.filter(char => char.id !== charId);
+            const currentCharacters = JSON.parse(localStorage.getItem('fg-characters') || '[]');
+            const updatedCharacters = currentCharacters.filter((char: Character) => char.id !== charId);
             localStorage.setItem('fg-characters', JSON.stringify(updatedCharacters));
             setCharacters(updatedCharacters); // Optimistic update
-            window.dispatchEvent(new Event('storage')); // Notify other components
+            window.dispatchEvent(new StorageEvent('storage', { key: 'fg-characters' }));
             toast({ title: `"${charName}" foi eliminado.` });
         } catch(error) {
             console.error("Delete failed:", error);

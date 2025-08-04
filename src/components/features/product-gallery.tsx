@@ -31,7 +31,11 @@ export function ProductGallery() {
     };
     loadProducts();
     
-    const handleStorageChange = () => loadProducts();
+    const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === 'fg-products') {
+            loadProducts();
+        }
+    };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [toast]);
@@ -56,10 +60,11 @@ export function ProductGallery() {
     if (!productId) return;
     if (window.confirm(`Tem a certeza que quer eliminar o produto "${productName || 'este produto'}"?`)) {
       try {
-        const updatedProducts = products.filter(p => p.id !== productId);
+        const currentProducts = JSON.parse(localStorage.getItem('fg-products') || '[]');
+        const updatedProducts = currentProducts.filter((p: Product) => p.id !== productId);
         localStorage.setItem('fg-products', JSON.stringify(updatedProducts));
         setProducts(updatedProducts);
-        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new StorageEvent('storage', { key: 'fg-products' }));
         toast({ title: `"${productName}" foi eliminado.` });
       } catch (error) {
         console.error("Delete failed:", error);

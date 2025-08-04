@@ -30,7 +30,11 @@ export function SceneGallery() {
     };
     loadScenes();
     
-    const handleStorageChange = () => loadScenes();
+    const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === 'fg-scenes') {
+            loadScenes();
+        }
+    };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [toast]);
@@ -109,10 +113,11 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
     if (!sceneId) return;
     if (window.confirm(`Tem a certeza que quer eliminar a cena "${sceneTitle || 'esta cena'}"?`)) {
       try {
-        const updatedScenes = scenes.filter(scene => scene.id !== sceneId);
+        const currentScenes = JSON.parse(localStorage.getItem('fg-scenes') || '[]');
+        const updatedScenes = currentScenes.filter((scene: Scene) => scene.id !== sceneId);
         localStorage.setItem('fg-scenes', JSON.stringify(updatedScenes));
         setScenes(updatedScenes);
-        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new StorageEvent('storage', { key: 'fg-scenes' }));
         toast({ title: `"${sceneTitle}" foi eliminada.` });
       } catch (error) {
         console.error("Delete failed:", error);
