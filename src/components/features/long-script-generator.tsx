@@ -1,4 +1,3 @@
-// src/components/features/long-script-generator.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,6 +10,8 @@ import { FileText, User, Clapperboard, Clock, BookOpen, Loader2, Copy, Image as 
 import { useToast } from '@/hooks/use-toast';
 import { generateLongScript, GenerateLongScriptOutput } from '@/ai/flows/script-generation/generate-long-script';
 import type { Character, Scene } from '@/lib/types';
+import { generateImage } from '@/ai/flows/media-generation/generate-image';
+import { ImagePreviewDialog } from './image-preview-dialog';
 
 
 export function LongScriptGenerator() {
@@ -23,6 +24,11 @@ export function LongScriptGenerator() {
   const [duration, setDuration] = useState(5);
   const [result, setResult] = useState<GenerateLongScriptOutput | null>(null);
   const { toast } = useToast();
+
+  // Image Generation State
+  const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null); // scene index
+  const [generatedImageData, setGeneratedImageData] = useState<{ url: string; prompt: string } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -90,6 +96,20 @@ export function LongScriptGenerator() {
     toast({ title: "Roteiro exportado como JSON!" });
   };
 
+  const handleGenerateImage = async (prompt: string, index: number) => {
+    setIsGeneratingImage(String(index));
+    try {
+      const { imageDataUri } = await generateImage({ prompt });
+      setGeneratedImageData({ url: imageDataUri, prompt });
+      setIsDialogOpen(true);
+    } catch (error) {
+      console.error('Image generation failed', error);
+      toast({ title: 'Erro ao gerar imagem', variant: 'destructive' });
+    } finally {
+      setIsGeneratingImage(null);
+    }
+  };
+
   const handleActionClick = (featureName: string) => {
     toast({
         title: "Funcionalidade em desenvolvimento",
@@ -99,6 +119,12 @@ export function LongScriptGenerator() {
 
 
   return (
+    <>
+    <ImagePreviewDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        imageData={generatedImageData}
+    />
     <Card className="bg-transparent border-none shadow-none">
       <CardHeader className="px-0">
         <div className="flex items-center gap-3">
@@ -216,9 +242,19 @@ export function LongScriptGenerator() {
                                                 </Button>
                                             </div>
                                             <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
-                                            <Button variant="outline" size="sm" className="w-full" onClick={() => handleActionClick("Gerar Imagem")}>
-                                              <ImageIcon className="mr-2 h-4 w-4" />
-                                              Gerar Imagem
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full"
+                                                disabled={isGeneratingImage === String(index)}
+                                                onClick={() => handleGenerateImage(scene.imagePrompt, index)}
+                                            >
+                                                {isGeneratingImage === String(index) ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                ) : (
+                                                <ImageIcon className="mr-2 h-4 w-4" />
+                                                )}
+                                                Gerar Imagem
                                             </Button>
                                         </div>
                                         <div className="space-y-2">
@@ -252,7 +288,7 @@ export function LongScriptGenerator() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
-                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Gerar Thumbnail")}><Film className="mr-2 h-4 w-4"/>Gerar Thumbnail</Button>
+                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Gerar de acordo com a sugestão")}><Film className="mr-2 h-4 w-4"/>Gerar de acordo com a sugestão</Button>
                         </CardContent>
                     </Card>
                     <Card>
@@ -269,5 +305,6 @@ export function LongScriptGenerator() {
         )}
       </CardFooter>
     </Card>
+    </>
   );
 }

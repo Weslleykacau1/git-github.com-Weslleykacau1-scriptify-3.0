@@ -11,6 +11,9 @@ import { Loader2, FileInput, Image as ImageIcon, Video, Copy, Download, Search, 
 import { generateMediaPrompts, GenerateMediaPromptsOutput } from '@/ai/flows/generate-media-prompts';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
+import { generateImage } from '@/ai/flows/media-generation/generate-image';
+import { ImagePreviewDialog } from './image-preview-dialog';
+
 
 const formSchema = z.object({
   script: z.string().min(1, 'O roteiro é obrigatório.'),
@@ -22,6 +25,10 @@ export function MediaPromptGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GenerateMediaPromptsOutput | null>(null);
   const { toast } = useToast();
+
+  const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null);
+  const [generatedImageData, setGeneratedImageData] = useState<{ url: string; prompt: string } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -65,6 +72,20 @@ export function MediaPromptGenerator() {
     toast({ title: "Análise exportada como JSON!" });
   };
   
+  const handleGenerateImage = async (prompt: string, index: number) => {
+    setIsGeneratingImage(String(index));
+    try {
+      const { imageDataUri } = await generateImage({ prompt });
+      setGeneratedImageData({ url: imageDataUri, prompt });
+      setIsDialogOpen(true);
+    } catch (error) {
+      console.error('Image generation failed', error);
+      toast({ title: 'Erro ao gerar imagem', variant: 'destructive' });
+    } finally {
+      setIsGeneratingImage(null);
+    }
+  };
+  
   const handleActionClick = (featureName: string) => {
     toast({
         title: "Funcionalidade em desenvolvimento",
@@ -74,141 +95,158 @@ export function MediaPromptGenerator() {
 
 
   return (
-    <Card className="bg-transparent border-none shadow-none">
-        <CardHeader className="px-0">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                <FileInput className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="m-0 text-xl font-bold font-headline">Analisador de Roteiro Existente</CardTitle>
-                <CardDescription>
-                    Cole um roteiro pronto para que a IA extraia prompts de imagem e vídeo para cada cena, além de gerar SEO e ideias de thumbnail.
-                </CardDescription>
-              </div>
-            </div>
-        </CardHeader>
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-                control={form.control}
-                name="script"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Roteiro</FormLabel>
-                    <FormControl>
-                    <Textarea
-                        placeholder="Cole o seu roteiro aqui..."
-                        className="min-h-[150px]"
-                        {...field}
-                    />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Analisar Roteiro e Gerar
-            </Button>
-            </form>
-        </Form>
-        {isLoading && (
-            <div className="mt-6 flex justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        )}
-        {result && (
-            <div className="mt-6 space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className='text-lg'>Prompts Gerados por Cena</CardTitle>
-                        <div className="flex gap-2">
-                           <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar JSON</Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {result.scenes.map((scene, index) => (
-                            <div key={index} className="border bg-card p-4 rounded-lg space-y-4">
-                                <h4 className="font-semibold">{scene.sceneTitle}</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between text-sm font-medium">
-                                            <div className="flex items-center gap-2">
-                                                <FileInput className="h-4 w-4 text-primary" />
-                                                <span>Roteiro (PT-BR)</span>
-                                            </div>
-                                            <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.script, 'Roteiro')}>
-                                                <Copy className="mr-2 h-4 w-4" />
-                                                Copiar
-                                            </Button>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">{scene.script}</p>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between text-sm font-medium">
-                                                <div className="flex items-center gap-2">
-                                                    <ImageIcon className="h-4 w-4 text-primary" />
-                                                    <span>Prompt de Imagem (EN)</span>
-                                                </div>
-                                                <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
-                                                    <Copy className="mr-2 h-4 w-4" />
-                                                    Copiar
-                                                </Button>
-                                            </div>
-                                            <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
-                                             <Button variant="outline" size="sm" className="w-full" onClick={() => handleActionClick("Gerar Imagem")}>
-                                              <ImageIcon className="mr-2 h-4 w-4" />
-                                              Gerar Imagem
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between text-sm font-medium">
-                                                <div className="flex items-center gap-2">
-                                                    <Video className="h-4 w-4 text-primary" />
-                                                    <span>Prompt de Vídeo (EN)</span>
-                                                </div>
-                                                <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
-                                                    <Copy className="mr-2 h-4 w-4" />
-                                                    Copiar
-                                                </Button>
-                                            </div>
-                                            <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
-                                             <Button variant="outline" size="sm" className="w-full" onClick={() => handleActionClick("Gerar Vídeo")}>
-                                                <Video className="mr-2 h-4 w-4" />
-                                                Gerar Vídeo
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
-
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className='text-lg'>Ideias para Thumbnail</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
-                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Gerar Thumbnail")}><Film className="mr-2"/>Gerar Thumbnail</Button>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className='text-lg'>Palavras-chave de SEO</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
-                            <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Otimizar para SEO")}><Search className="mr-2"/>Otimizar para SEO</Button>
-                        </CardContent>
-                    </Card>
+    <>
+      <ImagePreviewDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        imageData={generatedImageData}
+      />
+      <Card className="bg-transparent border-none shadow-none">
+          <CardHeader className="px-0">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <FileInput className="h-6 w-6 text-primary" />
                 </div>
-            </div>
-        )}
-    </Card>
+                <div>
+                  <CardTitle className="m-0 text-xl font-bold font-headline">Analisador de Roteiro Existente</CardTitle>
+                  <CardDescription>
+                      Cole um roteiro pronto para que a IA extraia prompts de imagem e vídeo para cada cena, além de gerar SEO e ideias de thumbnail.
+                  </CardDescription>
+                </div>
+              </div>
+          </CardHeader>
+          <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                  control={form.control}
+                  name="script"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>Roteiro</FormLabel>
+                      <FormControl>
+                      <Textarea
+                          placeholder="Cole o seu roteiro aqui..."
+                          className="min-h-[150px]"
+                          {...field}
+                      />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+              <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Analisar Roteiro e Gerar
+              </Button>
+              </form>
+          </Form>
+          {isLoading && (
+              <div className="mt-6 flex justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+          )}
+          {result && (
+              <div className="mt-6 space-y-6">
+                  <Card>
+                      <CardHeader>
+                          <CardTitle className='text-lg'>Prompts Gerados por Cena</CardTitle>
+                          <div className="flex gap-2">
+                             <Button variant="outline" size="sm" onClick={handleExport}><Download className="mr-2 h-4 w-4"/>Exportar JSON</Button>
+                          </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                          {result.scenes.map((scene, index) => (
+                              <div key={index} className="border bg-card p-4 rounded-lg space-y-4">
+                                  <h4 className="font-semibold">{scene.sceneTitle}</h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div className="space-y-2">
+                                          <div className="flex items-center justify-between text-sm font-medium">
+                                              <div className="flex items-center gap-2">
+                                                  <FileInput className="h-4 w-4 text-primary" />
+                                                  <span>Roteiro (PT-BR)</span>
+                                              </div>
+                                              <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.script, 'Roteiro')}>
+                                                  <Copy className="mr-2 h-4 w-4" />
+                                                  Copiar
+                                              </Button>
+                                          </div>
+                                          <p className="text-sm text-muted-foreground">{scene.script}</p>
+                                      </div>
+                                      <div className="space-y-4">
+                                          <div className="space-y-2">
+                                              <div className="flex items-center justify-between text-sm font-medium">
+                                                  <div className="flex items-center gap-2">
+                                                      <ImageIcon className="h-4 w-4 text-primary" />
+                                                      <span>Prompt de Imagem (EN)</span>
+                                                  </div>
+                                                  <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                                      <Copy className="mr-2 h-4 w-4" />
+                                                      Copiar
+                                                  </Button>
+                                              </div>
+                                              <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
+                                               <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  className="w-full"
+                                                  disabled={isGeneratingImage === String(index)}
+                                                  onClick={() => handleGenerateImage(scene.imagePrompt, index)}
+                                              >
+                                                  {isGeneratingImage === String(index) ? (
+                                                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                  ) : (
+                                                      <ImageIcon className="mr-2 h-4 w-4" />
+                                                  )}
+                                                  Gerar Imagem
+                                              </Button>
+                                          </div>
+                                          <div className="space-y-2">
+                                              <div className="flex items-center justify-between text-sm font-medium">
+                                                  <div className="flex items-center gap-2">
+                                                      <Video className="h-4 w-4 text-primary" />
+                                                      <span>Prompt de Vídeo (EN)</span>
+                                                  </div>
+                                                  <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
+                                                      <Copy className="mr-2 h-4 w-4" />
+                                                      Copiar
+                                                  </Button>
+                                              </div>
+                                              <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
+                                               <Button variant="outline" size="sm" className="w-full" onClick={() => handleActionClick("Gerar Vídeo")}>
+                                                  <Video className="mr-2 h-4 w-4" />
+                                                  Gerar Vídeo
+                                              </Button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          ))}
+                      </CardContent>
+                  </Card>
+
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Card>
+                          <CardHeader>
+                              <CardTitle className='text-lg'>Ideias para Thumbnail</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                              <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
+                              <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Gerar de acordo com a sugestão")}><Film className="mr-2"/>Gerar de acordo com a sugestão</Button>
+                          </CardContent>
+                      </Card>
+                      <Card>
+                          <CardHeader>
+                              <CardTitle className='text-lg'>Palavras-chave de SEO</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                              <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
+                              <Button variant="outline" size="sm" className='mt-2' onClick={() => handleActionClick("Otimizar para SEO")}><Search className="mr-2"/>Otimizar para SEO</Button>
+                          </CardContent>
+                      </Card>
+                  </div>
+              </div>
+          )}
+      </Card>
+    </>
   );
 }
