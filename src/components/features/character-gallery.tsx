@@ -13,21 +13,23 @@ export function CharacterGallery() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const loadCharacters = () => {
-      try {
-        const storedCharacters = localStorage.getItem('fg-characters');
-        if (storedCharacters) {
-          setCharacters(JSON.parse(storedCharacters));
-        }
-      } catch (error) {
-        console.error("Failed to load characters from localStorage", error);
-        toast({ title: "Erro ao carregar personagens", variant: "destructive" });
+  const loadCharacters = () => {
+    try {
+      const storedCharacters = localStorage.getItem('fg-characters');
+      if (storedCharacters) {
+        setCharacters(JSON.parse(storedCharacters));
+      } else {
+        setCharacters([]);
       }
-    };
+    } catch (error) {
+      console.error("Failed to load characters from localStorage", error);
+      toast({ title: "Erro ao carregar personagens", variant: "destructive" });
+    }
+  };
+
+  useEffect(() => {
     loadCharacters();
     
-    // Listen for storage changes to update gallery
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'fg-characters') {
         loadCharacters();
@@ -76,8 +78,7 @@ Prompt Negativo: ${character.negativePrompt || ''}
             const currentCharacters = JSON.parse(localStorage.getItem('fg-characters') || '[]');
             const updatedCharacters = currentCharacters.filter((char: Character) => char.id !== charId);
             localStorage.setItem('fg-characters', JSON.stringify(updatedCharacters));
-            setCharacters(updatedCharacters); // Optimistic update
-            window.dispatchEvent(new StorageEvent('storage', { key: 'fg-characters' }));
+            setCharacters(updatedCharacters);
             toast({ title: `"${charName}" foi eliminado.` });
         } catch(error) {
             console.error("Delete failed:", error);

@@ -16,18 +16,21 @@ export function SceneGallery() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const loadScenes = () => {
-      try {
-        const storedScenes = localStorage.getItem('fg-scenes');
-        if (storedScenes) {
-          setScenes(JSON.parse(storedScenes));
-        }
-      } catch (error) {
-        console.error("Failed to load scenes from localStorage", error);
-        toast({ title: "Erro ao carregar cenas", variant: "destructive" });
+  const loadScenes = () => {
+    try {
+      const storedScenes = localStorage.getItem('fg-scenes');
+      if (storedScenes) {
+        setScenes(JSON.parse(storedScenes));
+      } else {
+        setScenes([]);
       }
-    };
+    } catch (error) {
+      console.error("Failed to load scenes from localStorage", error);
+      toast({ title: "Erro ao carregar cenas", variant: "destructive" });
+    }
+  };
+
+  useEffect(() => {
     loadScenes();
     
     const handleStorageChange = (event: StorageEvent) => {
@@ -117,7 +120,6 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
         const updatedScenes = currentScenes.filter((scene: Scene) => scene.id !== sceneId);
         localStorage.setItem('fg-scenes', JSON.stringify(updatedScenes));
         setScenes(updatedScenes);
-        window.dispatchEvent(new StorageEvent('storage', { key: 'fg-scenes' }));
         toast({ title: `"${sceneTitle}" foi eliminada.` });
       } catch (error) {
         console.error("Delete failed:", error);

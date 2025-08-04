@@ -17,18 +17,21 @@ export function ProductGallery() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const loadProducts = () => {
-      try {
-        const storedProducts = localStorage.getItem('fg-products');
-        if (storedProducts) {
-          setProducts(JSON.parse(storedProducts));
-        }
-      } catch (error) {
-        console.error("Failed to load products from localStorage", error);
-        toast({ title: "Erro ao carregar produtos", variant: "destructive" });
+  const loadProducts = () => {
+    try {
+      const storedProducts = localStorage.getItem('fg-products');
+      if (storedProducts) {
+        setProducts(JSON.parse(storedProducts));
+      } else {
+        setProducts([]);
       }
-    };
+    } catch (error) {
+      console.error("Failed to load products from localStorage", error);
+      toast({ title: "Erro ao carregar produtos", variant: "destructive" });
+    }
+  };
+
+  useEffect(() => {
     loadProducts();
     
     const handleStorageChange = (event: StorageEvent) => {
@@ -64,7 +67,6 @@ export function ProductGallery() {
         const updatedProducts = currentProducts.filter((p: Product) => p.id !== productId);
         localStorage.setItem('fg-products', JSON.stringify(updatedProducts));
         setProducts(updatedProducts);
-        window.dispatchEvent(new StorageEvent('storage', { key: 'fg-products' }));
         toast({ title: `"${productName}" foi eliminado.` });
       } catch (error) {
         console.error("Delete failed:", error);
