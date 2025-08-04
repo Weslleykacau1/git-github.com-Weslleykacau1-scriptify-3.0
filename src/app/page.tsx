@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
-import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box } from 'lucide-react';
+import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
@@ -13,9 +13,9 @@ import { CharacterGallery } from '@/components/features/character-gallery';
 import { SceneGallery } from '@/components/features/scene-gallery';
 import { Button } from '@/components/ui/button';
 import { VideoTranscriber } from '@/components/features/video-transcriber';
-import { ArrowLeft } from 'lucide-react';
 import { ProductGallery } from '@/components/features/product-gallery';
 import type { Character, Scene, Product } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script' | 'product_gallery';
@@ -25,6 +25,7 @@ export default function Home() {
   const [loadedCharacter, setLoadedCharacter] = useState<Character | null>(null);
   const [loadedScene, setLoadedScene] = useState<Scene | null>(null);
   const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleLoadCharacter = (event: Event) => {
@@ -73,6 +74,7 @@ export default function Home() {
       id: 'creator' as ActiveView,
       title: 'Criador de Personagens e Cenas',
       description: 'A ferramenta principal para dar vida às suas ideias. Crie influenciadores e defina as cenas para os seus vídeos.',
+      mobileDescription: 'Crie personagens, influenciadores e cenas.',
       className: 'md:col-span-2 md:row-span-2',
       icon: <Bot className="h-6 w-6" />,
     },
@@ -80,6 +82,7 @@ export default function Home() {
       id: 'viral' as ActiveView,
       title: 'Gerador de Roteiro Viral',
       description: 'Use a fórmula viral para criar roteiros curtos e de alto impacto para Shorts e TikTok.',
+      mobileDescription: 'Crie roteiros curtos de alto impacto.',
       className: 'md:col-span-1',
       icon: <Rocket className="h-6 w-6" />,
     },
@@ -87,6 +90,7 @@ export default function Home() {
       id: 'transcribe' as ActiveView,
       title: 'Transcrever Vídeo',
       description: 'Transforme áudio de vídeos em texto para criar novos roteiros e conteúdos.',
+      mobileDescription: 'Transforme áudio de vídeos em texto.',
       className: 'md:col-span-1',
       icon: <FileText className="h-6 w-6" />,
     },
@@ -94,6 +98,7 @@ export default function Home() {
       id: 'scene_gallery' as ActiveView,
       title: 'Galeria de Cenas',
       description: 'Acesse e gerencie todas as suas cenas criadas.',
+      mobileDescription: 'Acesse e gerencie as suas cenas.',
       className: 'md:col-span-1',
       icon: <Clapperboard className="h-6 w-6" />,
     },
@@ -101,6 +106,7 @@ export default function Home() {
       id: 'character_gallery' as ActiveView,
       title: 'Galeria de Personagens',
       description: 'Acesse e gerencie todos os seus personagens criados.',
+      mobileDescription: 'Acesse e gerencie os seus personagens.',
       className: 'md:col-span-1',
       icon: <Users className="h-6 w-6" />,
     },
@@ -108,6 +114,7 @@ export default function Home() {
       id: 'product_gallery' as ActiveView,
       title: 'Galeria de Produtos',
       description: 'Acesse e gerencie todos os seus produtos salvos.',
+      mobileDescription: 'Acesse e gerencie os seus produtos.',
       className: 'md:col-span-1',
       icon: <Box className="h-6 w-6" />,
     },
@@ -115,13 +122,15 @@ export default function Home() {
       id: 'thumbnail' as ActiveView,
       title: 'Gerador de Thumbnail',
       description: 'Crie thumbnails de alta qualidade para seus vídeos.',
+      mobileDescription: 'Crie thumbnails de alta qualidade.',
       className: 'md:col-span-1',
       icon: <ImageIcon className="h-6 w-6" />,
     },
     {
       id: 'advanced_script' as ActiveView,
-      title: 'Ferramentas de Roteiro Avançadas',
+      title: 'Roteiros Avançados',
       description: 'Gere roteiros longos, para web docs, e transforme roteiros prontos em prompts de imagem e video.',
+      mobileDescription: 'Gere roteiros longos e para web docs.',
       className: 'md:col-span-2',
       icon: <Zap className="h-6 w-6" />,
     },
@@ -146,8 +155,8 @@ export default function Home() {
             {items.map((item) => (
                <div key={item.id} className={item.className} onClick={() => handleNavigate(item.id)}>
                   <BentoGridItem
-                  title={item.title}
-                  description={item.description}
+                  title={isMobile && item.title.includes(' ') ? item.title.split(' ')[0] : item.title}
+                  description={isMobile ? item.mobileDescription : item.description}
                   icon={item.icon}
                   className="h-full"
                   >
@@ -163,7 +172,7 @@ export default function Home() {
       );
     }
     return (
-        <div className="bg-card border rounded-xl p-6 md:p-8">
+        <div className="bg-card border rounded-xl p-4 md:p-8">
              {featureComponents[activeView]}
         </div>
     );
@@ -173,9 +182,9 @@ export default function Home() {
     <div className="min-h-screen w-full bg-background">
       <Header>
         {activeView !== 'home' && (
-            <Button variant="ghost" onClick={() => handleNavigate('home')}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar à Tela Inicial
+            <Button variant="ghost" onClick={() => handleNavigate('home')} size={isMobile ? "icon" : "default"}>
+                <ArrowLeft className={isMobile ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                {!isMobile && 'Voltar'}
             </Button>
         )}
       </Header>

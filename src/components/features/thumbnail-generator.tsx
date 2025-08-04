@@ -1,3 +1,4 @@
+
 // src/components/features/thumbnail-generator.tsx
 'use client';
 
@@ -72,15 +73,14 @@ export function ThumbnailGenerator() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full w-full">
-      {/* Step 1: Reference Image */}
       <div className="flex flex-col space-y-4">
         <div className='flex items-center gap-3'>
-          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
             <ImageIcon className="h-6 w-6 text-primary" />
           </div>
           <div>
             <h3 className="font-semibold text-lg">Passo 1: Imagem de Referência</h3>
-            <p className="text-sm text-muted-foreground">Anexe imagens de referência e digite um tema para gerar ideias de thumbnail.</p>
+            <p className="text-sm text-muted-foreground">Anexe imagens e digite um tema para gerar ideias.</p>
           </div>
         </div>
         
@@ -96,7 +96,7 @@ export function ThumbnailGenerator() {
 
         <div className="space-y-2">
           <Label htmlFor="theme">Tema para Thumbnail</Label>
-          <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Ex: Minha rotina de skincare, Review do novo jogo, etc." />
+          <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Ex: Minha rotina de skincare..." />
         </div>
 
         <div className="space-y-2">
@@ -142,7 +142,7 @@ export function ThumbnailGenerator() {
       <div className="flex flex-col space-y-4">
         <h3 className="font-semibold text-lg">Passo 2: Resultado da Thumbnail</h3>
         <p className="text-sm text-muted-foreground">Aqui estão as sugestões da IA.</p>
-        <div className="flex-grow border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-card p-4">
+        <div className="flex-grow border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-card p-4 min-h-[300px]">
           {isLoading && <Loader2 className="h-8 w-8 animate-spin text-primary" />}
           {!isLoading && !result && <p className="text-muted-foreground text-center">Aguardando a geração de ideias...</p>}
           {result && (

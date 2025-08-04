@@ -1,3 +1,4 @@
+
 // src/components/features/product-gallery.tsx
 'use client';
 
@@ -8,11 +9,13 @@ import { UploadCloud, FileText, Trash2, Download, Box } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
 import { convertJsonToCsv } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 export function ProductGallery() {
   const [products, setProducts] = useState<Product[]>([]);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadProducts = () => {
@@ -96,9 +99,9 @@ export function ProductGallery() {
 
   return (
     <div className="flex flex-col h-full w-full space-y-4">
-      <div className="flex justify-between items-start mb-2">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
             <Box className="h-6 w-6 text-primary" />
           </div>
           <div>
@@ -108,14 +111,16 @@ export function ProductGallery() {
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={handleExportAll}>
+        <Button variant="outline" onClick={handleExportAll} className="w-full md:w-auto">
             <Download className="mr-2 h-4 w-4" />
             Exportar Tudo (JSON)
         </Button>
       </div>
       
       {products.length === 0 ? (
-        <p className="text-muted-foreground text-center py-8">A sua galeria de produtos está vazia.</p>
+        <div className="flex-grow flex items-center justify-center">
+            <p className="text-muted-foreground text-center py-8">A sua galeria de produtos está vazia.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((product) => (
@@ -132,7 +137,7 @@ export function ProductGallery() {
                   <Button className="flex-1" onClick={() => handleLoad(product)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>Exportar JSON</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
                   <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(product.id!, product.name)}><Trash2 className="h-4 w-4"/></Button>
                 </div>
               </CardFooter>

@@ -1,3 +1,4 @@
+
 // src/components/features/character-profile-generator.tsx
 'use client';
 
@@ -21,6 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ContentSuggester } from './content-suggester';
 import type { Character, Scene, Product } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 interface CharacterProfileGeneratorProps {
     initialCharacter?: Character | null;
@@ -37,6 +40,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
   const [isLoadingScene, setIsLoadingScene] = useState(false);
   const [isLoadingProduct, setIsLoadingProduct] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState<string | null>(null);
+  const isMobile = useIsMobile();
   
   // States for Character Profile
   const [profile, setProfile] = useState<Partial<Character>>(initialCharacter || {});
@@ -325,10 +329,10 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-card border rounded-xl p-6 space-y-4 flex flex-col">
+        <div className="bg-card border rounded-xl p-4 md:p-6 space-y-4 flex flex-col">
             <div className="flex items-center gap-3">
                 <UploadCloud className="h-6 w-6 text-primary" />
-                <h3 className="font-semibold text-lg">Carregar Foto de Referência</h3>
+                <h3 className="font-semibold text-lg">Carregar Foto</h3>
             </div>
             <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} />
              {photoDataUri && (
@@ -345,10 +349,10 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
             </Alert>
         </div>
 
-        <div className="bg-card border rounded-xl p-6 space-y-4 flex flex-col">
+        <div className="bg-card border rounded-xl p-4 md:p-6 space-y-4 flex flex-col">
             <div className="flex items-center gap-3">
                 <ClipboardPaste className="h-6 w-6 text-primary" />
-                <h3 className="font-semibold text-lg">Cole as Características</h3>
+                <h3 className="font-semibold text-lg">Colar Texto</h3>
             </div>
             <Textarea
                 placeholder="Cole aqui um texto com as características do influenciador..."
@@ -445,10 +449,10 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                 <Textarea id="negativePrompt" placeholder="Ex: Evitar roupas escuras, não sorrir..." value={profile.negativePrompt || ''} onChange={e => handleProfileChange('negativePrompt', e.target.value)} />
             </div>
         </div>
-        <div className="flex flex-wrap gap-2 justify-end pt-4">
-            <Button variant="outline" onClick={resetCharacter}><Plus /> Novo Influenciador</Button>
-            <Button variant="outline" onClick={() => loadFromGallery('character')}><Library /> Carregar da Galeria</Button>
-            <Button onClick={() => saveToGallery('character')}><Save /> Guardar Personagem</Button>
+        <div className="flex flex-col sm:flex-row gap-2 justify-end pt-4">
+            <Button variant="outline" className="w-full sm:w-auto" onClick={resetCharacter}><Plus className="mr-2 h-4 w-4" /> Novo</Button>
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => loadFromGallery('character')}><Library className="mr-2 h-4 w-4" /> Carregar</Button>
+            <Button onClick={() => saveToGallery('character')} className="w-full sm:w-auto"><Save className="mr-2 h-4 w-4" /> Guardar</Button>
         </div>
 
         <div className="flex items-center gap-3 pt-8">
@@ -551,7 +555,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     <Text className="h-6 w-6 text-red-400" />
                     <h3 className="font-semibold text-lg text-red-400">Controlo de Texto no Ecrã</h3>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                     <Label htmlFor="digitalText">Permite textos digitais na tela?</Label>
                     <RadioGroup value={scene.allowsDigitalText ? 'yes' : 'no'} onValueChange={(v) => handleSceneChange('allowsDigitalText', v === 'yes')} id="digitalText" className="flex gap-4">
                         <div className="flex items-center space-x-2">
@@ -564,8 +568,8 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                         </div>
                     </RadioGroup>
                 </div>
-                <div className="flex justify-between items-center">
-                    <Label htmlFor="physicalText">Apenas textos físicos como rótulos e placas reais?</Label>
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <Label htmlFor="physicalText">Apenas textos físicos?</Label>
                     <RadioGroup value={scene.onlyPhysicalText ? 'yes' : 'no'} onValueChange={(v) => handleSceneChange('onlyPhysicalText', v === 'yes')} id="physicalText" className="flex gap-4">
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="yes" id="physicalText-yes" />
@@ -608,9 +612,9 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     <Label htmlFor="productDescription">Descrição do Produto</Label>
                     <Textarea id="productDescription" placeholder="Descrição detalhada do produto..." value={scene.product?.description || ''} onChange={(e) => handleProductChange('description', e.target.value)} />
                 </div>
-                 <div className="flex flex-wrap gap-2 justify-start pt-2">
-                    <Button variant="outline" size="sm" onClick={() => loadFromGallery('product')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
-                    <Button size="sm" onClick={() => saveToGallery('product')}><Save className="mr-2 h-4 w-4"/> Guardar Produto</Button>
+                 <div className="flex flex-col sm:flex-row gap-2 justify-start pt-2">
+                    <Button variant="outline" size={isMobile ? "default" : "sm"} className="w-full sm:w-auto" onClick={() => loadFromGallery('product')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
+                    <Button size={isMobile ? "default" : "sm"} className="w-full sm:w-auto" onClick={() => saveToGallery('product')}><Save className="mr-2 h-4 w-4"/> Guardar Produto</Button>
                 </div>
                 <div className="flex items-center space-x-2 pt-4">
                     <RadioGroup defaultValue="no" id="sponsored" className="flex">
@@ -622,10 +626,10 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                 </div>
             </div>
             
-            <div className="flex flex-wrap gap-2 justify-start pt-4">
-                <Button variant="outline" onClick={resetScene}><Plus className="mr-2"/> Nova Cena</Button>
-                <Button variant="outline" onClick={() => loadFromGallery('scene')}><Library className="mr-2"/> Carregar da Galeria</Button>
-                <Button onClick={() => saveToGallery('scene')}><Save className="mr-2"/> Guardar Cena</Button>
+            <div className="flex flex-col sm:flex-row gap-2 justify-start pt-4">
+                <Button variant="outline" className="w-full sm:w-auto" onClick={resetScene}><Plus className="mr-2 h-4 w-4"/> Nova Cena</Button>
+                <Button variant="outline" className="w-full sm:w-auto" onClick={() => loadFromGallery('scene')}><Library className="mr-2 h-4 w-4"/> Carregar</Button>
+                <Button className="w-full sm:w-auto" onClick={() => saveToGallery('scene')}><Save className="mr-2 h-4 w-4"/> Guardar Cena</Button>
             </div>
         </div>
         

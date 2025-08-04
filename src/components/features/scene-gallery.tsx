@@ -1,3 +1,4 @@
+
 // src/components/features/scene-gallery.tsx
 'use client';
 
@@ -8,11 +9,13 @@ import { UploadCloud, FileText, Trash2, Download, Clapperboard } from 'lucide-re
 import { useToast } from '@/hooks/use-toast';
 import type { Scene } from '@/lib/types';
 import { convertJsonToCsv } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 export function SceneGallery() {
   const [scenes, setScenes] = useState<Scene[]>([]);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadScenes = () => {
@@ -108,32 +111,34 @@ export function SceneGallery() {
 
   return (
     <div className="flex flex-col h-full w-full space-y-4">
-      <div className="flex justify-between items-start mb-2">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+          <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
             <Clapperboard className="h-6 w-6 text-primary" />
           </div>
           <div>
             <h2 className="text-xl font-bold font-headline">Galeria de Cenas</h2>
             <p className="text-sm text-muted-foreground">
-              Cenas que você salvou. Carregue uma para editar ou use-a com um influenciador para gerar um roteiro.
+              Cenas que você salvou. Carregue uma para editar ou usar para gerar um roteiro.
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-            <Button variant="outline" onClick={() => handleExportAll('csv')}>
+        <div className="flex gap-2 w-full md:w-auto">
+            <Button variant="outline" onClick={() => handleExportAll('csv')} className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
-                Exportar CSV
+                CSV
             </Button>
-            <Button variant="outline" onClick={() => handleExportAll('json')}>
+            <Button variant="outline" onClick={() => handleExportAll('json')} className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
-                Exportar JSON
+                JSON
             </Button>
         </div>
       </div>
       
       {scenes.length === 0 ? (
-        <p className="text-muted-foreground text-center py-8">A sua galeria de cenas está vazia.</p>
+        <div className="flex-grow flex items-center justify-center">
+            <p className="text-muted-foreground text-center py-8">A sua galeria de cenas está vazia.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {scenes.map((scene) => (

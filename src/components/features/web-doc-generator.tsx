@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -153,7 +154,7 @@ export function WebDocGenerator() {
       <Card className="bg-transparent border-none shadow-none">
         <CardHeader className="px-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
               <BookOpen className="h-6 w-6 text-primary" />
             </div>
             <div>
@@ -175,7 +176,7 @@ export function WebDocGenerator() {
           <div className="space-y-2">
             <Label className="flex items-center gap-2"><Pencil className="h-4 w-4" /> Tema do Documentário</Label>
             <Input 
-              placeholder="Ex: A ascensão dos impérios digitais, Os segredos do oceano profundo..." 
+              placeholder="Ex: A ascensão dos impérios digitais..." 
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
             />
@@ -183,7 +184,7 @@ export function WebDocGenerator() {
           <div className="space-y-2">
             <Label className="flex items-center gap-2"><List className="h-4 w-4" /> Tópicos a Cobrir (Opcional)</Label>
             <Input 
-              placeholder="Ex: A origem da internet, As primeiras redes sociais, O futuro da conexão..." 
+              placeholder="Ex: A origem da internet, As primeiras redes sociais..." 
               value={topicsToCover}
               onChange={(e) => setTopicsToCover(e.target.value)}
             />
@@ -236,7 +237,7 @@ export function WebDocGenerator() {
                                               </div>
                                               <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.narration, 'Narração')}>
                                                   <Copy className="mr-2 h-4 w-4" />
-                                                  Copiar
+                                                  <span className="hidden md:inline">Copiar</span>
                                               </Button>
                                           </div>
                                           <p className="text-sm text-muted-foreground">{scene.narration}</p>
@@ -250,7 +251,7 @@ export function WebDocGenerator() {
                                                   </div>
                                                   <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
                                                       <Copy className="mr-2 h-4 w-4" />
-                                                      Copiar
+                                                      <span className="hidden md:inline">Copiar</span>
                                                   </Button>
                                               </div>
                                               <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
@@ -277,7 +278,7 @@ export function WebDocGenerator() {
                                                   </div>
                                                   <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
                                                       <Copy className="mr-2 h-4 w-4" />
-                                                      Copiar
+                                                      <span className="hidden md:inline">Copiar</span>
                                                   </Button>
                                               </div>
                                               <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>

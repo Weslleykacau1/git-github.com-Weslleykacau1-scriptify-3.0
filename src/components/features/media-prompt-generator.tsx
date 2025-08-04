@@ -17,6 +17,7 @@ import { ImagePreviewDialog } from './image-preview-dialog';
 import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 import { SeoPreviewDialog } from './seo-preview-dialog';
 import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 const formSchema = z.object({
@@ -37,6 +38,7 @@ export function MediaPromptGenerator() {
 
   const [isSeoDialogOpen, setIsSeoDialogOpen] = useState(false);
   const [seoData, setSeoData] = useState<GenerateSeoMetadataOutput | null>(null);
+  const isMobile = useIsMobile();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -159,7 +161,7 @@ export function MediaPromptGenerator() {
       <Card className="bg-transparent border-none shadow-none">
           <CardHeader className="px-0">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                   <FileInput className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -220,9 +222,9 @@ export function MediaPromptGenerator() {
                                                   <FileInput className="h-4 w-4 text-primary" />
                                                   <span>Roteiro (PT-BR)</span>
                                               </div>
-                                              <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.script, 'Roteiro')}>
-                                                  <Copy className="mr-2 h-4 w-4" />
-                                                  Copiar
+                                              <Button variant="ghost" size={isMobile ? "icon" : "sm"} onClick={() => handleCopy(scene.script, 'Roteiro')}>
+                                                  <Copy className="h-4 w-4" />
+                                                  {!isMobile && <span className="ml-2">Copiar</span>}
                                               </Button>
                                           </div>
                                           <p className="text-sm text-muted-foreground">{scene.script}</p>
@@ -234,9 +236,9 @@ export function MediaPromptGenerator() {
                                                       <ImageIcon className="h-4 w-4 text-primary" />
                                                       <span>Prompt de Imagem (EN)</span>
                                                   </div>
-                                                  <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
-                                                      <Copy className="mr-2 h-4 w-4" />
-                                                      Copiar
+                                                  <Button variant="ghost" size={isMobile ? "icon" : "sm"} onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                                      <Copy className="h-4 w-4" />
+                                                      {!isMobile && <span className="ml-2">Copiar</span>}
                                                   </Button>
                                               </div>
                                               <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
@@ -261,9 +263,9 @@ export function MediaPromptGenerator() {
                                                       <Video className="h-4 w-4 text-primary" />
                                                       <span>Prompt de Vídeo (EN)</span>
                                                   </div>
-                                                  <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
-                                                      <Copy className="mr-2 h-4 w-4" />
-                                                      Copiar
+                                                  <Button variant="ghost" size={isMobile ? "icon" : "sm"} onClick={() => handleCopy(scene.videoPrompt, 'Prompt de Vídeo')}>
+                                                      <Copy className="h-4 w-4" />
+                                                      {!isMobile && <span className="ml-2">Copiar</span>}
                                                   </Button>
                                               </div>
                                               <p className="text-sm text-muted-foreground">{scene.videoPrompt}</p>
