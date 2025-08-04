@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { UploadCloud, FileText, Trash2, Download, Clapperboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Scene } from '@/lib/types';
-import { convertJsonToCsv } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 
@@ -54,7 +53,7 @@ export function SceneGallery() {
     }
   };
   
-  const handleExportAll = (format: 'json' | 'csv') => {
+  const handleExportAll = (format: 'json' | 'txt') => {
      if (scenes.length === 0) {
        toast({ title: 'Nada para exportar', description: 'A sua galeria de cenas está vazia.', variant: 'destructive' });
        return;
@@ -67,9 +66,20 @@ export function SceneGallery() {
         if (format === 'json') {
           dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scenes, null, 2));
           fileName = `scenes_backup.json`;
-        } else {
-          dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(convertJsonToCsv(scenes));
-          fileName = `scenes_backup.csv`;
+        } else { // format === 'txt'
+          const allScenesText = scenes.map(s => 
+`Título da Cena: ${s.title || ''}
+Duração: ${s.duration || ''} seg
+Formato: ${s.videoFormat || ''}
+Ângulo da Câmara: ${s.cameraAngle || ''}
+Cenário: ${s.setting || ''}
+Ação Principal: ${s.mainAction || ''}
+Diálogo: ${s.dialogue || ''}
+${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand}\n  Descrição: ${s.product.description}`: ''}
+---------------------------------`
+      ).join('\n\n');
+          dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(allScenesText);
+          fileName = `todas_as_cenas.txt`;
         }
         
         const downloadAnchorNode = document.createElement('a');
@@ -124,9 +134,9 @@ export function SceneGallery() {
           </div>
         </div>
         <div className="flex gap-2 w-full md:w-auto">
-            <Button variant="outline" onClick={() => handleExportAll('csv')} className="flex-1">
+            <Button variant="outline" onClick={() => handleExportAll('txt')} className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
-                CSV
+                EXPORTA EM .TXT
             </Button>
             <Button variant="outline" onClick={() => handleExportAll('json')} className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
