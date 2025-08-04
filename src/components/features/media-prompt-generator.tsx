@@ -88,7 +88,7 @@ export function MediaPromptGenerator() {
     setGeneratedImageData(null);
     setGeneratedImageData2(null);
     try {
-      const { imageDataUri } = await generateImage({ prompt });
+      const { imageDataUri } = await generateImage({ prompt, aspectRatio: '16:9' });
       setGeneratedImageData({ url: imageDataUri, prompt });
       setIsImageDialogOpen(true);
     } catch (error) {
