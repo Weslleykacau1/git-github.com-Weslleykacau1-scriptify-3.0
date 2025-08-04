@@ -105,7 +105,8 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
     }
   }
 
-  const handleDelete = (sceneId: string, sceneTitle?: string) => {
+  const handleDelete = (sceneId?: string, sceneTitle?: string) => {
+    if (!sceneId) return;
     if (window.confirm(`Tem a certeza que quer eliminar a cena "${sceneTitle || 'esta cena'}"?`)) {
       try {
         const updatedScenes = scenes.filter(scene => scene.id !== sceneId);

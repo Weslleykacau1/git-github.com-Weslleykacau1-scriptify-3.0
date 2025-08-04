@@ -65,7 +65,8 @@ Prompt Negativo: ${character.negativePrompt || ''}
     }
   };
   
-  const handleDelete = (charId: string, charName?: string) => {
+  const handleDelete = (charId?: string, charName?: string) => {
+     if (!charId) return;
      if (window.confirm(`Tem a certeza que quer eliminar "${charName || 'este personagem'}"?`)) {
         try {
             const updatedCharacters = characters.filter(char => char.id !== charId);

@@ -52,7 +52,8 @@ export function ProductGallery() {
     }
   };
   
-  const handleDelete = (productId: string, productName?: string) => {
+  const handleDelete = (productId?: string, productName?: string) => {
+    if (!productId) return;
     if (window.confirm(`Tem a certeza que quer eliminar o produto "${productName || 'este produto'}"?`)) {
       try {
         const updatedProducts = products.filter(p => p.id !== productId);
@@ -145,7 +146,7 @@ Descrição: ${p.description || ''}
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                   <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
-                  <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(product.id!, product.name)}><Trash2 className="h-4 w-4"/></Button>
+                  <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(product.id, product.name)}><Trash2 className="h-4 w-4"/></Button>
                 </div>
               </CardFooter>
             </Card>
