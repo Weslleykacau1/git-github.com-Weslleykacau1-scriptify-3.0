@@ -1,3 +1,4 @@
+
 // src/components/features/media-prompt-generator.tsx
 'use client';
 
@@ -296,7 +297,7 @@ export function MediaPromptGenerator() {
               <Card>
                 <CardHeader>
                   <CardTitle className='text-lg'>Palavras-chave de SEO</CardTitle>
-                </Header>
+                </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">{result.seoKeywords}</p>
                   <Button variant="outline" size="sm" className='mt-2' onClick={handleGenerateSeo} disabled={isGenerating === 'seo'}>
