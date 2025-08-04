@@ -5,57 +5,58 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download, RefreshCw, Youtube, Video, Image as ImageIcon, FileText, Bot } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Download, RefreshCw, Youtube, Video, Image as ImageIcon, FileText, Bot, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { transcribeUploadedVideo } from '@/ai/flows/transcribe-uploaded-video';
+import { generateScriptFromTranscription } from '@/ai/flows/content-assistance/generate-script-from-transcription';
+import { paraphraseScript } from '@/ai/flows/content-assistance/paraphrase-script';
+import { Textarea } from '../ui/textarea';
 
-// A simplified file uploader for this component
+
 const FileUploadArea = ({ 
   title, 
-  description, 
-  formats, 
-  onFileChange, 
-  icon 
+  onFileChange,
+  file,
+  accept,
 }: { 
   title: string; 
-  description: string; 
-  formats: string; 
   onFileChange: (file: File | null) => void;
-  icon: React.ReactNode;
+  file: File | null;
+  accept: string;
 }) => {
-  const [fileName, setFileName] = useState<string | null>(null);
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    setFileName(file ? file.name : null);
-    onFileChange(file);
+    const selectedFile = event.target.files?.[0] || null;
+    onFileChange(selectedFile);
   };
 
   return (
     <div className="flex-1">
-      <Label className="flex items-center gap-2 mb-2">{icon} {title}</Label>
+      <Label className="flex items-center gap-2 mb-2">{title === 'Anexar ficheiro de vídeo' ? <Video className="h-4 w-4"/> : <ImageIcon className="h-4 w-4"/>} {title}</Label>
       <div className="relative flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-card p-6 text-center transition-colors">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           {title === 'Anexar ficheiro de vídeo' ? <Video className="h-10 w-10" /> : <ImageIcon className="h-10 w-10" />}
-          <p className="text-xs mt-2">{formats}</p>
           <Button variant="outline" asChild className="mt-2">
             <label>
-              <input type="file" className="sr-only" onChange={handleFileChange} />
+              <input type="file" className="sr-only" onChange={handleFileChange} accept={accept} />
               {title === 'Anexar ficheiro de vídeo' ? 'Escolher Vídeo' : 'Escolher Imagem'}
             </label>
           </Button>
-          {fileName && <p className="text-xs mt-2 text-foreground">{fileName}</p>}
-          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+          {file && <p className="text-xs mt-2 text-foreground">{file.name}</p>}
         </div>
       </div>
     </div>
   );
 };
 
+
 export function VideoTranscriber() {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null); // State for the scene image
+  const [transcription, setTranscription] = useState('');
+  const [finalScript, setFinalScript] = useState('');
+  const [isLoading, setIsLoading] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleUrlConversion = () => {
@@ -77,6 +78,73 @@ export function VideoTranscriber() {
     }
   };
 
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+  }
+
+  const handleTranscribe = async () => {
+    if (!videoFile) {
+        toast({ title: "Nenhum ficheiro de vídeo selecionado", variant: "destructive" });
+        return;
+    }
+    setIsLoading('transcribing');
+    setTranscription('');
+    setFinalScript('');
+    toast({ title: "A transcrever vídeo...", description: "Isto pode demorar alguns minutos." });
+
+    try {
+        const videoDataUri = await fileToDataUri(videoFile);
+        const { transcription: result } = await transcribeUploadedVideo({ videoDataUri });
+        setTranscription(result);
+        toast({ title: "Transcrição concluída com sucesso!" });
+    } catch (error) {
+        console.error("Transcription failed:", error);
+        toast({ title: "Erro na transcrição", variant: "destructive" });
+    } finally {
+        setIsLoading(null);
+    }
+  }
+
+  const handleGenerateScript = async () => {
+     if (!transcription) return;
+     setIsLoading('scripting');
+     setFinalScript('');
+     toast({ title: "Gerando roteiro da transcrição..." });
+     try {
+         const imagePrompt = imageFile ? await fileToDataUri(imageFile) : undefined;
+         const { script } = await generateScriptFromTranscription({ transcription, imagePrompt });
+         setFinalScript(script);
+         toast({ title: "Roteiro gerado com sucesso!" });
+     } catch (error) {
+        console.error("Script generation failed:", error);
+        toast({ title: "Erro ao gerar roteiro", variant: "destructive" });
+     } finally {
+        setIsLoading(null);
+     }
+  }
+
+  const handleParaphrase = async () => {
+    if (!transcription) return;
+    setIsLoading('paraphrasing');
+    setFinalScript('');
+    toast({ title: "Gerando roteiro com outras palavras..." });
+    try {
+        const imagePrompt = imageFile ? await fileToDataUri(imageFile) : undefined;
+        const { script } = await paraphraseScript({ transcription, imagePrompt });
+        setFinalScript(script);
+        toast({ title: "Roteiro reescrito com sucesso!" });
+    } catch (error) {
+       console.error("Paraphrasing failed:", error);
+       toast({ title: "Erro ao reescrever roteiro", variant: "destructive" });
+    } finally {
+       setIsLoading(null);
+    }
+  }
 
   return (
     <div className="flex flex-col h-full w-full space-y-6">
@@ -144,36 +212,48 @@ export function VideoTranscriber() {
                 </div>
             </div>
         </CardHeader>
-        <CardContent>
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <CardContent className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
                 <FileUploadArea
-                    icon={<Video className="h-4 w-4"/>}
                     title="Anexar ficheiro de vídeo"
-                    description="Formatos suportados: MP4, MOV, WEBM, etc."
-                    formats=""
                     onFileChange={setVideoFile}
+                    file={videoFile}
+                    accept="video/*"
                 />
                 <FileUploadArea
-                    icon={<ImageIcon className="h-4 w-4"/>}
                     title="Anexar imagem de cena (Opcional)"
-                    description="Isto irá definir o cenário visual do roteiro gerado."
-                    formats=""
                     onFileChange={setImageFile}
+                    file={imageFile}
+                    accept="image/*"
                 />
             </div>
-            <Button className="w-full mb-4">
+            <Button className="w-full" onClick={handleTranscribe} disabled={!videoFile || !!isLoading}>
+                {isLoading === 'transcribing' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileText className="mr-2 h-4 w-4"/>}
                 Transcrever Vídeo Anexado
             </Button>
-            <div className="flex flex-col md:flex-row gap-4">
-                <Button variant="primary" className="flex-1 bg-green-600 hover:bg-green-700">
-                    <FileText className="mr-2" />
-                    Gerar Roteiro da Transcrição
-                </Button>
-                <Button variant="secondary" className="flex-1">
-                    <Bot className="mr-2" />
-                    Gerar com Outras Palavras
-                </Button>
-            </div>
+            
+            {transcription && (
+                <div className="space-y-4 pt-4">
+                    <Label>Transcrição Resultante</Label>
+                    <Textarea value={transcription} readOnly className="min-h-[150px] bg-muted"/>
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <Button className="flex-1" onClick={handleGenerateScript} disabled={!!isLoading}>
+                            {isLoading === 'scripting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileText className="mr-2" />}
+                            Gerar Roteiro da Transcrição
+                        </Button>
+                        <Button variant="secondary" className="flex-1" onClick={handleParaphrase} disabled={!!isLoading}>
+                            {isLoading === 'paraphrasing' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Bot className="mr-2" />}
+                            Gerar com Outras Palavras
+                        </Button>
+                    </div>
+                </div>
+            )}
+            {finalScript && (
+                 <div className="space-y-2 pt-4">
+                    <Label>Roteiro Final Gerado</Label>
+                    <Textarea value={finalScript} readOnly className="min-h-[200px] bg-muted font-mono"/>
+                 </div>
+            )}
         </CardContent>
       </Card>
     </div>
