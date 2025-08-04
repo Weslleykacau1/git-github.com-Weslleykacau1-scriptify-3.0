@@ -13,8 +13,6 @@ import { Loader2, FileInput, Image as ImageIcon, Video, Copy, Download, Search, 
 import { generateMediaPrompts, GenerateMediaPromptsOutput } from '@/ai/flows/generate-media-prompts';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
-import { generateImage } from '@/ai/flows/media-generation/generate-image';
-import { ImagePreviewDialog } from './image-preview-dialog';
 import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 import { SeoPreviewDialog } from './seo-preview-dialog';
 import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
@@ -83,22 +81,6 @@ export function MediaPromptGenerator() {
     toast({ title: "Análise exportada como JSON!" });
   };
   
-  const handleGenerateImage = async (prompt: string, index: number) => {
-    setIsGenerating(`image-${index}`);
-    setGeneratedImageData(null);
-    setGeneratedImageData2(null);
-    try {
-      const { imageDataUri } = await generateImage({ prompt, aspectRatio: '16:9' });
-      setGeneratedImageData({ url: imageDataUri, prompt });
-      setIsImageDialogOpen(true);
-    } catch (error) {
-      console.error('Image generation failed', error);
-      toast({ title: 'Erro ao gerar imagem', variant: 'destructive' });
-    } finally {
-      setIsGenerating(null);
-    }
-  };
-
   const handleGenerateThumbnail = async () => {
     if (!result || !result.scenes.length) return;
     setIsGenerating('thumbnail');
@@ -147,12 +129,6 @@ export function MediaPromptGenerator() {
 
   return (
     <>
-      <ImagePreviewDialog
-        isOpen={isImageDialogOpen}
-        onOpenChange={setIsImageDialogOpen}
-        imageData={generatedImageData}
-        imageData2={generatedImageData2}
-      />
       <SeoPreviewDialog
         isOpen={isSeoDialogOpen}
         onOpenChange={setIsSeoDialogOpen}
@@ -242,20 +218,6 @@ export function MediaPromptGenerator() {
                             </Button>
                           </div>
                           <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            disabled={isGenerating === `image-${index}`}
-                            onClick={() => handleGenerateImage(scene.imagePrompt, index)}
-                          >
-                            {isGenerating === `image-${index}` ? (
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                              <ImageIcon className="mr-2 h-4 w-4" />
-                            )}
-                            Gerar Imagem
-                          </Button>
                         </div>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-sm font-medium">
