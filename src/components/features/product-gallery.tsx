@@ -1,4 +1,3 @@
-
 // src/components/features/product-gallery.tsx
 'use client';
 
@@ -146,6 +145,7 @@ Descrição: ${p.description || ''}
               <CardFooter className="flex flex-col items-start gap-2">
                 <div className="flex w-full gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(product)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
+                  <Button variant="destructive" className="flex-1" onClick={() => handleDelete(product.id, product.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir Produto</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                   <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
