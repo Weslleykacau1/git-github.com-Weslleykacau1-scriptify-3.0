@@ -9,10 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Sun, Moon, Monitor, Key } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -26,7 +23,6 @@ interface SettingsDialogProps {
 type Theme = 'light' | 'dark' | 'system';
 
 export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
-  const [language, setLanguage] = useState('pt-BR');
   const [theme, setTheme] = useState<Theme>('dark');
   const { toast } = useToast();
   const router = useRouter();
@@ -35,7 +31,6 @@ export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
     if (isOpen) {
         try {
             const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
-            setLanguage(banco.configuracoes?.idioma || 'pt-BR');
             setTheme(banco.configuracoes?.tema || 'dark');
         } catch (error) {
             console.error("Failed to load settings from localStorage", error);
@@ -67,22 +62,6 @@ export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
         toast({ title: "Erro ao guardar o tema", variant: 'destructive'});
     }
   }
-  
-  const handleLanguageChange = (newLanguage: string) => {
-      setLanguage(newLanguage);
-       try {
-        const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
-        if (!banco.configuracoes) {
-            banco.configuracoes = {};
-        }
-        banco.configuracoes.idioma = newLanguage;
-        localStorage.setItem('studioBanco', JSON.stringify(banco));
-        toast({ title: "Idioma atualizado!" });
-    } catch(error) {
-        console.error("Failed to save language", error);
-        toast({ title: "Erro ao guardar o idioma", variant: 'destructive'});
-    }
-  }
 
   const handleDeactivate = () => {
     localStorage.removeItem('studioActivationKey');
@@ -98,22 +77,6 @@ export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
           <DialogTitle>Configurações</DialogTitle>
         </DialogHeader>
         <div className="grid gap-6 py-4">
-          <div className="space-y-3">
-             <h4 className="font-medium text-sm text-muted-foreground">Geral</h4>
-             <div className="space-y-2">
-                <Label htmlFor="language">Idioma</Label>
-                 <Select value={language} onValueChange={handleLanguageChange}>
-                    <SelectTrigger id="language">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                        <SelectItem value="en-US">Inglês</SelectItem>
-                        <SelectItem value="es-ES">Espanhol</SelectItem>
-                    </SelectContent>
-                </Select>
-             </div>
-          </div>
           <div className="space-y-3">
             <h4 className="font-medium text-sm text-muted-foreground">Aparência</h4>
             <div className="grid grid-cols-3 gap-4">
