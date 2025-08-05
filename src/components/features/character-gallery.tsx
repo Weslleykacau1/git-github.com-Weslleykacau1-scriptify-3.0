@@ -5,12 +5,19 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { UploadCloud, FileText, Trash2, Palette } from 'lucide-react';
+import { UploadCloud, FileText, Trash2, Palette, Film, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Character } from '@/lib/types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { generateQuickScene } from '@/ai/flows/script-generation/generate-quick-scene';
+import { Textarea } from '../ui/textarea';
 
 export function CharacterGallery() {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [generatedScene, setGeneratedScene] = useState('');
+  const [isGeneratingScene, setIsGeneratingScene] = useState(false);
   const { toast } = useToast();
 
   const loadCharacters = () => {
@@ -38,7 +45,29 @@ export function CharacterGallery() {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [toast]);
+
+  const handleOpenModal = (character: Character) => {
+    setSelectedCharacter(character);
+    setGeneratedScene('');
+    setIsModalOpen(true);
+  };
   
+  const handleGenerateScene = async () => {
+    if (!selectedCharacter) return;
+    setIsGeneratingScene(true);
+    setGeneratedScene('');
+    try {
+      const result = await generateQuickScene({ characterProfile: JSON.stringify(selectedCharacter, null, 2) });
+      setGeneratedScene(result.scene);
+      toast({ title: "Cena gerada com sucesso!" });
+    } catch (error) {
+      console.error("Failed to generate quick scene", error);
+      toast({ title: "Erro ao gerar cena", variant: "destructive" });
+    } finally {
+      setIsGeneratingScene(false);
+    }
+  };
+
   const handleExport = (character: Character) => {
     try {
       // Format character data into a readable string
@@ -98,6 +127,7 @@ Prompt Negativo: ${character.negativePrompt || ''}
   };
 
   return (
+    <>
     <div className="flex flex-col h-full w-full space-y-4">
       <div className="flex justify-between items-start mb-2">
         <div className='flex items-center gap-3'>
@@ -129,6 +159,7 @@ Prompt Negativo: ${character.negativePrompt || ''}
               <CardFooter className="flex flex-col items-start gap-2">
                 <div className="flex w-full gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(char)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
+                  <Button variant="outline" className="flex-1" onClick={() => handleOpenModal(char)}><Film className="mr-2 h-4 w-4"/>Cena Rápida</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                   <Button variant="ghost" size="sm" onClick={() => handleExport(char)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
@@ -140,5 +171,30 @@ Prompt Negativo: ${character.negativePrompt || ''}
         </div>
        )}
     </div>
+    
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+            <DialogHeader>
+                <DialogTitle>Gerador de Cena Rápida</DialogTitle>
+                <DialogDescription>
+                    Gerar uma cena cômica e curta para "{selectedCharacter?.name}".
+                </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+                <Button onClick={handleGenerateScene} disabled={isGeneratingScene}>
+                    {isGeneratingScene ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Film className="mr-2 h-4 w-4" />}
+                    Gerar Cena
+                </Button>
+                {generatedScene && (
+                    <Textarea 
+                        readOnly
+                        value={generatedScene}
+                        className="min-h-[250px] bg-muted"
+                    />
+                )}
+            </div>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

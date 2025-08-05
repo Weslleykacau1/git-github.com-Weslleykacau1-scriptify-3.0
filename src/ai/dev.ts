@@ -10,6 +10,7 @@ import '@/ai/flows/analysis/analyze-product-image';
 
 // Script Generation
 import '@/ai/flows/script-generation/generate-script-ideas';
+import '@/ai-flows/script-generation/generate-quick-scene';
 import '@/ai/flows/script-generation/generate-long-script';
 import '@/ai/flows/script-generation/generate-web-doc-script';
 import '@/ai/flows/script-generation/generate-viral-script';
