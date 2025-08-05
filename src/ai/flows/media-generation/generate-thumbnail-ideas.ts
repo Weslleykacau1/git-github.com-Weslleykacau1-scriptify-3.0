@@ -64,18 +64,18 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
 });
 
 
-async function generateImage(prompt: string, mainImageUri: string, aspectRatio: '16:9', backgroundImageUri?: string): Promise<string> {
-    const promptParts: any[] = [
-        { text: prompt },
-        { media: { url: mainImageUri } },
-    ];
-    if (backgroundImageUri) {
-        promptParts.push({ media: { url: backgroundImageUri } });
-    }
+async function generateImage(promptText: string, mainImageUri: string, aspectRatio: '16:9', backgroundImageUri?: string): Promise<string> {
+    const prompt = {
+        text: promptText,
+        media: {
+            mainImage: { url: mainImageUri },
+            ...(backgroundImageUri && { backgroundImage: { url: backgroundImageUri } }),
+        },
+    };
 
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: promptParts,
+      prompt: prompt,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
         aspectRatio: aspectRatio,
