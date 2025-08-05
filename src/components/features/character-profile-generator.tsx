@@ -17,7 +17,7 @@ import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ContentSuggester } from './content-suggester';
@@ -331,9 +331,9 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     Analisar Imagem
                 </Button>
             )}
-            <Alert>
+            <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
                 <Sparkles className="h-4 w-4" />
-                <AlertDescription className="text-xs">
+                <AlertDescription className="text-xs text-blue-400/80">
                 A análise será detalhada, incluindo características faciais, cabelo, estilo e personalidade.
                 </AlertDescription>
             </Alert>
@@ -375,9 +375,9 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
             <div className="space-y-1">
                 <Label htmlFor="physicalAppearance">Detalhes de Aparência</Label>
                 <Textarea id="physicalAppearance" placeholder="Descreva a aparência física em detalhe extremo..." value={profile.physicalAppearance || ''} onChange={e => handleProfileChange('physicalAppearance', e.target.value)} />
-                <Alert>
+                <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
                     <Sparkles className="h-4 w-4" />
-                    <AlertDescription className="text-xs">
+                    <AlertDescription className="text-xs text-blue-400/80">
                     Seja detalhado - formato do rosto, cor dos olhos, textura do cabelo, etc. para melhor geração de vídeo.
                     </AlertDescription>
                 </Alert>
