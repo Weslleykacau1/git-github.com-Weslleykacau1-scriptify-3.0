@@ -66,7 +66,7 @@ export default function ActivationPage() {
                             Ativar
                         </Button>
                         <Button variant="secondary" className="w-full" asChild>
-                           <a href="https://pay.cakto.com.br/6uv8krj_496356" target="_blank" rel="noopener noreferrer">
+                           <a href="https://pay.kiwify.com.br/yQ6y5GZ" target="_blank" rel="noopener noreferrer">
                              <ShoppingCart className="mr-2 h-4 w-4" />
                              Adquirir Chave
                            </a>
