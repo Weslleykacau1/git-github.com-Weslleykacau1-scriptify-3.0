@@ -133,7 +133,6 @@ Prompt Negativo: ${character.negativePrompt || ''}
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                   <Button variant="ghost" size="sm" onClick={() => handleExport(char)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
-                  <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(char.id, char.name)}><Trash2 className="h-4 w-4"/></Button>
                 </div>
               </CardFooter>
             </Card>
