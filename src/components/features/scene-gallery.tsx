@@ -1,4 +1,3 @@
-
 // src/components/features/scene-gallery.tsx
 'use client';
 
@@ -163,9 +162,14 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
                 <p className="text-sm text-muted-foreground line-clamp-3">{scene.setting}</p>
                 {scene.duration && <p className="text-xs text-muted-foreground mt-2">{scene.duration} seg</p>}
               </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row gap-2">
-                  <Button className="flex-1" onClick={() => handleLoad(scene)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
-                  <Button variant="destructive" className="flex-1" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="mr-2 h-4 w-4"/>Excluir cena</Button>
+              <CardFooter className="flex flex-col items-start gap-2">
+                 <div className="flex flex-col sm:flex-row w-full gap-2">
+                    <Button className="flex-1" onClick={() => handleLoad(scene)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
+                    <Button variant="destructive" className="flex-1" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="mr-2 h-4 w-4"/>Excluir cena</Button>
+                 </div>
+                 <div className="flex w-full justify-start items-center mt-2">
+                    <Button variant="ghost" size="sm" onClick={() => handleExport(scene)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM .TXT</Button>
+                 </div>
               </CardFooter>
             </Card>
           ))}
