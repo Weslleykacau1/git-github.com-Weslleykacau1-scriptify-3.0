@@ -23,10 +23,9 @@ import { SettingsDialog } from '@/components/features/settings-dialog';
 
 
 const VALID_KEYS = [
-    '2T4Y-6U8I-9O1P-3A5S',
-    '7D9F-1G2H-3J4K-5L6M',
-    '8N0B-2V3C-4X5Z-7M6N',
-    '1Q2W-3E4R-5T6Y-7U8I'
+    'ABCD-1234-EFGH-5678',
+    'WXYZ-9876-LMNQ-4321',
+    'VIP-2025-ACESSO-LIB'
 ];
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script';
