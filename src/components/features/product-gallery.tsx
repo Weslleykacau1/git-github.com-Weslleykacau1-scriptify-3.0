@@ -44,14 +44,19 @@ export function ProductGallery() {
 
   const handleExport = (product: Product) => {
     try {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(product, null, 2));
+        const productDataString = `
+Nome do Produto: ${product.name || ''}
+Marca: ${product.brand || ''}
+Descrição: ${product.description || ''}
+        `.trim();
+        const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(productDataString);
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `${product.name || 'product'}.json`);
+        downloadAnchorNode.setAttribute("download", `${product.name || 'product'}.txt`);
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
-        toast({ title: `"${product.name}" exportado com sucesso!` });
+        toast({ title: `"${product.name}" exportado como TXT com sucesso!` });
     } catch (error) {
         console.error("Export failed:", error);
         toast({ title: 'Erro ao exportar', variant: 'destructive' });
@@ -148,7 +153,7 @@ Descrição: ${p.description || ''}
                     <Button variant="destructive" className="flex-1" onClick={() => handleDelete(product.id, product.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir Produto</Button>
                  </div>
                  <div className="flex w-full justify-start items-center mt-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
                  </div>
               </CardFooter>
             </Card>
