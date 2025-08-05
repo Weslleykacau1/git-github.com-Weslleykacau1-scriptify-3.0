@@ -132,7 +132,7 @@ Descrição: ${p.description || ''}
             <p className="text-muted-foreground text-center py-8">A sua galeria de produtos está vazia.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((product) => (
             <Card key={product.id} className="flex flex-col">
               <CardHeader>
@@ -142,14 +142,9 @@ Descrição: ${p.description || ''}
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-4">{product.description}</p>
               </CardContent>
-              <CardFooter className="flex flex-col items-start gap-2">
-                <div className="flex w-full gap-2">
+              <CardFooter className="flex flex-col sm:flex-row gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(product)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                   <Button variant="destructive" className="flex-1" onClick={() => handleDelete(product.id, product.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir Produto</Button>
-                </div>
-                <div className="flex w-full justify-between items-center mt-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
-                </div>
               </CardFooter>
             </Card>
           ))}

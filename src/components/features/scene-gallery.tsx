@@ -153,7 +153,7 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
             <p className="text-muted-foreground text-center py-8">A sua galeria de cenas está vazia.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {scenes.map((scene) => (
             <Card key={scene.id} className="flex flex-col">
               <CardHeader>
@@ -163,11 +163,9 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
                 <p className="text-sm text-muted-foreground line-clamp-3">{scene.setting}</p>
                 {scene.duration && <p className="text-xs text-muted-foreground mt-2">{scene.duration} seg</p>}
               </CardContent>
-              <CardFooter className="flex flex-col items-start gap-2">
-                <div className="flex w-full gap-2">
+              <CardFooter className="flex flex-col sm:flex-row gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(scene)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                   <Button variant="destructive" className="flex-1" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="mr-2 h-4 w-4"/>Excluir cena</Button>
-                </div>
               </CardFooter>
             </Card>
           ))}

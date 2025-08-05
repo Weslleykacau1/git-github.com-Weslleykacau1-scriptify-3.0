@@ -117,7 +117,7 @@ Prompt Negativo: ${character.negativePrompt || ''}
        {characters.length === 0 ? (
          <p className="text-muted-foreground text-center py-8">A sua galeria de personagens está vazia.</p>
        ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {characters.map((char) => (
             <Card key={char.id} className="flex flex-col">
               <CardHeader>
@@ -128,7 +128,7 @@ Prompt Negativo: ${character.negativePrompt || ''}
                 <p className="text-sm text-muted-foreground line-clamp-3">{char.biography}</p>
               </CardContent>
               <CardFooter className="flex flex-col items-start gap-2">
-                <div className="flex w-full gap-2">
+                <div className="flex flex-col sm:flex-row w-full gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(char)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                   <Button variant="destructive" className="flex-1" onClick={() => handleDelete(char.id, char.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir Personagem</Button>
                 </div>
