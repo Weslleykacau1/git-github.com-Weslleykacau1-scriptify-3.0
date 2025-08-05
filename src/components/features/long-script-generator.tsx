@@ -2,19 +2,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { FileText, User, Clapperboard, BookOpen, Loader2, Copy, ImageIcon, Video, Search, Film, Download, List } from 'lucide-react';
+import { FileText, User, Clapperboard, BookOpen, Loader2, Copy, ImageIcon, Video, Search, Film, Download, List, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateLongScript, GenerateLongScriptOutput } from '@/ai/flows/script-generation/generate-long-script';
 import type { Character, Scene } from '@/lib/types';
 import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 import { SeoPreviewDialog } from './seo-preview-dialog';
 import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { generateImage } from '@/ai/flows/media-generation/generate-image';
 
 export function LongScriptGenerator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +33,10 @@ export function LongScriptGenerator() {
   
   const [isSeoDialogOpen, setIsSeoDialogOpen] = useState(false);
   const [seoData, setSeoData] = useState<GenerateSeoMetadataOutput | null>(null);
+
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -160,8 +166,33 @@ export function LongScriptGenerator() {
     }
   };
 
+  const handleGenerateImage = async (prompt: string, index: number) => {
+    setIsGeneratingImage(`image-${index}`);
+    try {
+        const { imageDataUri } = await generateImage({ prompt, aspectRatio: '16:9' });
+        setCurrentImage(imageDataUri);
+        setIsImageModalOpen(true);
+    } catch(e) {
+        toast({title: 'Erro ao gerar imagem', variant: 'destructive'});
+    } finally {
+        setIsGeneratingImage(null);
+    }
+  }
+
   return (
     <>
+    <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Imagem Gerada</DialogTitle>
+          </DialogHeader>
+          {currentImage && (
+            <div className="relative aspect-video">
+              <Image src={currentImage} alt="Imagem gerada" layout="fill" objectFit="contain" />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     <SeoPreviewDialog
         isOpen={isSeoDialogOpen}
         onOpenChange={setIsSeoDialogOpen}
@@ -274,10 +305,15 @@ export function LongScriptGenerator() {
                                                     <ImageIcon className="h-4 w-4 text-primary" />
                                                     <span>Prompt de Imagem (EN)</span>
                                                 </div>
-                                                <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
-                                                    <Copy className="mr-2 h-4 w-4" />
-                                                     <span className="hidden md:inline">Copiar</span>
-                                                </Button>
+                                                <div className="flex items-center">
+                                                    <Button variant="ghost" size="icon" onClick={() => handleGenerateImage(scene.imagePrompt, index)} disabled={isGeneratingImage === `image-${index}`}>
+                                                        {isGeneratingImage === `image-${index}` ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                                        <Copy className="mr-2 h-4 w-4" />
+                                                        <span className="hidden md:inline">Copiar</span>
+                                                    </Button>
+                                                </div>
                                             </div>
                                             <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
                                         </div>
@@ -334,5 +370,3 @@ export function LongScriptGenerator() {
     </>
   );
 }
-
-    

@@ -1,5 +1,4 @@
 
-// src/components/features/thumbnail-generator.tsx
 'use client';
 
 import { useState } from 'react';

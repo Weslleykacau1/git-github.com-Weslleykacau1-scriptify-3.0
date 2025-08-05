@@ -2,21 +2,24 @@
 // src/components/features/media-prompt-generator.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, FileInput, Image as ImageIcon, Video, Copy, Download, Search, Film } from 'lucide-react';
+import { Loader2, FileInput, Image as ImageIcon, Video, Copy, Download, Search, Film, Eye } from 'lucide-react';
 import { generateMediaPrompts, GenerateMediaPromptsOutput } from '@/ai/flows/generate-media-prompts';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 import { SeoPreviewDialog } from './seo-preview-dialog';
 import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { generateImage } from '@/ai/flows/media-generation/generate-image';
 
 
 const formSchema = z.object({
@@ -35,6 +38,10 @@ export function MediaPromptGenerator() {
   const [isSeoDialogOpen, setIsSeoDialogOpen] = useState(false);
   const [seoData, setSeoData] = useState<GenerateSeoMetadataOutput | null>(null);
   const isMobile = useIsMobile();
+  
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -130,8 +137,33 @@ export function MediaPromptGenerator() {
     }
   };
 
+  const handleGenerateImage = async (prompt: string, index: number) => {
+    setIsGeneratingImage(`image-${index}`);
+    try {
+        const { imageDataUri } = await generateImage({ prompt, aspectRatio: '16:9' });
+        setCurrentImage(imageDataUri);
+        setIsImageModalOpen(true);
+    } catch(e) {
+        toast({title: 'Erro ao gerar imagem', variant: 'destructive'});
+    } finally {
+        setIsGeneratingImage(null);
+    }
+  }
+
   return (
     <>
+      <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Imagem Gerada</DialogTitle>
+          </DialogHeader>
+          {currentImage && (
+            <div className="relative aspect-video">
+              <Image src={currentImage} alt="Imagem gerada" layout="fill" objectFit="contain" />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       <SeoPreviewDialog
         isOpen={isSeoDialogOpen}
         onOpenChange={setIsSeoDialogOpen}
@@ -145,9 +177,6 @@ export function MediaPromptGenerator() {
             </div>
             <div>
               <CardTitle className="m-0 text-xl font-bold font-headline">Analisador de Roteiro Existente</CardTitle>
-              <CardDescription>
-                Cole um roteiro pronto para que a IA extraia prompts de imagem e vídeo para cada cena, além de gerar SEO e ideias de thumbnail.
-              </CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -158,7 +187,7 @@ export function MediaPromptGenerator() {
               name="script"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Roteiro</FormLabel>
+                  <FormLabel>Cole um roteiro pronto para que a IA extraia prompts de imagem e vídeo para cada cena, além de gerar SEO e ideias de thumbnail.</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Cole o seu roteiro aqui..."
@@ -215,10 +244,15 @@ export function MediaPromptGenerator() {
                               <ImageIcon className="h-4 w-4 text-primary" />
                               <span>Prompt de Imagem (EN)</span>
                             </div>
-                            <Button variant="ghost" size={isMobile ? "icon" : "sm"} onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
-                              <Copy className="h-4 w-4" />
-                              {!isMobile && <span className="ml-2">Copiar</span>}
-                            </Button>
+                             <div className="flex items-center">
+                                <Button variant="ghost" size="icon" onClick={() => handleGenerateImage(scene.imagePrompt, index)} disabled={isGeneratingImage === `image-${index}`}>
+                                    {isGeneratingImage === `image-${index}` ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                                <Button variant="ghost" size={isMobile ? "icon" : "sm"} onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
+                                  <Copy className="h-4 w-4" />
+                                  {!isMobile && <span className="ml-2">Copiar</span>}
+                                </Button>
+                            </div>
                           </div>
                           <p className="text-sm text-muted-foreground">{scene.imagePrompt}</p>
                         </div>
@@ -274,5 +308,3 @@ export function MediaPromptGenerator() {
     </>
   );
 }
-
-    
