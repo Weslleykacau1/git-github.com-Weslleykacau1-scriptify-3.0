@@ -45,12 +45,12 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
     name: 'generateThumbnailAndSeoPrompt',
     input: { schema: z.object({ theme: z.string(), style: z.string() }) },
     output: { schema: z.object({ 
-        youtubeTitle: z.string(), 
-        overlayText: z.string(), 
-        emoji: z.string(),
-        youtubeDescription: z.string(),
-        hashtags: z.string(),
-        tags: z.string(),
+        youtubeTitle: z.string().describe("Título 'clickbait' relevante para o conteúdo para maximizar CTR."), 
+        overlayText: z.string().describe("Texto de sobreposição curto (máx 5 palavras) e de alto impacto."), 
+        emoji: z.string().describe("Um único emoji relevante para o tema."),
+        youtubeDescription: z.string().describe("Descrição detalhada e otimizada para SEO, com um call to action."),
+        hashtags: z.string().describe("String de hashtags relevantes, separadas por espaços."),
+        tags: z.string().describe("String de tags relevantes para o YouTube, separadas por vírgulas."),
     }) },
     prompt: `You are a YouTube content and SEO strategist. Based on the video theme "{{theme}}" and the visual style "{{style}}", generate the following assets. All output must be in Brazilian Portuguese.
 
