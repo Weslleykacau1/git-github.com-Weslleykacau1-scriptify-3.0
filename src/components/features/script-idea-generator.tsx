@@ -21,6 +21,7 @@ export function ScriptIdeaGenerator() {
   const [duration, setDuration] = useState<'8s' | '15s' | '30s'>('8s');
   const [videoType, setVideoType] = useState<'Shorts' | 'Watch'>('Shorts');
   const [cta, setCta] = useState('Siga para mais!');
+  const [customCta, setCustomCta] = useState('');
   const [generatedScript, setGeneratedScript] = useState('');
   
   const { toast } = useToast();
@@ -30,6 +31,9 @@ export function ScriptIdeaGenerator() {
         toast({ title: 'Erro', description: 'Por favor, insira um tema para o roteiro.', variant: 'destructive' });
         return;
     }
+
+    const finalCta = cta === 'Personalizado' ? customCta : cta;
+
     setIsLoading(true);
     setGeneratedScript('');
     toast({ title: 'Gerando roteiro viral...' });
@@ -39,7 +43,7 @@ export function ScriptIdeaGenerator() {
             theme,
             duration,
             videoType,
-            cta,
+            cta: finalCta,
             imagePrompt: image || undefined,
         });
         setGeneratedScript(result.script);
@@ -113,11 +117,27 @@ export function ScriptIdeaGenerator() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Siga para mais!">Siga para mais!</SelectItem>
-              <SelectItem value="Comente abaixo!">Comente abaixo!</SelectItem>
-              <SelectItem value="Compartilhe com um amigo!">Compartilhe com um amigo!</SelectItem>
+              <SelectItem value="Comente a sua opinião!">Comente a sua opinião!</SelectItem>
+              <SelectItem value="Clique no link da bio!">Clique no link da bio!</SelectItem>
+              <SelectItem value="Partilhe com um amigo!">Partilhe com um amigo!</SelectItem>
+              <SelectItem value="Nenhum">Nenhum</SelectItem>
+              <SelectItem value="Personalizado">Personalizado</SelectItem>
             </SelectContent>
           </Select>
       </div>
+
+       {cta === 'Personalizado' && (
+        <div className="space-y-1">
+          <Label htmlFor="custom-cta">CTA Personalizado</Label>
+          <Input 
+            id="custom-cta"
+            placeholder="Digite o seu call to action..."
+            value={customCta}
+            onChange={(e) => setCustomCta(e.target.value)}
+          />
+        </div>
+      )}
+
 
       <Button onClick={handleGenerate} disabled={isLoading} size="lg" className="w-full">
         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
