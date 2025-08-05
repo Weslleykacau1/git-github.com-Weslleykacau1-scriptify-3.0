@@ -72,7 +72,7 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
 });
 
 
-async function generateImage(promptParts: (z.infer<typeof ai.generateInputSchema>['prompt']), aspectRatio: '16:9'): Promise<string> {
+async function generateImageWithReferences(promptParts: (z.infer<typeof ai.generateInputSchema>['prompt']), aspectRatio: '16:9'): Promise<string> {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
       prompt: promptParts,
@@ -109,7 +109,7 @@ const generateThumbnailIdeasFlow = ai.defineFlow(
     // Step 2: Construct a detailed prompt for image generation, now including the reference images directly.
     const basePromptText = `Create a YouTube thumbnail in a "${style}" style. The video is about "${theme}". The thumbnail should prominently feature the main character from the reference image. The background should be inspired by the background reference image if provided. Overlay the text "${overlayText}" and include the emoji "${emoji}" in a visually appealing way. The overall mood should be exciting and clickable.`;
     
-    const basePromptParts = [
+    const basePromptParts: (string | {text: string} | {media: {url: string}})[] = [
         { text: basePromptText },
         { media: { url: mainImageUri } }
     ];
@@ -120,14 +120,14 @@ const generateThumbnailIdeasFlow = ai.defineFlow(
 
     // Step 3: Generate two image variations
     const prompt1 = [...basePromptParts];
-    prompt1[0].text += " Variation 1.";
+    (prompt1[0] as {text: string}).text += " Variation 1.";
 
     const prompt2 = [...basePromptParts];
-    prompt2[0].text += " Variation 2, slightly different composition.";
+    (prompt2[0] as {text: string}).text += " Variation 2, slightly different composition.";
     
     const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImage(prompt1 as any, aspectRatio),
-      generateImage(prompt2 as any, aspectRatio),
+      generateImageWithReferences(prompt1 as any, aspectRatio),
+      generateImageWithReferences(prompt2 as any, aspectRatio),
     ]);
     
     // Step 4: Return all results
