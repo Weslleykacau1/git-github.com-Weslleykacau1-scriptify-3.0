@@ -8,9 +8,8 @@ import { FileUploader } from '@/components/ui/file-uploader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Image as ImageIcon, Sparkles, Loader2, Camera, Film, Copy, Download, Tag, Hash, FileText, Type } from 'lucide-react';
+import { Image as ImageIcon, Sparkles, Loader2, Camera, Film, Copy, Tag, Hash, FileText, Type } from 'lucide-react';
 import { generateThumbnailIdeas, GenerateThumbnailIdeasOutput } from '@/ai/flows/media-generation/generate-thumbnail-ideas';
-import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Textarea } from '../ui/textarea';
 
@@ -63,16 +62,6 @@ export function ThumbnailGenerator() {
     toast({ title: `${fieldName} copiado para a área de transferência!` });
   };
   
-  const handleDownload = (imageUrl: string) => {
-    const link = document.createElement('a');
-    link.href = imageUrl;
-    link.download = `thumbnail_${theme.replace(/\s/g, '_')}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full w-full">
       <div className="flex flex-col space-y-4">
@@ -137,7 +126,7 @@ export function ThumbnailGenerator() {
 
         <Button onClick={handleGenerate} disabled={isLoading} className="mt-auto">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-          Gerar Ideias e SEO
+          Gerar Prompt e SEO
         </Button>
       </div>
 
@@ -148,22 +137,16 @@ export function ThumbnailGenerator() {
           {!isLoading && !result && <p className="text-muted-foreground text-center">Aguardando a geração de ideias...</p>}
           {result && (
             <Card className="w-full">
-              <CardContent className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="space-y-4">
-                   <h3 className="font-semibold">Variações de Thumbnail</h3>
-                   <p className="text-sm"><strong>Texto:</strong> {result.overlayText} {result.emoji}</p>
-                    <div className="space-y-2">
-                        <Image src={result.thumbnailImage1Uri} alt="Thumbnail 1" width={512} height={288} className="rounded-lg object-cover" />
-                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage1Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 1</Button>
-                    </div>
-                    <div className="space-y-2">
-                        <Image src={result.thumbnailImage2Uri} alt="Thumbnail 2" width={512} height={288} className="rounded-lg object-cover" />
-                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleDownload(result.thumbnailImage2Uri)}><Download className="mr-2 h-4 w-4"/>Baixar Variação 2</Button>
-                    </div>
-                </div>
-
+              <CardContent className="p-4 grid grid-cols-1 gap-4">
                 <div className="space-y-3">
-                   <h3 className="font-semibold">Metadados de SEO</h3>
+                   <h3 className="font-semibold">Prompt e Metadados de SEO</h3>
+                    <div className="space-y-1">
+                        <Label htmlFor="image-prompt" className="flex items-center gap-2 text-xs"><ImageIcon className="h-3 w-3" /> Prompt de Imagem (EN)</Label>
+                        <div className="flex items-start gap-1">
+                          <Textarea id="image-prompt" readOnly value={result.imagePrompt} className="bg-muted text-xs h-28" />
+                          <Button variant="ghost" size="icon" onClick={() => handleCopy(result.imagePrompt, 'Prompt de Imagem')}><Copy className="h-4 w-4" /></Button>
+                        </div>
+                    </div>
                     <div className="space-y-1">
                         <Label htmlFor="youtube-title" className="flex items-center gap-2 text-xs"><Type className="h-3 w-3" /> Título do Vídeo</Label>
                         <div className="flex items-start gap-1">

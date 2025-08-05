@@ -2,9 +2,9 @@
 'use server';
 
 /**
- * @fileOverview Generates thumbnail ideas including text, SEO, and two image variations.
+ * @fileOverview Generates thumbnail ideas including text, SEO, and an image prompt.
  *
- * - generateThumbnailIdeas - A function that handles the thumbnail generation process.
+ * - generateThumbnailIdeas - A function that handles the thumbnail idea generation process.
  * - GenerateThumbnailIdeasInput - The input type for the function.
  * - GenerateThumbnailIdeasOutput - The return type for the function.
  */
@@ -35,24 +35,21 @@ const GenerateThumbnailIdeasOutputSchema = z.object({
   youtubeDescription: z.string().describe('A detailed, SEO-friendly description for the YouTube video, including a call to action.'),
   hashtags: z.string().describe('A string of relevant hashtags, space-separated, starting with # (e.g., "#ai #tecnologia #futuro").'),
   tags: z.string().describe('A comma-separated string of keywords for the YouTube tags field (e.g., "inteligencia artificial, tecnologia, futuro, inovação").'),
-  thumbnailImage1Uri: z.string().describe('The first generated thumbnail image as a data URI.'),
-  thumbnailImage2Uri: z.string().describe('The second generated thumbnail image as a data URI.'),
+  imagePrompt: z.string().describe('A detailed English prompt to generate the thumbnail image.'),
 });
 export type GenerateThumbnailIdeasOutput = z.infer<typeof GenerateThumbnailIdeasOutputSchema>;
 
 
 const generateThumbnailAndSeoPrompt = ai.definePrompt({
     name: 'generateThumbnailAndSeoPrompt',
-    input: { schema: z.object({ theme: z.string(), style: z.string() }) },
-    output: { schema: z.object({ 
-        youtubeTitle: z.string().describe("Título 'clickbait' relevante para o conteúdo para maximizar CTR."), 
-        overlayText: z.string().describe("Texto de sobreposição curto (máx 5 palavras) e de alto impacto."), 
-        emoji: z.string().describe("Um único emoji relevante para o tema."),
-        youtubeDescription: z.string().describe("Descrição detalhada e otimizada para SEO, com um call to action."),
-        hashtags: z.string().describe("String de hashtags relevantes, separadas por espaços."),
-        tags: z.string().describe("String de tags relevantes para o YouTube, separadas por vírgulas."),
+    input: { schema: z.object({ 
+        theme: z.string(), 
+        style: z.string(),
+        mainImageUri: z.string(),
+        backgroundImageUri: z.string().optional(),
     }) },
-    prompt: `You are a YouTube content and SEO strategist. Based on the video theme "{{theme}}" and the visual style "{{style}}", generate the following assets. All output must be in Brazilian Portuguese.
+    output: { schema: GenerateThumbnailIdeasOutputSchema },
+    prompt: `You are a YouTube content and SEO strategist. Based on the video theme "{{theme}}", the visual style "{{style}}", and the provided reference images, generate the following assets. All text output must be in Brazilian Portuguese, except for the image prompt which must be in English.
 
 1.  **YouTube Title:** A catchy, SEO-optimized title.
 2.  **Overlay Text:** A very short, impactful text to put on the thumbnail image itself.
@@ -60,6 +57,15 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
 4.  **YouTube Description:** A detailed, SEO-friendly description.
 5.  **Hashtags:** A space-separated list of 3-5 relevant hashtags.
 6.  **Tags:** A comma-separated list of keywords for the YouTube tags section.
+7.  **Image Prompt:** A detailed English prompt for an image generation AI. The prompt should describe a YouTube thumbnail in a "{{style}}" style. The video is about "{{theme}}". The thumbnail should prominently feature the main character from the main reference image. The background should be inspired by the background reference image if provided. The prompt should include instructions to overlay the text "{{overlayText}}" and the emoji "{{emoji}}" in a visually appealing way. The overall mood should be exciting and clickable.
+
+Main reference image:
+{{media url=mainImageUri}}
+
+{{#if backgroundImageUri}}
+Background reference image:
+{{media url=backgroundImageUri}}
+{{/if}}
 `,
     config: {
         safetySettings: [
@@ -72,75 +78,26 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
 });
 
 
-async function generateImageWithReferences(promptParts: (z.infer<typeof ai.generateInputSchema>['prompt']), aspectRatio: '16:9'): Promise<string> {
-    const { media } = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: promptParts,
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'],
-        aspectRatio: aspectRatio,
-        safetySettings: [
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-        ],
-      },
-    });
-
-    if (!media.url) {
-      throw new Error('Image generation failed to return a data URI.');
-    }
-    return media.url;
-}
-
-
 const generateThumbnailIdeasFlow = ai.defineFlow(
   {
     name: 'generateThumbnailIdeasFlow',
     inputSchema: GenerateThumbnailIdeasInputSchema,
     outputSchema: GenerateThumbnailIdeasOutputSchema,
   },
-  async ({ mainImageUri, backgroundImageUri, theme, style, aspectRatio }) => {
-    // Step 1: Generate textual and SEO ideas
-    const textAndSeoResult = await generateThumbnailAndSeoPrompt({ theme, style });
-    const { youtubeTitle, overlayText, emoji, youtubeDescription, hashtags, tags } = textAndSeoResult.output!;
-
-    // Step 2: Construct a detailed prompt for image generation, now including the reference images directly.
-    const basePromptText = `Create a YouTube thumbnail in a "${style}" style. The video is about "${theme}". The thumbnail should prominently feature the main character from the reference image. The background should be inspired by the background reference image if provided. Overlay the text "${overlayText}" and include the emoji "${emoji}" in a visually appealing way. The overall mood should be exciting and clickable.`;
+  async ({ mainImageUri, backgroundImageUri, theme, style }) => {
     
-    const basePromptParts: (string | {text: string} | {media: {url: string}})[] = [
-        { text: basePromptText },
-        { media: { url: mainImageUri } }
-    ];
+    const { output } = await generateThumbnailAndSeoPrompt({
+        theme,
+        style,
+        mainImageUri,
+        backgroundImageUri,
+    });
     
-    if (backgroundImageUri) {
-        basePromptParts.push({ media: { url: backgroundImageUri } });
+    if (!output) {
+        throw new Error('Failed to generate thumbnail ideas.');
     }
 
-    // Step 3: Generate two image variations
-    const prompt1 = [...basePromptParts];
-    (prompt1[0] as {text: string}).text += " Variation 1.";
-
-    const prompt2 = [...basePromptParts];
-    (prompt2[0] as {text: string}).text += " Variation 2, slightly different composition.";
-    
-    const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImageWithReferences(prompt1 as any, aspectRatio),
-      generateImageWithReferences(prompt2 as any, aspectRatio),
-    ]);
-    
-    // Step 4: Return all results
-    return {
-      youtubeTitle,
-      overlayText,
-      emoji,
-      youtubeDescription,
-      hashtags,
-      tags,
-      thumbnailImage1Uri,
-      thumbnailImage2Uri,
-    };
+    return output;
   }
 );
 
