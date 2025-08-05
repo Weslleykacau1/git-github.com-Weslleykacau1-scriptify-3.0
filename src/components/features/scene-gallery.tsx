@@ -146,12 +146,6 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
             </p>
           </div>
         </div>
-        <div className="flex gap-2 w-full md:w-auto">
-            <Button variant="outline" onClick={handleExportAll} className="flex-1">
-                <Download className="mr-2 h-4 w-4" />
-                EXPORTA EM .TXT
-            </Button>
-        </div>
       </div>
       
       {scenes.length === 0 ? (
