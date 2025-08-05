@@ -130,7 +130,7 @@ Prompt Negativo: ${character.negativePrompt || ''}
               <CardFooter className="flex flex-col items-start gap-2">
                 <div className="flex flex-col sm:flex-row w-full gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(char)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
-                  <Button variant="destructive" className="flex-1" onClick={() => handleDelete(char.id, char.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir Personagem</Button>
+                  <Button variant="destructive" className="flex-1" onClick={() => handleDelete(char.id, char.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                   <Button variant="ghost" size="sm" onClick={() => handleExport(char)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
