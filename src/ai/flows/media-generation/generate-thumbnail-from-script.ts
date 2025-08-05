@@ -26,7 +26,7 @@ const GenerateThumbnailFromScriptOutputSchema = z.object({
 });
 export type GenerateThumbnailFromScriptOutput = z.infer<typeof GenerateThumbnailFromScriptOutputSchema>;
 
-async function generateImageForThumbnail(prompt: string, referenceImageUri: string): Promise<string> {
+async function generateImageForThumbnail(prompt: string): Promise<string> {
     const { imageDataUri } = await generateImage({
         prompt,
         aspectRatio: '16:9'
@@ -46,13 +46,13 @@ const generateThumbnailFromScriptFlow = ai.defineFlow(
     const { imageDataUri: referenceImageUri } = await generateImage({ prompt: firstSceneImagePrompt, aspectRatio: '16:9' });
     
     // Step 2: Construct detailed prompts for the two thumbnail variations.
-    const imagePrompt1 = `Create a highly clickable YouTube thumbnail based on this reference image: ${referenceImageUri}. The video's theme is described by these ideas: "${thumbnailIdeas}". Make this thumbnail visually striking and compelling. Variation 1.`;
-    const imagePrompt2 = `Create another highly clickable YouTube thumbnail using the same reference image and theme ideas: "${thumbnailIdeas}". Make this a different, alternative composition. Variation 2. Reference image: ${referenceImageUri}`;
+    const imagePrompt1 = `Create a highly clickable YouTube thumbnail based on this reference image: {{media url="${referenceImageUri}"}}. The video's theme is described by these ideas: "${thumbnailIdeas}". Make this thumbnail visually striking and compelling. Variation 1.`;
+    const imagePrompt2 = `Create another highly clickable YouTube thumbnail using the same reference image and theme ideas: "${thumbnailIdeas}". Make this a different, alternative composition. Variation 2. Reference image: {{media url="${referenceImageUri}"}}`;
 
     // Step 3: Generate two thumbnail variations using the reference image.
     const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImageForThumbnail(imagePrompt1, referenceImageUri),
-      generateImageForThumbnail(imagePrompt2, referenceImageUri),
+      generateImageForThumbnail(imagePrompt1),
+      generateImageForThumbnail(imagePrompt2),
     ]);
     
     // Step 4: Return the results.

@@ -64,18 +64,10 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
 });
 
 
-async function generateImage(promptText: string, mainImageUri: string, aspectRatio: '16:9', backgroundImageUri?: string): Promise<string> {
-    const prompt = {
-        text: promptText,
-        media: {
-            mainImage: { url: mainImageUri },
-            ...(backgroundImageUri && { backgroundImage: { url: backgroundImageUri } }),
-        },
-    };
-
+async function generateImage(promptText: string, aspectRatio: '16:9'): Promise<string> {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: prompt,
+      prompt: promptText,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
         aspectRatio: aspectRatio,
@@ -100,13 +92,13 @@ const generateThumbnailIdeasFlow = ai.defineFlow(
     const textAndSeoResult = await generateThumbnailAndSeoPrompt({ theme, style });
     const { youtubeTitle, overlayText, emoji, youtubeDescription, hashtags, tags } = textAndSeoResult.output!;
 
-    // Step 2: Construct a detailed prompt for image generation
-    const imagePrompt = `Create a YouTube thumbnail in a "${style}" style. The video is about "${theme}". The thumbnail should prominently feature the main character from the reference image. The background should be inspired by the background reference image if provided. Overlay the text "${overlayText}" and include the emoji "${emoji}" in a visually appealing way. The overall mood should be exciting and clickable.`;
+    // Step 2: Construct a detailed prompt for image generation, now including the reference images directly.
+    const imagePromptText = `Create a YouTube thumbnail in a "${style}" style. The video is about "${theme}". The thumbnail should prominently feature the main character from the reference image. The background should be inspired by the background reference image if provided. Overlay the text "${overlayText}" and include the emoji "${emoji}" in a visually appealing way. The overall mood should be exciting and clickable. Reference image: {{media url="${mainImageUri}"}} ${backgroundImageUri ? `Background reference: {{media url="${backgroundImageUri}"}}` : ''}`;
 
     // Step 3: Generate two image variations
     const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImage(`${imagePrompt} Variation 1.`, mainImageUri, aspectRatio, backgroundImageUri),
-      generateImage(`${imagePrompt} Variation 2, slightly different composition.`, mainImageUri, aspectRatio, backgroundImageUri),
+      generateImage(`${imagePromptText} Variation 1.`, aspectRatio),
+      generateImage(`${imagePromptText} Variation 2, slightly different composition.`, aspectRatio),
     ]);
     
     // Step 4: Return all results
