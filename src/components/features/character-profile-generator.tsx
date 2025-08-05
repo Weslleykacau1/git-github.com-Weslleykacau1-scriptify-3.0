@@ -469,6 +469,11 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     </Button>
                 )}
             </div>
+            <div className="flex flex-col sm:flex-row gap-2 justify-start pt-2">
+                <Button variant="outline" className="w-full sm:w-auto" onClick={resetScene}><Plus className="mr-2 h-4 w-4"/> Nova Cena</Button>
+                <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigateToGallery('scene_gallery')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
+                <Button className="w-full sm:w-auto" onClick={() => saveToGallery('scene')}><Save className="mr-2 h-4 w-4"/> Guardar Cena</Button>
+            </div>
              <div className="space-y-2">
                 <Label htmlFor="sceneSetting">Cenário</Label>
                 <Textarea 
@@ -614,12 +619,6 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     </RadioGroup>
                     <Label htmlFor="sponsored-yes">É uma parceria / conteúdo patrocinado.</Label>
                 </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-2 justify-start pt-4">
-                <Button variant="outline" className="w-full sm:w-auto" onClick={resetScene}><Plus className="mr-2 h-4 w-4"/> Nova Cena</Button>
-                <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigateToGallery('scene_gallery')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
-                <Button className="w-full sm:w-auto" onClick={() => saveToGallery('scene')}><Save className="mr-2 h-4 w-4"/> Guardar Cena</Button>
             </div>
         </div>
         
