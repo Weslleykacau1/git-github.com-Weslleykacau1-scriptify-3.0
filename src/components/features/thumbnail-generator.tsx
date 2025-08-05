@@ -21,7 +21,6 @@ export function ThumbnailGenerator() {
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [theme, setTheme] = useState('');
   const [style, setStyle] = useState('default');
-  const [aspectRatio, setAspectRatio] = useState<'16:9' | '9:16'>('16:9');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GenerateThumbnailIdeasOutput | null>(null);
   const { toast } = useToast();
@@ -44,7 +43,7 @@ export function ThumbnailGenerator() {
         backgroundImageUri: backgroundImage || undefined,
         theme,
         style,
-        aspectRatio,
+        aspectRatio: '16:9',
       });
       setResult(generatedResult);
       toast({ title: 'Ideias de thumbnail e SEO geradas com sucesso!' });
@@ -104,7 +103,7 @@ export function ThumbnailGenerator() {
           <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Ex: Minha rotina de skincare..." />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
             <div className="space-y-2">
               <Label htmlFor="style">Estilo da Thumbnail</Label>
               <Select value={style} onValueChange={setStyle}>
@@ -135,18 +134,6 @@ export function ThumbnailGenerator() {
                   <SelectItem value="movie-poster">Thumbnail Estilo Cartaz de Filme / Série</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="aspectRatio">Aspect Ratio</Label>
-                <Select value={aspectRatio} onValueChange={(v) => setAspectRatio(v as any)}>
-                    <SelectTrigger id="aspectRatio">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="16:9">16:9 (Horizontal)</SelectItem>
-                        <SelectItem value="9:16">9:16 (Vertical)</SelectItem>
-                    </SelectContent>
-                </Select>
             </div>
         </div>
         

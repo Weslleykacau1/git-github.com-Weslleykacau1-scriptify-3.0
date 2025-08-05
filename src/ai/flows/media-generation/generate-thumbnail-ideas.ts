@@ -24,7 +24,7 @@ const GenerateThumbnailIdeasInputSchema = z.object({
     .describe("An optional background image, as a data URI."),
   theme: z.string().describe('The theme of the video (e.g., "My skincare routine").'),
   style: z.string().describe('The visual style for the thumbnail (e.g., "MrBeast Style").'),
-  aspectRatio: z.enum(['16:9', '9:16']).optional().default('16:9').describe('The aspect ratio for the thumbnail.'),
+  aspectRatio: z.enum(['16:9', '9:16']).describe('The aspect ratio for the thumbnail.'),
 });
 export type GenerateThumbnailIdeasInput = z.infer<typeof GenerateThumbnailIdeasInputSchema>;
 
