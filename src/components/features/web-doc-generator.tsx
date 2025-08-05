@@ -7,13 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { BookOpen, Pencil, List, Info, Loader2, Copy, Video, Image as ImageIcon, FileInput, Download, Search, Film, Sparkles } from 'lucide-react';
+import { BookOpen, Pencil, List, Info, Loader2, Copy, Video, Image as ImageIcon, FileInput, Download, Search, Film } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateWebDocScript, GenerateWebDocScriptOutput } from '@/ai/flows/script-generation/generate-web-doc-script';
 import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
 import { SeoPreviewDialog } from './seo-preview-dialog';
 import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
-import { Switch } from '../ui/switch';
 
 
 export function WebDocGenerator() {
@@ -182,35 +181,6 @@ export function WebDocGenerator() {
               min="1"
             />
           </div>
-           <div className="border rounded-lg p-4 space-y-4">
-                <div className="flex items-center gap-3">
-                    <Sparkles className="h-6 w-6 text-primary" />
-                    <h3 className="font-semibold text-lg">Melhorias de Qualidade</h3>
-                </div>
-                <div className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <Label htmlFor="hyper-realism-webdoc" className='font-medium'>Hiper-realismo</Label>
-                            <p className="text-xs text-muted-foreground">Vídeos com aparência realista e detalhes impressionantes.</p>
-                        </div>
-                        <Switch id="hyper-realism-webdoc" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <Label htmlFor="4k-webdoc" className='font-medium'>4K</Label>
-                            <p className="text-xs text-muted-foreground">Qualidade ultra nítida em altíssima resolução.</p>
-                        </div>
-                        <Switch id="4k-webdoc" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <Label htmlFor="professional-camera-webdoc" className='font-medium'>Câmera Profissional</Label>
-                            <p className="text-xs text-muted-foreground">Movimentos e enquadramentos cinematográficos.</p>
-                        </div>
-                        <Switch id="professional-camera-webdoc" />
-                    </div>
-                </div>
-            </div>
           <Button onClick={handleGenerate} disabled={isLoading} className="w-full">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BookOpen className="mr-2 h-4 w-4" />}
             Gerar Roteiro de Web Doc
