@@ -126,10 +126,6 @@ Descrição: ${p.description || ''}
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={handleExportAll} className="w-full md:w-auto">
-            <Download className="mr-2 h-4 w-4" />
-            EXPORTA EM .TXT
-        </Button>
       </div>
       
       {products.length === 0 ? (
