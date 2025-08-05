@@ -245,7 +245,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
             variant: 'destructive',
         });
     } finally {
-        setIsLoadingProduct(false);
+      setIsLoadingProduct(false);
     }
   };
   
@@ -430,6 +430,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                             <SelectItem value="Mineiro">Mineiro</SelectItem>
                             <SelectItem value="Gaúcho">Gaúcho</SelectItem>
                             <SelectItem value="Baiano">Baiano</SelectItem>
+                            <SelectItem value="Nordestino">Nordestino</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
