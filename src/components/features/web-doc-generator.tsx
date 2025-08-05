@@ -8,14 +8,51 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { BookOpen, Pencil, List, Info, Loader2, Copy, Video, Image as ImageIcon, FileInput, Download, Search, Film, Eye } from 'lucide-react';
+import { BookOpen, Pencil, List, Info, Loader2, Copy, Video, Image as ImageIcon, FileInput, Download, Search, Film, Eye, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateWebDocScript, GenerateWebDocScriptOutput } from '@/ai/flows/script-generation/generate-web-doc-script';
-import { generateThumbnailFromScript } from '@/ai/flows/media-generation/generate-thumbnail-from-script';
+import { generateThumbnailPromptFromIdeas } from '@/ai/flows/media-generation/generate-thumbnail-prompt-from-ideas';
 import { SeoPreviewDialog } from './seo-preview-dialog';
 import { generateSeoMetadata, GenerateSeoMetadataOutput } from '@/ai/flows/content-assistance/generate-seo-metadata';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { generateImage } from '@/ai/flows/media-generation/generate-image';
+import { Textarea } from '../ui/textarea';
+
+
+const ThumbnailPromptDialog = ({ prompt, isOpen, onOpenChange }: { prompt: string | null; isOpen: boolean; onOpenChange: (open: boolean) => void; }) => {
+    const { toast } = useToast();
+    const handleCopy = () => {
+        if (!prompt) return;
+        navigator.clipboard.writeText(prompt);
+        toast({ title: "Prompt copiado para a área de transferência!" });
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Prompt de Thumbnail Gerado</DialogTitle>
+                    <DialogDescription>
+                        Use este prompt numa ferramenta de geração de imagem para criar a sua thumbnail.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="my-4">
+                    <Textarea
+                        readOnly
+                        value={prompt || ''}
+                        className="h-48 bg-muted"
+                    />
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleCopy}>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copiar Prompt
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
 export function WebDocGenerator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +70,9 @@ export function WebDocGenerator() {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null);
+  
+  const [isThumbnailPromptDialogOpen, setIsThumbnailPromptDialogOpen] = useState(false);
+  const [thumbnailPrompt, setThumbnailPrompt] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     if (!topic) {
@@ -93,21 +133,19 @@ export function WebDocGenerator() {
     toast({ title: "Roteiro exportado como TXT!" });
   };
   
-  const handleGenerateThumbnail = async () => {
+  const handleGenerateThumbnailPrompt = async () => {
     if (!result || !result.scenes.length) return;
     setIsGenerating('thumbnail');
     try {
-      const { thumbnailImage1Uri, thumbnailImage2Uri } = await generateThumbnailFromScript({
+      const { thumbnailPrompt: prompt } = await generateThumbnailPromptFromIdeas({
         firstSceneImagePrompt: result.scenes[0].imagePrompt,
         thumbnailIdeas: result.thumbnailIdeas,
-        aspectRatio: '16:9'
       });
-      // Logic to show images in a dialog will be needed here.
-      toast({title: 'Thumbnails geradas, mas a visualização ainda não está implementada.'});
-      
+      setThumbnailPrompt(prompt);
+      setIsThumbnailPromptDialogOpen(true);
     } catch (error) {
-      console.error('Thumbnail generation failed', error);
-      toast({ title: 'Erro ao gerar thumbnails', variant: 'destructive' });
+      console.error('Thumbnail prompt generation failed', error);
+      toast({ title: 'Erro ao gerar prompt de thumbnail', variant: 'destructive' });
     } finally {
       setIsGenerating(null);
     }
@@ -146,6 +184,11 @@ export function WebDocGenerator() {
 
   return (
     <>
+      <ThumbnailPromptDialog
+        prompt={thumbnailPrompt}
+        isOpen={isThumbnailPromptDialogOpen}
+        onOpenChange={setIsThumbnailPromptDialogOpen}
+      />
       <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
@@ -297,9 +340,9 @@ export function WebDocGenerator() {
                           </CardHeader>
                           <CardContent>
                               <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
-                               <Button variant="outline" size="sm" className='mt-2' onClick={handleGenerateThumbnail} disabled={isGenerating === 'thumbnail'}>
-                                {isGenerating === 'thumbnail' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Film className="mr-2 h-4 w-4" />}
-                                Gerar Thumbnail
+                               <Button variant="outline" size="sm" className='mt-2' onClick={handleGenerateThumbnailPrompt} disabled={isGenerating === 'thumbnail'}>
+                                {isGenerating === 'thumbnail' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                                Gerar Prompt de Thumbnail
                               </Button>
                           </CardContent>
                       </Card>

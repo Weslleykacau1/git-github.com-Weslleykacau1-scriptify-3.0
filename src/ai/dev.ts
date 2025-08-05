@@ -30,6 +30,8 @@ import '@/ai/flows/generate-media-prompts';
 import '@/ai/flows/media-generation/generate-thumbnail-ideas';
 import '@/ai/flows/media-generation/generate-image';
 import '@/ai/flows/media-generation/generate-thumbnail-from-script';
+import '@/ai/flows/media-generation/generate-thumbnail-prompt-from-ideas';
+
 
 // Transcription
 import '@/ai/flows/transcribe-uploaded-video';
