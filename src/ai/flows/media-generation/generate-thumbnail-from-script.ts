@@ -26,25 +26,12 @@ const GenerateThumbnailFromScriptOutputSchema = z.object({
 });
 export type GenerateThumbnailFromScriptOutput = z.infer<typeof GenerateThumbnailFromScriptOutputSchema>;
 
-async function generateImageForThumbnail(prompt: string, referenceImageUri: string, aspectRatio: '16:9' | '9:16'): Promise<string> {
-    const promptParts = [
-        { text: prompt },
-        { media: { url: referenceImageUri } },
-    ];
-    
-    const { media } = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: promptParts,
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'],
-        aspectRatio: aspectRatio,
-      },
+async function generateImageForThumbnail(prompt: string, referenceImageUri: string): Promise<string> {
+    const { imageDataUri } = await generateImage({
+        prompt,
+        aspectRatio: '16:9'
     });
-
-    if (!media.url) {
-      throw new Error('Image generation failed to return a data URI.');
-    }
-    return media.url;
+    return imageDataUri;
 }
 
 
@@ -54,18 +41,18 @@ const generateThumbnailFromScriptFlow = ai.defineFlow(
     inputSchema: GenerateThumbnailFromScriptInputSchema,
     outputSchema: GenerateThumbnailFromScriptOutputSchema,
   },
-  async ({ firstSceneImagePrompt, thumbnailIdeas, aspectRatio }) => {
+  async ({ firstSceneImagePrompt, thumbnailIdeas }) => {
     // Step 1: Generate a reference image from the first scene's prompt.
-    const { imageDataUri: referenceImageUri } = await generateImage({ prompt: firstSceneImagePrompt, aspectRatio });
+    const { imageDataUri: referenceImageUri } = await generateImage({ prompt: firstSceneImagePrompt, aspectRatio: '16:9' });
     
     // Step 2: Construct detailed prompts for the two thumbnail variations.
-    const imagePrompt1 = `Create a highly clickable YouTube thumbnail based on this reference image. The video's theme is described by these ideas: "${thumbnailIdeas}". Make this thumbnail visually striking and compelling. Variation 1.`;
-    const imagePrompt2 = `Create another highly clickable YouTube thumbnail using the same reference image and theme ideas: "${thumbnailIdeas}". Make this a different, alternative composition. Variation 2.`;
+    const imagePrompt1 = `Create a highly clickable YouTube thumbnail based on this reference image: ${referenceImageUri}. The video's theme is described by these ideas: "${thumbnailIdeas}". Make this thumbnail visually striking and compelling. Variation 1.`;
+    const imagePrompt2 = `Create another highly clickable YouTube thumbnail using the same reference image and theme ideas: "${thumbnailIdeas}". Make this a different, alternative composition. Variation 2. Reference image: ${referenceImageUri}`;
 
     // Step 3: Generate two thumbnail variations using the reference image.
     const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImageForThumbnail(imagePrompt1, referenceImageUri, aspectRatio!),
-      generateImageForThumbnail(imagePrompt2, referenceImageUri, aspectRatio!),
+      generateImageForThumbnail(imagePrompt1, referenceImageUri),
+      generateImageForThumbnail(imagePrompt2, referenceImageUri),
     ]);
     
     // Step 4: Return the results.
