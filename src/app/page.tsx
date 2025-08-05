@@ -19,7 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingScreen } from '@/components/loading-screen';
 
 
-type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script' | 'product_gallery';
+type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script';
 
 export default function Home() {
   const [activeView, setActiveView] = useState<ActiveView>('home');
