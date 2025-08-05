@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BrainCircuit, Key } from 'lucide-react';
+import { BrainCircuit, Key, LifeBuoy, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
@@ -60,10 +60,24 @@ export default function ActivationPage() {
                             }}
                         />
                     </div>
-                    <Button onClick={checkKey} className="w-full">
-                        <Key className="mr-2 h-4 w-4" />
-                        Ativar
-                    </Button>
+                    <div className="space-y-2">
+                        <Button onClick={checkKey} className="w-full">
+                            <Key className="mr-2 h-4 w-4" />
+                            Ativar
+                        </Button>
+                        <Button variant="secondary" className="w-full" asChild>
+                           <a href="https://pay.cakto.com.br/6uv8krj_496356" target="_blank" rel="noopener noreferrer">
+                             <ShoppingCart className="mr-2 h-4 w-4" />
+                             Adquirir Chave
+                           </a>
+                        </Button>
+                        <Button variant="outline" className="w-full" asChild>
+                            <a href="https://wa.me/5541998136317" target="_blank" rel="noopener noreferrer">
+                                <LifeBuoy className="mr-2 h-4 w-4" />
+                                Suporte via WhatsApp
+                            </a>
+                        </Button>
+                    </div>
                     {error && <p className="text-sm text-destructive text-center">{error}</p>}
                 </CardContent>
             </Card>
