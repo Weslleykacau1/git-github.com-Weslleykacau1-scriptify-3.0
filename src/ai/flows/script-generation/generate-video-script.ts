@@ -1,3 +1,4 @@
+// src/ai/flows/script-generation/generate-video-script.ts
 'use server';
 
 /**
