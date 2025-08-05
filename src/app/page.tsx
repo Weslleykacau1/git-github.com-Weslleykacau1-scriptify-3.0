@@ -33,6 +33,23 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
+    
+    // Inicializar banco se não existir
+    if (!localStorage.getItem('studioBanco')) {
+      const banco = {
+        personagens: [],
+        cenas: [],
+        roteiros: [],
+        produtos: [],
+        thumbnails: [],
+        configuracoes: {
+          tema: 'escuro',
+          idioma: 'pt-BR'
+        }
+      };
+      localStorage.setItem('studioBanco', JSON.stringify(banco));
+    }
+
     // Simulate initial app loading
     const timer = setTimeout(() => {
         setIsLoading(false);
