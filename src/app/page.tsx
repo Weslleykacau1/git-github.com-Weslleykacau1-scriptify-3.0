@@ -17,7 +17,6 @@ import { ProductGallery } from '@/components/features/product-gallery';
 import type { Character, Scene, Product } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingScreen } from '@/components/loading-screen';
-import NoSsr from '@/components/no-ssr';
 
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script';
@@ -225,20 +224,18 @@ export default function Home() {
   }
 
   return (
-    <NoSsr>
-        <div className="min-h-screen w-full bg-background">
-        <Header>
-            {activeView !== 'home' && (
-                <Button variant="ghost" onClick={() => handleNavigate('home')} size={isMobile ? "icon" : "default"}>
-                    <ArrowLeft className={isMobile ? "h-5 w-5" : "mr-2 h-4 w-4"} />
-                    {!isMobile && 'Voltar'}
-                </Button>
-            )}
-        </Header>
-        <main className="p-4 sm:p-6 lg:p-8">
-            {renderContent()}
-        </main>
-        </div>
-    </NoSsr>
+    <div className="min-h-screen w-full bg-background">
+    <Header>
+        {activeView !== 'home' && (
+            <Button variant="ghost" onClick={() => handleNavigate('home')} size={isMobile ? "icon" : "default"}>
+                <ArrowLeft className={isMobile ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                {!isMobile && 'Voltar'}
+            </Button>
+        )}
+    </Header>
+    <main className="p-4 sm:p-6 lg:p-8">
+        {renderContent()}
+    </main>
+    </div>
   );
 }
