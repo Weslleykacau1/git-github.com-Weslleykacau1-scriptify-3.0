@@ -348,9 +348,6 @@ export function LongScriptGenerator() {
                                                     <span>Prompt de Imagem (EN)</span>
                                                 </div>
                                                 <div className="flex items-center">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleGenerateImage(scene.imagePrompt, index)} disabled={isGeneratingImage === `image-${index}`}>
-                                                        {isGeneratingImage === `image-${index}` ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
-                                                    </Button>
                                                     <Button variant="ghost" size="sm" onClick={() => handleCopy(scene.imagePrompt, 'Prompt de Imagem')}>
                                                         <Copy className="mr-2 h-4 w-4" />
                                                         <span className="hidden md:inline">Copiar</span>
@@ -412,3 +409,5 @@ export function LongScriptGenerator() {
     </>
   );
 }
+
+    
