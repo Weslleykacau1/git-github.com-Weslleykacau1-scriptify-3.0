@@ -17,6 +17,7 @@ import { ProductGallery } from '@/components/features/product-gallery';
 import type { Character, Scene, Product } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingScreen } from '@/components/loading-screen';
+import { PurchaseBanner } from '@/components/purchase-banner';
 
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script';
@@ -27,11 +28,23 @@ export default function Home() {
   const [loadedScene, setLoadedScene] = useState<Scene | null>(null);
   const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPurchaseBanner, setShowPurchaseBanner] = useState(false);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
+
+    const firstUseDateStr = localStorage.getItem('studioFirstUseDate');
+    if (!firstUseDateStr) {
+      localStorage.setItem('studioFirstUseDate', new Date().toISOString());
+    } else {
+      const firstUseDate = new Date(firstUseDateStr);
+      const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
+      if (new Date().getTime() - firstUseDate.getTime() > threeDaysInMillis) {
+        setShowPurchaseBanner(true);
+      }
+    }
     
     // Inicializar banco se não existir
     if (!localStorage.getItem('studioBanco')) {
@@ -225,17 +238,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full bg-background">
-    <Header>
-        {activeView !== 'home' && (
-            <Button variant="ghost" onClick={() => handleNavigate('home')} size={isMobile ? "icon" : "default"}>
-                <ArrowLeft className={isMobile ? "h-5 w-5" : "mr-2 h-4 w-4"} />
-                {!isMobile && 'Voltar'}
-            </Button>
-        )}
-    </Header>
-    <main className="p-4 sm:p-6 lg:p-8">
-        {renderContent()}
-    </main>
+      {showPurchaseBanner && <PurchaseBanner />}
+      <Header>
+          {activeView !== 'home' && (
+              <Button variant="ghost" onClick={() => handleNavigate('home')} size={isMobile ? "icon" : "default"}>
+                  <ArrowLeft className={isMobile ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                  {!isMobile && 'Voltar'}
+              </Button>
+          )}
+      </Header>
+      <main className="p-4 sm:p-6 lg:p-8">
+          {renderContent()}
+      </main>
     </div>
   );
 }
