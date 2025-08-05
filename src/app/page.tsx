@@ -18,6 +18,7 @@ import type { Character, Scene, Product } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingScreen } from '@/components/loading-screen';
 import { PurchaseBanner } from '@/components/purchase-banner';
+import { SettingsDialog } from '@/components/features/settings-dialog';
 
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script';
@@ -31,6 +32,8 @@ export default function Home() {
   const [showPurchaseBanner, setShowPurchaseBanner] = useState(false);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
 
   useEffect(() => {
     setIsClient(true);
@@ -55,12 +58,23 @@ export default function Home() {
         produtos: [],
         thumbnails: [],
         configuracoes: {
-          tema: 'escuro',
+          tema: 'dark',
           idioma: 'pt-BR'
         }
       };
       localStorage.setItem('studioBanco', JSON.stringify(banco));
     }
+
+    // Apply theme on load
+    const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+    const theme = banco.configuracoes?.tema || 'dark';
+    if (theme === 'system') {
+      const systemIsDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', systemIsDark);
+    } else {
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    }
+
 
     // Simulate initial app loading
     const timer = setTimeout(() => {
@@ -239,7 +253,7 @@ export default function Home() {
   return (
     <div className="min-h-screen w-full bg-background flex flex-col">
       {showPurchaseBanner && <PurchaseBanner />}
-      <Header>
+      <Header onSettingsClick={() => setIsSettingsOpen(true)}>
           {activeView !== 'home' && (
               <Button variant="ghost" onClick={() => handleNavigate('home')} size={isMobile ? "icon" : "default"}>
                   <ArrowLeft className={isMobile ? "h-5 w-5" : "mr-2 h-4 w-4"} />
@@ -250,6 +264,7 @@ export default function Home() {
       <main className="p-4 sm:p-6 lg:p-8 flex-grow">
           {renderContent()}
       </main>
+      <SettingsDialog isOpen={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
       <footer className="text-center p-4 text-muted-foreground mt-auto">
         <a
           href="https://instagram.com/weslleyathila"
