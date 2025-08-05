@@ -172,10 +172,10 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
               <CardFooter className="flex flex-col items-start gap-2">
                 <div className="flex w-full gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(scene)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
+                  <Button variant="destructive" className="flex-1" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="mr-2 h-4 w-4"/>Excluir cena</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                   <Button variant="ghost" size="sm" onClick={() => handleExport(scene)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM .TXT</Button>
-                  <Button variant="ghost" size="icon" className="text-destructive/70 hover:text-destructive" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="h-4 w-4"/></Button>
                 </div>
               </CardFooter>
             </Card>
