@@ -63,51 +63,27 @@ const generateThumbnailAndSeoPrompt = ai.definePrompt({
 `,
     config: {
         safetySettings: [
-            {
-                category: 'HARM_CATEGORY_HATE_SPEECH',
-                threshold: 'BLOCK_NONE',
-            },
-            {
-                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                threshold: 'BLOCK_NONE',
-            },
-            {
-                category: 'HARM_CATEGORY_HARASSMENT',
-                threshold: 'BLOCK_NONE',
-            },
-            {
-                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                threshold: 'BLOCK_NONE',
-            },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
         ],
     }
 });
 
 
-async function generateImage(promptText: string, aspectRatio: '16:9'): Promise<string> {
+async function generateImage(promptParts: (z.infer<typeof ai.generateInputSchema>['prompt']), aspectRatio: '16:9'): Promise<string> {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: promptText,
+      prompt: promptParts,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
         aspectRatio: aspectRatio,
         safetySettings: [
-            {
-                category: 'HARM_CATEGORY_HATE_SPEECH',
-                threshold: 'BLOCK_NONE',
-            },
-            {
-                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                threshold: 'BLOCK_NONE',
-            },
-            {
-                category: 'HARM_CATEGORY_HARASSMENT',
-                threshold: 'BLOCK_NONE',
-            },
-            {
-                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                threshold: 'BLOCK_NONE',
-            },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
         ],
       },
     });
@@ -131,12 +107,27 @@ const generateThumbnailIdeasFlow = ai.defineFlow(
     const { youtubeTitle, overlayText, emoji, youtubeDescription, hashtags, tags } = textAndSeoResult.output!;
 
     // Step 2: Construct a detailed prompt for image generation, now including the reference images directly.
-    const imagePromptText = `Create a YouTube thumbnail in a "${style}" style. The video is about "${theme}". The thumbnail should prominently feature the main character from the reference image. The background should be inspired by the background reference image if provided. Overlay the text "${overlayText}" and include the emoji "${emoji}" in a visually appealing way. The overall mood should be exciting and clickable. Reference image: {{media url="${mainImageUri}"}} ${backgroundImageUri ? `Background reference: {{media url="${backgroundImageUri}"}}` : ''}`;
+    const basePromptText = `Create a YouTube thumbnail in a "${style}" style. The video is about "${theme}". The thumbnail should prominently feature the main character from the reference image. The background should be inspired by the background reference image if provided. Overlay the text "${overlayText}" and include the emoji "${emoji}" in a visually appealing way. The overall mood should be exciting and clickable.`;
+    
+    const basePromptParts = [
+        { text: basePromptText },
+        { media: { url: mainImageUri } }
+    ];
+    
+    if (backgroundImageUri) {
+        basePromptParts.push({ media: { url: backgroundImageUri } });
+    }
 
     // Step 3: Generate two image variations
+    const prompt1 = [...basePromptParts];
+    prompt1[0].text += " Variation 1.";
+
+    const prompt2 = [...basePromptParts];
+    prompt2[0].text += " Variation 2, slightly different composition.";
+    
     const [thumbnailImage1Uri, thumbnailImage2Uri] = await Promise.all([
-      generateImage(`${imagePromptText} Variation 1.`, aspectRatio),
-      generateImage(`${imagePromptText} Variation 2, slightly different composition.`, aspectRatio),
+      generateImage(prompt1 as any, aspectRatio),
+      generateImage(prompt2 as any, aspectRatio),
     ]);
     
     // Step 4: Return all results
