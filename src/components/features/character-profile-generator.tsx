@@ -611,14 +611,6 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     <Button variant="outline" size={isMobile ? "default" : "sm"} className="w-full sm:w-auto" onClick={() => navigateToGallery('product_gallery')}><Library className="mr-2 h-4 w-4"/> Carregar da Galeria</Button>
                     <Button size={isMobile ? "default" : "sm"} className="w-full sm:w-auto" onClick={() => saveToGallery('product')}><Save className="mr-2 h-4 w-4"/> Guardar Produto</Button>
                 </div>
-                <div className="flex items-center space-x-2 pt-4">
-                    <RadioGroup defaultValue="no" id="sponsored" className="flex">
-                        <div className="flex items-center space-x-2">
-                             <RadioGroupItem value="yes" id="sponsored-yes" />
-                        </div>
-                    </RadioGroup>
-                    <Label htmlFor="sponsored-yes">É uma parceria / conteúdo patrocinado.</Label>
-                </div>
             </div>
         </div>
         
