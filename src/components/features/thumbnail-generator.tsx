@@ -136,37 +136,6 @@ export function ThumbnailGenerator() {
               </Select>
             </div>
         </div>
-        
-        <div className="border rounded-lg p-4 space-y-4">
-            <div className="flex items-center gap-3">
-                <Sparkles className="h-6 w-6 text-primary" />
-                <h3 className="font-semibold text-lg">Melhorias de Qualidade</h3>
-            </div>
-            <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <Label htmlFor="hyper-realism-thumb" className='font-medium'>Hiper-realismo</Label>
-                        <p className="text-xs text-muted-foreground">Vídeos com aparência realista e detalhes impressionantes.</p>
-                    </div>
-                    <Switch id="hyper-realism-thumb" />
-                </div>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <Label htmlFor="4k-thumb" className='font-medium'>4K</Label>
-                        <p className="text-xs text-muted-foreground">Qualidade ultra nítida em altíssima resolução.</p>
-                    </div>
-                    <Switch id="4k-thumb" />
-                </div>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <Label htmlFor="professional-camera-thumb" className='font-medium'>Câmera Profissional</Label>
-                        <p className="text-xs text-muted-foreground">Movimentos e enquadramentos cinematográficos.</p>
-                    </div>
-                    <Switch id="professional-camera-thumb" />
-                </div>
-            </div>
-        </div>
-
 
         <Button onClick={handleGenerate} disabled={isLoading} className="mt-auto">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
