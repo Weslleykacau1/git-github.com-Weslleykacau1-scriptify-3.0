@@ -15,12 +15,8 @@ export function CharacterGallery() {
 
   const loadCharacters = () => {
     try {
-      const storedCharacters = localStorage.getItem('fg-characters');
-      if (storedCharacters) {
-        setCharacters(JSON.parse(storedCharacters));
-      } else {
-        setCharacters([]);
-      }
+      const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+      setCharacters(banco.personagens || []);
     } catch (error) {
       console.error("Failed to load characters from localStorage", error);
       toast({ title: "Erro ao carregar personagens", variant: "destructive" });
@@ -30,10 +26,8 @@ export function CharacterGallery() {
   useEffect(() => {
     loadCharacters();
     
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'fg-characters') {
+    const handleStorageChange = () => {
         loadCharacters();
-      }
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
@@ -75,10 +69,10 @@ Prompt Negativo: ${character.negativePrompt || ''}
      if (!charId) return;
      if (window.confirm(`Tem a certeza que quer eliminar "${charName || 'este personagem'}"?`)) {
         try {
-            const currentCharacters = JSON.parse(localStorage.getItem('fg-characters') || '[]');
-            const updatedCharacters = currentCharacters.filter((char: Character) => char.id !== charId);
-            localStorage.setItem('fg-characters', JSON.stringify(updatedCharacters));
-            setCharacters(updatedCharacters);
+            const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+            banco.personagens = banco.personagens.filter((char: Character) => char.id !== charId);
+            localStorage.setItem('studioBanco', JSON.stringify(banco));
+            window.dispatchEvent(new Event('storage')); // Notify other components
             toast({ title: `"${charName}" foi eliminado.` });
         } catch(error) {
             console.error("Delete failed:", error);
@@ -115,7 +109,9 @@ Prompt Negativo: ${character.negativePrompt || ''}
       </div>
       
        {characters.length === 0 ? (
-         <p className="text-muted-foreground text-center py-8">A sua galeria de personagens está vazia.</p>
+         <div className="flex-grow flex items-center justify-center">
+            <p className="text-muted-foreground text-center py-8">A sua galeria de personagens está vazia.</p>
+         </div>
        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {characters.map((char) => (
@@ -127,13 +123,13 @@ Prompt Negativo: ${character.negativePrompt || ''}
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-3">{char.biography}</p>
               </CardContent>
-              <CardFooter className="flex flex-col items-start gap-2">
+              <CardFooter className="flex flex-col items-stretch gap-2 mt-auto pt-4">
                 <div className="flex flex-col sm:flex-row w-full gap-2">
                   <Button className="flex-1" onClick={() => handleLoad(char)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                   <Button variant="destructive" className="flex-1" onClick={() => handleDelete(char.id, char.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir</Button>
                 </div>
-                <div className="flex w-full justify-between items-center mt-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleExport(char)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
+                <div className="w-full mt-2">
+                  <Button variant="ghost" size="sm" onClick={() => handleExport(char)} className="w-full sm:w-auto"><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
                 </div>
               </CardFooter>
             </Card>

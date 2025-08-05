@@ -1,3 +1,4 @@
+
 // src/components/features/scene-gallery.tsx
 'use client';
 
@@ -17,12 +18,8 @@ export function SceneGallery() {
 
   const loadScenes = () => {
     try {
-      const storedScenes = localStorage.getItem('fg-scenes');
-      if (storedScenes) {
-        setScenes(JSON.parse(storedScenes));
-      } else {
-        setScenes([]);
-      }
+      const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+      setScenes(banco.cenas || []);
     } catch (error) {
       console.error("Failed to load scenes from localStorage", error);
       toast({ title: "Erro ao carregar cenas", variant: "destructive" });
@@ -32,10 +29,8 @@ export function SceneGallery() {
   useEffect(() => {
     loadScenes();
     
-    const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'fg-scenes') {
-            loadScenes();
-        }
+    const handleStorageChange = () => {
+      loadScenes();
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
@@ -110,10 +105,10 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
     if (!sceneId) return;
     if (window.confirm(`Tem a certeza que quer eliminar a cena "${sceneTitle || 'esta cena'}"?`)) {
       try {
-        const currentScenes = JSON.parse(localStorage.getItem('fg-scenes') || '[]');
-        const updatedScenes = currentScenes.filter((scene: Scene) => scene.id !== sceneId);
-        localStorage.setItem('fg-scenes', JSON.stringify(updatedScenes));
-        setScenes(updatedScenes);
+        const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+        banco.cenas = banco.cenas.filter((scene: Scene) => scene.id !== sceneId);
+        localStorage.setItem('studioBanco', JSON.stringify(banco));
+        window.dispatchEvent(new Event('storage')); // Notify other components
         toast({ title: `"${sceneTitle}" foi eliminada.` });
       } catch (error) {
         console.error("Delete failed:", error);
@@ -162,13 +157,13 @@ ${s.product ? `\nProduto:\n  Nome: ${s.product.name}\n  Marca: ${s.product.brand
                 <p className="text-sm text-muted-foreground line-clamp-3">{scene.setting}</p>
                 {scene.duration && <p className="text-xs text-muted-foreground mt-2">{scene.duration} seg</p>}
               </CardContent>
-              <CardFooter className="flex flex-col items-start gap-2">
+              <CardFooter className="flex flex-col items-stretch gap-2 mt-auto pt-4">
                  <div className="flex flex-col sm:flex-row w-full gap-2">
                     <Button className="flex-1" onClick={() => handleLoad(scene)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                     <Button variant="destructive" className="flex-1" onClick={() => handleDelete(scene.id, scene.title)}><Trash2 className="mr-2 h-4 w-4"/>Excluir</Button>
                  </div>
-                 <div className="flex w-full justify-start items-center mt-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleExport(scene)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM .TXT</Button>
+                 <div className="w-full mt-2">
+                    <Button variant="ghost" size="sm" onClick={() => handleExport(scene)} className="w-full sm:w-auto"><FileText className="mr-2 h-4 w-4"/>EXPORTA EM .TXT</Button>
                  </div>
               </CardFooter>
             </Card>

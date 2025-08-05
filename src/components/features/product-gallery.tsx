@@ -1,3 +1,4 @@
+
 // src/components/features/product-gallery.tsx
 'use client';
 
@@ -18,12 +19,8 @@ export function ProductGallery() {
 
   const loadProducts = () => {
     try {
-      const storedProducts = localStorage.getItem('fg-products');
-      if (storedProducts) {
-        setProducts(JSON.parse(storedProducts));
-      } else {
-        setProducts([]);
-      }
+      const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+      setProducts(banco.produtos || []);
     } catch (error) {
       console.error("Failed to load products from localStorage", error);
       toast({ title: "Erro ao carregar produtos", variant: "destructive" });
@@ -33,10 +30,8 @@ export function ProductGallery() {
   useEffect(() => {
     loadProducts();
     
-    const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'fg-products') {
-            loadProducts();
-        }
+    const handleStorageChange = () => {
+        loadProducts();
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
@@ -67,10 +62,10 @@ Descrição: ${product.description || ''}
     if (!productId) return;
     if (window.confirm(`Tem a certeza que quer eliminar o produto "${productName || 'este produto'}"?`)) {
       try {
-        const currentProducts = JSON.parse(localStorage.getItem('fg-products') || '[]');
-        const updatedProducts = currentProducts.filter((p: Product) => p.id !== productId);
-        localStorage.setItem('fg-products', JSON.stringify(updatedProducts));
-        setProducts(updatedProducts);
+        const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+        banco.produtos = banco.produtos.filter((p: Product) => p.id !== productId);
+        localStorage.setItem('studioBanco', JSON.stringify(banco));
+        window.dispatchEvent(new Event('storage')); // Notify other components
         toast({ title: `"${productName}" foi eliminado.` });
       } catch (error) {
         console.error("Delete failed:", error);
@@ -147,13 +142,13 @@ Descrição: ${p.description || ''}
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-4">{product.description}</p>
               </CardContent>
-              <CardFooter className="flex flex-col items-start gap-2">
+              <CardFooter className="flex flex-col items-stretch gap-2 mt-auto pt-4">
                  <div className="flex flex-col sm:flex-row w-full gap-2">
                     <Button className="flex-1" onClick={() => handleLoad(product)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                     <Button variant="destructive" className="flex-1" onClick={() => handleDelete(product.id, product.name)}><Trash2 className="mr-2 h-4 w-4"/>Excluir</Button>
                  </div>
-                 <div className="flex w-full justify-start items-center mt-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
+                 <div className="w-full mt-2">
+                    <Button variant="ghost" size="sm" onClick={() => handleExport(product)} className="w-full sm:w-auto"><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
                  </div>
               </CardFooter>
             </Card>

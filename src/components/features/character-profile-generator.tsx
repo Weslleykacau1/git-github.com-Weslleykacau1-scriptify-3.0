@@ -1,3 +1,4 @@
+
 // src/components/features/character-profile-generator.tsx
 'use client';
 
@@ -109,53 +110,59 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
   };
   
   const saveToGallery = (type: 'character' | 'scene' | 'product') => {
-    let key, dataToSave, itemName;
-    
-    switch(type) {
-        case 'character':
-            key = 'fg-characters';
-            dataToSave = profile;
-            itemName = profile.name;
-            break;
-        case 'scene':
-            key = 'fg-scenes';
-            dataToSave = scene;
-            itemName = scene.title;
-            break;
-        case 'product':
-            if (!scene.product?.name) {
-                 toast({ title: `Por favor, defina um nome para o produto.`, variant: 'destructive'});
-                 return;
-            }
-            key = 'fg-products';
-            dataToSave = scene.product;
-            itemName = scene.product?.name;
-            if (!(dataToSave as any).id) {
-                (dataToSave as any).id = `prod_${Date.now()}`;
-            }
-            break;
-    }
-
-
-    if (!itemName && type !== 'product') {
-        toast({ title: `Por favor, defina um ${type === 'character' ? 'nome para o personagem' : 'título para a cena'}.`, variant: 'destructive'});
-        return;
-    }
-
     try {
-        const existingData = JSON.parse(localStorage.getItem(key) || '[]');
-        const existingIndex = existingData.findIndex((item: any) => item.id === (dataToSave as any).id);
+        const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+        let dataToSave: any;
+        let storageKey: 'personagens' | 'cenas' | 'produtos';
+        let itemName: string | undefined;
+
+        switch(type) {
+            case 'character':
+                storageKey = 'personagens';
+                dataToSave = profile;
+                itemName = profile.name;
+                if (!itemName) {
+                    toast({ title: "Por favor, defina um nome para o personagem.", variant: 'destructive'});
+                    return;
+                }
+                break;
+            case 'scene':
+                storageKey = 'cenas';
+                dataToSave = scene;
+                itemName = scene.title;
+                 if (!itemName) {
+                    toast({ title: "Por favor, defina um título para a cena.", variant: 'destructive'});
+                    return;
+                }
+                break;
+            case 'product':
+                if (!scene.product || !scene.product.name) {
+                     toast({ title: "Por favor, defina um nome para o produto.", variant: 'destructive'});
+                     return;
+                }
+                storageKey = 'produtos';
+                dataToSave = scene.product;
+                itemName = scene.product.name;
+                if (!dataToSave.id) {
+                    dataToSave.id = `prod_${Date.now()}`;
+                }
+                break;
+        }
+
+        const existingData = banco[storageKey] || [];
+        const existingIndex = existingData.findIndex((item: any) => item.id === dataToSave.id);
 
         if (existingIndex > -1) {
             existingData[existingIndex] = dataToSave; // Update existing
         } else {
-            if (!(dataToSave as any).id) {
-                 (dataToSave as any).id = `${type}_${Date.now()}`;
+            if (!dataToSave.id) {
+                 dataToSave.id = `${type}_${Date.now()}`;
             }
             existingData.push(dataToSave); // Add new
         }
-
-        localStorage.setItem(key, JSON.stringify(existingData));
+        
+        banco[storageKey] = existingData;
+        localStorage.setItem('studioBanco', JSON.stringify(banco));
         window.dispatchEvent(new Event('storage')); // Notify other components
         toast({
             title: `${type.charAt(0).toUpperCase() + type.slice(1)} guardado(a)!`,
