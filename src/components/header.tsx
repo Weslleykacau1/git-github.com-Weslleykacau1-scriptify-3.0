@@ -13,7 +13,7 @@ export function Header({children, onSettingsClick}: {children?: React.ReactNode,
             {children}
             {onSettingsClick && (
                 <Button variant="ghost" size="icon" onClick={onSettingsClick}>
-                    <Settings className="h-6 w-6" />
+                    <Settings className="h-6 w-6 text-primary" />
                 </Button>
             )}
         </div>
