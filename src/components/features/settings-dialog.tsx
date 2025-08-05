@@ -99,6 +99,8 @@ export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
+                        <SelectItem value="en-US">Inglês</SelectItem>
+                        <SelectItem value="es-ES">Espanhol</SelectItem>
                     </SelectContent>
                 </Select>
              </div>
