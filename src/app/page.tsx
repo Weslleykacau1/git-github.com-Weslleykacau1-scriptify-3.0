@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
 import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft, Instagram } from 'lucide-react';
@@ -21,6 +22,13 @@ import { PurchaseBanner } from '@/components/purchase-banner';
 import { SettingsDialog } from '@/components/features/settings-dialog';
 
 
+const VALID_KEYS = [
+    '2T4Y-6U8I-9O1P-3A5S',
+    '7D9F-1G2H-3J4K-5L6M',
+    '8N0B-2V3C-4X5Z-7M6N',
+    '1Q2W-3E4R-5T6Y-7U8I'
+];
+
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script';
 
 export default function Home() {
@@ -33,10 +41,17 @@ export default function Home() {
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const router = useRouter();
 
 
   useEffect(() => {
     setIsClient(true);
+
+    const activationKey = localStorage.getItem('studioActivationKey');
+    if (!activationKey || !VALID_KEYS.includes(activationKey)) {
+        router.push('/ativacao');
+        return; // Stop further execution in this effect
+    }
 
     const firstUseDateStr = localStorage.getItem('studioFirstUseDate');
     if (!firstUseDateStr) {
@@ -82,7 +97,7 @@ export default function Home() {
     }, 1500); // Adjust time as needed
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const handleLoadCharacter = (event: Event) => {
