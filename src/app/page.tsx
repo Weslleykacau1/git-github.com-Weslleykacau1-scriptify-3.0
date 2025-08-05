@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
-import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft } from 'lucide-react';
+import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft, Instagram } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
@@ -237,7 +237,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="min-h-screen w-full bg-background flex flex-col">
       {showPurchaseBanner && <PurchaseBanner />}
       <Header>
           {activeView !== 'home' && (
@@ -247,9 +247,20 @@ export default function Home() {
               </Button>
           )}
       </Header>
-      <main className="p-4 sm:p-6 lg:p-8">
+      <main className="p-4 sm:p-6 lg:p-8 flex-grow">
           {renderContent()}
       </main>
+      <footer className="text-center p-4 text-muted-foreground mt-auto">
+        <a
+          href="https://instagram.com/weslleyathila"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 hover:text-primary transition-colors"
+        >
+          <Instagram className="h-4 w-4" />
+          <span>Weslley Athila</span>
+        </a>
+      </footer>
     </div>
   );
 }
