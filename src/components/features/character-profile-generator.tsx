@@ -439,7 +439,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                 <Textarea id="negativePrompt" placeholder="Ex: Evitar roupas escuras, não sorrir..." value={profile.negativePrompt || ''} onChange={e => handleProfileChange('negativePrompt', e.target.value)} />
             </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 justify-end pt-4">
+        <div className="flex flex-col sm:flex-row gap-2 justify-start pt-4">
             <Button variant="outline" className="w-full sm:w-auto" onClick={resetCharacter}><Plus className="mr-2 h-4 w-4" /> Novo</Button>
             <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigateToGallery('character_gallery')}><Library className="mr-2 h-4 w-4" /> Carregar da Galeria</Button>
             <Button onClick={() => saveToGallery('character')} className="w-full sm:w-auto"><Save className="mr-2 h-4 w-4" /> Guardar</Button>
