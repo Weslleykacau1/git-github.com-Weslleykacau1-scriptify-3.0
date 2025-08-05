@@ -148,7 +148,7 @@ Descrição: ${p.description || ''}
                   <Button className="flex-1" onClick={() => handleLoad(product)}><UploadCloud className="mr-2 h-4 w-4"/>Carregar</Button>
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>Exportar</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleExport(product)}><FileText className="mr-2 h-4 w-4"/>EXPORTA EM TXT</Button>
                 </div>
               </CardFooter>
             </Card>
