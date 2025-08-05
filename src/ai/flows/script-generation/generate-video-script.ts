@@ -44,7 +44,7 @@ The character's dialogue must be in BRAZILIAN PORTUGUESE, matching their persona
 **Character Profile (Be Faithful):**
 - Name: {{character.name}}
 - Personality: {{character.personality}}
-- Physical Appearance: {{character.physicalAppearance}}
+- Physical Appearance: {{character.physicalAppearance}}. Be absolutely faithful to every detail of the character's face.
 - Clothing Style: {{character.clothingStyle}}
 - Unique Traits: {{character.uniqueTraits}}
 - Accent (for dialogue): {{character.accent}}
