@@ -151,17 +151,17 @@ export function ScriptIdeaGenerator() {
             </div>
         )}
 
-      <Alert>
+      <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
         <Wand2 className="h-4 w-4" />
-        <AlertTitle>O que é a "Fórmula Mega Viral"?</AlertTitle>
-        <AlertDescription className="text-xs space-y-1 mt-2">
+        <AlertTitle className="text-blue-300">O que é a "Fórmula Mega Viral"?</AlertTitle>
+        <AlertDescription className="text-xs space-y-1 mt-2 text-blue-400/80">
             <p>Ao gerar um roteiro de "Shorts", a IA é instruída a seguir uma estrutura com alto potencial de viralização, dividida nestas partes:</p>
             <ul className="list-disc pl-4">
-                <li><span className="font-semibold">Set up:</span> Uma frase inicial que cria o contexto.</li>
-                <li><span className="font-semibold">Hook:</span> Uma ação inesperada que prende a atenção.</li>
-                <li><span className="font-semibold">Escalation:</span> O desenvolvimento da ação.</li>
-                <li><span className="font-semibold">Climax/Punchline:</span> O ponto alto ou a piada final.</li>
-                <li><span className="font-semibold">CTA:</span> Uma chamada para ação (ex: "Siga para mais!").</li>
+                <li><span className="font-semibold text-blue-300/90">Set up:</span> Uma frase inicial que cria o contexto.</li>
+                <li><span className="font-semibold text-blue-300/90">Hook:</span> Uma ação inesperada que prende a atenção.</li>
+                <li><span className="font-semibold text-blue-300/90">Escalation:</span> O desenvolvimento da ação.</li>
+                <li><span className="font-semibold text-blue-300/90">Climax/Punchline:</span> O ponto alto ou a piada final.</li>
+                <li><span className="font-semibold text-blue-300/90">CTA:</span> Uma chamada para ação (ex: "Siga para mais!").</li>
             </ul>
         </AlertDescription>
       </Alert>
