@@ -1,0 +1,16 @@
+{
+  "name": "Scriptify Studio AI",
+  "short_name": "Scriptify",
+  "description": "Ferramentas de IA para criadores de conteúdo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#262229",
+  "theme_color": "#A050A0",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

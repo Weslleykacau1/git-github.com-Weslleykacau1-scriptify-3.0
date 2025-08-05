@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A050A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain-circuit"><path d="M12 5a3 3 0 1 0-5.993.119"/><path d="M9.5 8.5A2.5 2.5 0 0 1 12 6h0a2.5 2.5 0 0 1 2.5 2.5v0A2.5 2.5 0 0 1 12 11h0a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M14.5 8.5A2.5 2.5 0 0 0 12 6h0a2.5 2.5 0 0 0-2.5 2.5v0A2.5 2.5 0 0 0 12 11h0a2.5 2.5 0 0 0 2.5-2.5Z"/><path d="M6.007 5.119A3 3 0 1 0 12 5"/><path d="M12 5a3 3 0 1 1 5.993.119"/><path d="M18 10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1a2 2 0 0 0-2 2v1a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1.5"/><path d="M12 11v1.5"/><path d="M12 19v1.5"/><path d="M9 19v1.5"/><path d="M15 19v1.5"/><path d="m14 14-2-2-2 2"/><path d="M10 14h4"/></svg>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="512" height="512" rx="128" fill="#A050A0"/>
+<path d="M256 128L288 224L384 256L288 288L256 384L224 288L128 256L224 224L256 128Z" fill="white"/>
+</svg>
