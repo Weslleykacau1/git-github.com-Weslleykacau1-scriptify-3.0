@@ -152,7 +152,7 @@ export function ScriptIdeaGenerator() {
         )}
 
       <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
-        <Wand2 className="h-4 w-4" />
+        <Wand2 className="h-4 w-4 text-primary" />
         <AlertTitle className="text-blue-300">O que é a "Fórmula Mega Viral"?</AlertTitle>
         <AlertDescription className="text-xs space-y-1 mt-2 text-blue-400/80">
             <p>Ao gerar um roteiro de "Shorts", a IA é instruída a seguir uma estrutura com alto potencial de viralização, dividida nestas partes:</p>

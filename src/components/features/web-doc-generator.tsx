@@ -338,7 +338,7 @@ export function WebDocGenerator() {
                           <CardContent>
                               <p className="text-sm text-muted-foreground">{result.thumbnailIdeas}</p>
                                <Button variant="outline" size="sm" className='mt-2' onClick={handleGenerateThumbnailPrompt} disabled={isGenerating === 'thumbnail'}>
-                                {isGenerating === 'thumbnail' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                                {isGenerating === 'thumbnail' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4 text-primary" />}
                                 Gerar Prompt de Thumbnail
                               </Button>
                           </CardContent>

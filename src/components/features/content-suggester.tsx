@@ -82,7 +82,7 @@ export function ContentSuggester({ characterProfile, sceneDescription }: Content
       </p>
 
       <div className="flex flex-col space-y-4 flex-grow justify-center">
-        <Button onClick={() => handleGenerate('markdown')} disabled={isLoading} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold text-lg">
+        <Button onClick={() => handleGenerate('markdown')} disabled={isLoading} size="lg">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4"/>}
           Gerar Roteiro (Markdown)
         </Button>
