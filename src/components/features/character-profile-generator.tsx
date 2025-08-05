@@ -483,9 +483,9 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                     value={scene.setting || ''}
                     onChange={(e) => handleSceneChange('setting', e.target.value)}
                 />
-                <Alert>
+                <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
                     <Sparkles className="h-4 w-4" />
-                    <AlertDescription className="text-xs">
+                    <AlertDescription className="text-xs text-blue-400/80">
                         Dica: Seja específico sobre iluminação, cores dominantes, materiais, e atmosfera. Quanto mais detalhes, melhor o resultado.
                     </AlertDescription>
                 </Alert>
