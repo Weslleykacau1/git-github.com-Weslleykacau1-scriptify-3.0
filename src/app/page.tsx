@@ -16,6 +16,7 @@ import { VideoTranscriber } from '@/components/features/video-transcriber';
 import { ProductGallery } from '@/components/features/product-gallery';
 import type { Character, Scene, Product } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LoadingScreen } from '@/components/loading-screen';
 
 
 type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'thumbnail' | 'advanced_script' | 'product_gallery';
@@ -25,7 +26,17 @@ export default function Home() {
   const [loadedCharacter, setLoadedCharacter] = useState<Character | null>(null);
   const [loadedScene, setLoadedScene] = useState<Scene | null>(null);
   const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    // Simulate initial app loading
+    const timer = setTimeout(() => {
+        setIsLoading(false);
+    }, 1500); // Adjust time as needed
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleLoadCharacter = (event: Event) => {
@@ -184,6 +195,10 @@ export default function Home() {
         </div>
     );
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen w-full bg-background">
