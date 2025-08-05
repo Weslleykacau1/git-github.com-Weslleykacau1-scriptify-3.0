@@ -1,3 +1,4 @@
+
 // src/components/features/settings-dialog.tsx
 'use client';
 
@@ -12,9 +13,10 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Sun, Moon, Monitor } from 'lucide-react';
+import { Sun, Moon, Monitor, Key } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 interface SettingsDialogProps {
   isOpen: boolean;
@@ -27,6 +29,7 @@ export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
   const [language, setLanguage] = useState('pt-BR');
   const [theme, setTheme] = useState<Theme>('dark');
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (isOpen) {
@@ -81,6 +84,12 @@ export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
     }
   }
 
+  const handleDeactivate = () => {
+    localStorage.removeItem('studioActivationKey');
+    toast({ title: "Chave de ativação removida.", description: "Você será redirecionado para a página de ativação." });
+    onOpenChange(false); // Close dialog
+    router.push('/ativacao');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -145,6 +154,13 @@ export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
                     <span className="text-sm">Sistema</span>
                 </button>
             </div>
+          </div>
+           <div className="space-y-3">
+             <h4 className="font-medium text-sm text-muted-foreground">Licença</h4>
+             <Button variant="destructive" onClick={handleDeactivate} className="w-full">
+                <Key className="mr-2 h-4 w-4" />
+                Remover Chave de Ativação
+             </Button>
           </div>
         </div>
       </DialogContent>
