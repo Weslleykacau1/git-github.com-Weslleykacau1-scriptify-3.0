@@ -176,6 +176,63 @@ const superPromptExample = `{
   ]
 }`;
 
+const productModelJson = `{
+  "metadata": {
+    "project_name": "Comercial_Produto_Modelo",
+    "duration_seconds": 30,
+    "aspect_ratio": "9:16",
+    "notes": "Troque os valores conforme necessário"
+  },
+  "product": {
+    "name": "NOME_DO_PRODUTO",
+    "category": "CATEGORIA",
+    "features": ["CARACTERÍSTICA_1", "CARACTERÍSTICA_2", "CARACTERÍSTICA_3"],
+    "color_palette": ["#HEX1", "#HEX2", "#HEX3"]
+  },
+  "style": {
+    "mood": ["divertido", "inspirador", "luxuoso"],
+    "color_grade": ["high_saturation", "cinematic", "warm"],
+    "music_style": ["upbeat_pop", "energetic_electronic", "soft_acoustic"]
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 8,
+      "frame": ["close_up", "medium", "wide"],
+      "camera": {
+        "type": ["mirrorless", "cinema_camera", "smartphone_pro_mode"],
+        "lens": ["50mm", "35mm", "24mm_wide"],
+        "movement": ["slow_push_in", "arc_around_subject", "handheld_follow"],
+        "notes": "Descreva o foco principal da cena"
+      },
+      "talent": {
+        "character": "ATOR/ATRIZ/NARRADOR",
+        "expression": ["feliz", "surpreso", "confiante"],
+        "action": "AÇÃO_DA_PESSOA"
+      },
+      "dialogue": "TEXTO_FALADO",
+      "effects": [
+        "film_grain_light",
+        "lens_flare_subtle",
+        "depth_of_field_shallow",
+        "seamless_transition"
+      ],
+      "sound": {
+        "sfx": ["whoosh", "impact_punch", "sparkle"],
+        "music": "OPÇÃO_ESCOLHIDA",
+        "vo_level": "clear"
+      },
+      "post_notes": "Instruções extras para pós-produção"
+    }
+  ],
+  "cta": {
+    "text": "CHAMADA_PARA_AÇÃO_AQUI",
+    "effects": ["kinetic_typography", "button_bounce"],
+    "position": "bottom_center"
+  }
+}`;
+
+
 export function PropagandaGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
@@ -487,6 +544,36 @@ export function PropagandaGenerator() {
                 <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
                     <code>
                         {superPromptExample}
+                    </code>
+                </pre>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+         <AccordionItem value="item-4">
+          <AccordionTrigger>
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              <span>Modelo Avançado de Produto (JSON)</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+             <Alert>
+                <AlertDescription>
+                    Este é um modelo estruturado para obter melhores resultados de consistência com a IA. Substitua os valores em maiúsculas (ex: NOME_DO_PRODUTO) pelos seus próprios dados.
+                </AlertDescription>
+            </Alert>
+            <div className="relative mt-2">
+                 <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={() => handleCopyJson(productModelJson)}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
+                    <code>
+                        {productModelJson}
                     </code>
                 </pre>
             </div>
