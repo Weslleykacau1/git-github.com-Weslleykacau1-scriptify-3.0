@@ -18,7 +18,6 @@ import { ProductGallery } from '@/components/features/product-gallery';
 import type { Character, Scene, Product } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingScreen } from '@/components/loading-screen';
-import { PurchaseBanner } from '@/components/purchase-banner';
 import { SettingsDialog } from '@/components/features/settings-dialog';
 import { PropagandaGenerator } from '@/components/features/propaganda-generator';
 
@@ -37,7 +36,6 @@ export default function Home() {
   const [loadedScene, setLoadedScene] = useState<Scene | null>(null);
   const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showPurchaseBanner, setShowPurchaseBanner] = useState(false);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -51,23 +49,6 @@ export default function Home() {
     if (!activationKey || !VALID_KEYS.includes(activationKey)) {
         router.push('/ativacao');
         return; // Stop further execution in this effect
-    }
-    
-    // Default to not showing the banner if any valid key is present.
-    setShowPurchaseBanner(false);
-    
-    // Logic for trial period for non-VIP keys
-    if (activationKey !== 'VIP-2025-ACESSO-LIB') {
-        const firstUseDateStr = localStorage.getItem('studioFirstUseDate');
-        if (!firstUseDateStr) {
-          localStorage.setItem('studioFirstUseDate', new Date().toISOString());
-        } else {
-          const firstUseDate = new Date(firstUseDateStr);
-          const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
-          if (new Date().getTime() - firstUseDate.getTime() > threeDaysInMillis) {
-            setShowPurchaseBanner(true); // Show banner only after 3 days for non-VIPs
-          }
-        }
     }
     
     // Initialize storage if it doesn't exist
@@ -282,7 +263,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full bg-background flex flex-col">
-      {showPurchaseBanner && <PurchaseBanner />}
       <Header onSettingsClick={() => setIsSettingsOpen(true)}>
           {activeView !== 'home' && (
               <Button variant="ghost" onClick={() => handleNavigate('home')} size={isMobile ? "icon" : "default"}>
@@ -309,5 +289,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
