@@ -36,3 +36,18 @@ export interface Scene {
     onlyPhysicalText?: boolean;
     product?: Product | null;
 }
+
+export interface Propaganda {
+    id: string;
+    productName: string;
+    targetAudience: string;
+    mainMessage: string;
+    sceneFocus?: string;
+    talent: string;
+    narration?: string;
+    tone: string;
+    voiceStyle: string;
+    duration: '5s' | '8s';
+    image: string | null;
+    generatedScript: string;
+}

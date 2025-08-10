@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
-import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft, Instagram, Megaphone } from 'lucide-react';
+import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft, Instagram, Megaphone, GalleryVertical } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
@@ -15,11 +15,12 @@ import { SceneGallery } from '@/components/features/scene-gallery';
 import { Button } from '@/components/ui/button';
 import { VideoTranscriber } from '@/components/features/video-transcriber';
 import { ProductGallery } from '@/components/features/product-gallery';
-import type { Character, Scene, Product } from '@/lib/types';
+import type { Character, Scene, Product, Propaganda } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingScreen } from '@/components/loading-screen';
 import { SettingsDialog } from '@/components/features/settings-dialog';
 import { PropagandaGenerator } from '@/components/features/propaganda-generator';
+import { PropagandaGallery } from '@/components/features/propaganda-gallery';
 
 
 const VALID_KEYS = [
@@ -28,13 +29,14 @@ const VALID_KEYS = [
     'VIP-2025-ACESSO-LIB'
 ];
 
-type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script' | 'propaganda';
+type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script' | 'propaganda' | 'propaganda_gallery';
 
 export default function Home() {
   const [activeView, setActiveView] = useState<ActiveView>('home');
   const [loadedCharacter, setLoadedCharacter] = useState<Character | null>(null);
   const [loadedScene, setLoadedScene] = useState<Scene | null>(null);
   const [loadedProduct, setLoadedProduct] = useState<Product | null>(null);
+  const [loadedPropaganda, setLoadedPropaganda] = useState<Propaganda | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
@@ -58,6 +60,7 @@ export default function Home() {
         cenas: [],
         roteiros: [],
         produtos: [],
+        propagandas: [],
         thumbnails: [],
         configuracoes: {
           tema: 'dark',
@@ -105,6 +108,12 @@ export default function Home() {
         setActiveView('creator'); 
     };
 
+    const handleLoadPropaganda = (event: Event) => {
+        const customEvent = event as CustomEvent<Propaganda>;
+        setLoadedPropaganda(customEvent.detail);
+        setActiveView('propaganda');
+    };
+
     const handleNavigateToGallery = (event: Event) => {
       const customEvent = event as CustomEvent<ActiveView>;
       setActiveView(customEvent.detail);
@@ -113,19 +122,21 @@ export default function Home() {
     window.addEventListener('loadCharacter', handleLoadCharacter);
     window.addEventListener('loadScene', handleLoadScene);
     window.addEventListener('loadProduct', handleLoadProduct);
+    window.addEventListener('loadPropaganda', handleLoadPropaganda);
     window.addEventListener('navigateToGallery', handleNavigateToGallery);
 
     return () => {
         window.removeEventListener('loadCharacter', handleLoadCharacter);
         window.removeEventListener('loadScene', handleLoadScene);
         window.removeEventListener('loadProduct', handleLoadProduct);
+        window.removeEventListener('loadPropaganda', handleLoadPropaganda);
         window.removeEventListener('navigateToGallery', handleNavigateToGallery);
     };
   }, []);
 
 
   const featureComponents: Record<Exclude<ActiveView, 'home'>, React.ReactNode> = {
-    creator: <CharacterProfileGenerator key={`${loadedCharacter?.id}-${loadedScene?.id}-${loadedProduct?.id}`} initialCharacter={loadedCharacter} initialScene={loadedScene} initialProduct={loadedProduct} />,
+    creator: <CharacterProfileGenerator key={`creator-${loadedCharacter?.id}-${loadedScene?.id}-${loadedProduct?.id}`} initialCharacter={loadedCharacter} initialScene={loadedScene} initialProduct={loadedProduct} />,
     viral: <ScriptIdeaGenerator />,
     transcribe: <VideoTranscriber />,
     scene_gallery: <SceneGallery />,
@@ -133,7 +144,8 @@ export default function Home() {
     product_gallery: <ProductGallery />,
     thumbnail: <ThumbnailGenerator />,
     advanced_script: <AdvancedScriptingTools />,
-    propaganda: <PropagandaGenerator />,
+    propaganda: <PropagandaGenerator key={`propaganda-${loadedPropaganda?.id}`} initialPropaganda={loadedPropaganda} />,
+    propaganda_gallery: <PropagandaGallery />,
   };
 
   const items = [
@@ -194,6 +206,14 @@ export default function Home() {
       icon: <Box className="h-6 w-6" />,
     },
     {
+      id: 'propaganda_gallery' as ActiveView,
+      title: 'Galeria de Propagandas',
+      description: 'Acesse e gerencie todos os seus roteiros de propaganda salvos.',
+      mobileDescription: 'Acesse e gerencie as suas propagandas.',
+      className: 'md:col-span-1',
+      icon: <GalleryVertical className="h-6 w-6" />,
+    },
+    {
       id: 'thumbnail' as ActiveView,
       title: 'Gerador de Thumbnail',
       description: 'Crie thumbnails de alta qualidade para seus vídeos.',
@@ -217,6 +237,9 @@ export default function Home() {
       setLoadedCharacter(null);
       setLoadedScene(null);
       setLoadedProduct(null);
+    }
+    if (activeView === 'propaganda') {
+        setLoadedPropaganda(null);
     }
     setActiveView(view);
   };

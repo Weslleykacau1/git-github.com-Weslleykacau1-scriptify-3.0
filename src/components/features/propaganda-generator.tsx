@@ -1,11 +1,11 @@
 // src/components/features/propaganda-generator.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info } from 'lucide-react';
+import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -17,6 +17,7 @@ import { generateNarrationForPropaganda } from '@/ai/flows/script-generation/gen
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { generateSuperPrompt } from '@/ai/flows/script-generation/generate-super-prompt';
+import type { Propaganda } from '@/lib/types';
 
 
 const veo3ExampleJson = `{
@@ -231,24 +232,45 @@ const productModelJson = `{
   }
 }`;
 
+interface PropagandaGeneratorProps {
+    initialPropaganda?: Propaganda | null;
+}
 
-export function PropagandaGenerator() {
+export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorProps) {
+  const [id, setId] = useState(initialPropaganda?.id || `prop_${Date.now()}`);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
   const [isLoadingNarration, setIsLoadingNarration] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
-  const [productName, setProductName] = useState('');
-  const [targetAudience, setTargetAudience] = useState('');
-  const [mainMessage, setMainMessage] = useState('');
-  const [sceneFocus, setSceneFocus] = useState('');
-  const [talent, setTalent] = useState('none');
-  const [narration, setNarration] = useState('');
-  const [tone, setTone] = useState('Criativo');
-  const [voiceStyle, setVoiceStyle] = useState('Voz Masculina (Jovem)');
-  const [duration, setDuration] = useState<'5s' | '8s'>('8s');
-  const [generatedScript, setGeneratedScript] = useState('');
+  const [image, setImage] = useState(initialPropaganda?.image || null);
+  const [productName, setProductName] = useState(initialPropaganda?.productName || '');
+  const [targetAudience, setTargetAudience] = useState(initialPropaganda?.targetAudience || '');
+  const [mainMessage, setMainMessage] = useState(initialPropaganda?.mainMessage || '');
+  const [sceneFocus, setSceneFocus] = useState(initialPropaganda?.sceneFocus || '');
+  const [talent, setTalent] = useState(initialPropaganda?.talent || 'none');
+  const [narration, setNarration] = useState(initialPropaganda?.narration || '');
+  const [tone, setTone] = useState(initialPropaganda?.tone ||'Criativo');
+  const [voiceStyle, setVoiceStyle] = useState(initialPropaganda?.voiceStyle || 'Voz Masculina (Jovem)');
+  const [duration, setDuration] = useState<'5s' | '8s'>(initialPropaganda?.duration || '8s');
+  const [generatedScript, setGeneratedScript] = useState(initialPropaganda?.generatedScript || '');
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (initialPropaganda) {
+      setId(initialPropaganda.id || `prop_${Date.now()}`);
+      setImage(initialPropaganda.image || null);
+      setProductName(initialPropaganda.productName || '');
+      setTargetAudience(initialPropaganda.targetAudience || '');
+      setMainMessage(initialPropaganda.mainMessage || '');
+      setSceneFocus(initialPropaganda.sceneFocus || '');
+      setTalent(initialPropaganda.talent || 'none');
+      setNarration(initialPropaganda.narration || '');
+      setTone(initialPropaganda.tone || 'Criativo');
+      setVoiceStyle(initialPropaganda.voiceStyle || 'Voz Masculina (Jovem)');
+      setDuration(initialPropaganda.duration || '8s');
+      setGeneratedScript(initialPropaganda.generatedScript || '');
+    }
+  }, [initialPropaganda]);
 
   const fileToDataUri = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -360,6 +382,53 @@ export function PropagandaGenerator() {
    const handleCopyJson = (content: string) => {
     navigator.clipboard.writeText(content);
     toast({ title: 'JSON copiado para a área de transferência!' });
+  };
+  
+  const navigateToGallery = () => {
+    const event = new CustomEvent('navigateToGallery', { detail: 'propaganda_gallery' });
+    window.dispatchEvent(event);
+  };
+
+  const saveToGallery = () => {
+    if (!productName || !generatedScript) {
+        toast({ title: 'Faltam dados', description: 'É necessário um nome de produto e um roteiro gerado para guardar.', variant: 'destructive' });
+        return;
+    }
+
+    const propagandaData: Propaganda = {
+        id,
+        productName,
+        targetAudience,
+        mainMessage,
+        sceneFocus,
+        talent,
+        narration,
+        tone,
+        voiceStyle,
+        duration,
+        image,
+        generatedScript,
+    };
+
+    try {
+        const banco = JSON.parse(localStorage.getItem('studioBanco') || '{}');
+        const propagandas = banco.propagandas || [];
+        const existingIndex = propagandas.findIndex((p: Propaganda) => p.id === id);
+
+        if (existingIndex > -1) {
+            propagandas[existingIndex] = propagandaData;
+        } else {
+            propagandas.push(propagandaData);
+        }
+
+        banco.propagandas = propagandas;
+        localStorage.setItem('studioBanco', JSON.stringify(banco));
+        window.dispatchEvent(new Event('storage'));
+        toast({ title: 'Propaganda guardada!', description: `"${productName}" foi guardado(a) na sua galeria.` });
+    } catch (error) {
+        console.error("Failed to save propaganda", error);
+        toast({ title: 'Erro ao guardar propaganda', variant: 'destructive' });
+    }
   };
 
   return (
@@ -503,9 +572,13 @@ export function PropagandaGenerator() {
       </div>
 
       {generatedScript && (
-          <div className='space-y-2'>
+          <div className='space-y-4'>
               <Label>Roteiro Gerado</Label>
               <Textarea readOnly value={generatedScript} className='min-h-[250px] bg-muted' />
+              <div className="flex flex-col sm:flex-row gap-2">
+                  <Button onClick={saveToGallery} className="w-full sm:w-auto"><Save className="mr-2 h-4 w-4" /> Guardar na Galeria</Button>
+                  <Button onClick={navigateToGallery} variant="outline" className="w-full sm:w-auto"><Library className="mr-2 h-4 w-4" /> Ver Galeria</Button>
+              </div>
           </div>
       )}
 
