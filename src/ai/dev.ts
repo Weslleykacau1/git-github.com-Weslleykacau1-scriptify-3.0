@@ -8,6 +8,7 @@ import '@/ai/flows/analysis/analyze-character-image';
 import '@/ai/flows/analysis/analyze-text-profile';
 import '@/ai/flows/analysis/analyze-scene-background';
 import '@/ai/flows/analysis/analyze-product-image';
+import '@/ai/flows/analysis/analyze-propaganda-text';
 
 // Script Generation
 import '@/ai/flows/script-generation/generate-script-ideas';

@@ -1,3 +1,4 @@
+
 // src/components/features/propaganda-generator.tsx
 'use client';
 
@@ -5,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library } from 'lucide-react';
+import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library, UploadCloud, ClipboardPaste } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -13,6 +14,7 @@ import { FileUploader } from '../ui/file-uploader';
 import { generatePropagandaScript } from '@/ai/flows/script-generation/generate-propaganda-script';
 import { generatePropagandaJsonScript } from '@/ai/flows/script-generation/generate-propaganda-json-script';
 import { analyzeProductImage } from '@/ai/flows/analysis/analyze-product-image';
+import { analyzePropagandaText } from '@/ai/flows/analysis/analyze-propaganda-text';
 import { generateNarrationForPropaganda } from '@/ai/flows/script-generation/generate-narration-for-propaganda';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -242,6 +244,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
   const [isLoadingNarration, setIsLoadingNarration] = useState(false);
   const [image, setImage] = useState(initialPropaganda?.image || null);
+  const [textDescription, setTextDescription] = useState('');
   const [productName, setProductName] = useState(initialPropaganda?.productName || '');
   const [targetAudience, setTargetAudience] = useState(initialPropaganda?.targetAudience || '');
   const [mainMessage, setMainMessage] = useState(initialPropaganda?.mainMessage || '');
@@ -298,6 +301,30 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
       toast({ title: 'Erro na análise', description: 'Não foi possível analisar a imagem.', variant: 'destructive' });
     } finally {
       setIsLoadingAnalysis(false);
+    }
+  };
+
+  const handleAnalyzeText = async () => {
+    if (!textDescription) {
+      toast({ title: 'Erro', description: 'Por favor, insira um texto para analisar.', variant: 'destructive' });
+      return;
+    }
+    setIsLoadingAnalysis(true);
+    toast({ title: 'Analisando texto...' });
+    try {
+        const result = await analyzePropagandaText({ textDescription });
+        setProductName(result.productName);
+        setTargetAudience(result.targetAudience);
+        setMainMessage(result.mainMessage);
+        setSceneFocus(result.sceneFocus || '');
+        setTone(result.tone);
+        setNarration(result.narration || '');
+        toast({ title: 'Análise de texto concluída!', description: 'Os campos foram preenchidos com base no texto.' });
+    } catch (error) {
+        console.error("Failed to analyze text for propaganda", error);
+        toast({ title: 'Erro na análise de texto', variant: 'destructive' });
+    } finally {
+        setIsLoadingAnalysis(false);
     }
   };
 
@@ -444,18 +471,52 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
             </p>
         </div>
       </div>
-      
-      <div className="space-y-2">
-        <Label className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /> Imagem do Produto (Opcional)</Label>
-        <FileUploader onFileChange={setImage} file={image} />
-         {image && (
-            <Button onClick={handleAnalyzeImage} disabled={isLoadingAnalysis} className="mt-2 w-full">
-                {isLoadingAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                Analisar Imagem
-            </Button>
-        )}
-      </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-card border rounded-xl p-4 md:p-6 space-y-4 flex flex-col">
+            <div className="flex items-center gap-3">
+                <UploadCloud className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold text-lg">Analisar Imagem</h3>
+            </div>
+            <FileUploader onFileChange={setImage} file={image} />
+             {image && (
+                <Button onClick={handleAnalyzeImage} disabled={isLoadingAnalysis} className="w-full">
+                    {isLoadingAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Analisar Imagem
+                </Button>
+            )}
+            <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
+                <Sparkles className="h-4 w-4" />
+                <AlertDescription className="text-xs text-blue-400/80">
+                  A análise irá preencher o nome do produto e a mensagem principal.
+                </AlertDescription>
+            </Alert>
+        </div>
+
+        <div className="bg-card border rounded-xl p-4 md:p-6 space-y-4 flex flex-col">
+            <div className="flex items-center gap-3">
+                <ClipboardPaste className="h-6 w-6 text-primary" />
+                <h3 className="font-semibold text-lg">Analisar por Texto</h3>
+            </div>
+            <Textarea
+                placeholder="Cole aqui a descrição da campanha, o conceito do anúncio ou as características do produto..."
+                value={textDescription}
+                onChange={(e) => setTextDescription(e.target.value)}
+                className="flex-grow min-h-[150px]"
+            />
+             <Button onClick={handleAnalyzeText} disabled={isLoadingAnalysis || !textDescription}>
+                {isLoadingAnalysis && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Analisar Texto e Preencher
+            </Button>
+             <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
+                <Sparkles className="h-4 w-4" />
+                <AlertDescription className="text-xs text-blue-400/80">
+                  A IA irá extrair o nome, público, mensagem, foco, tom e sugerir uma narração.
+                </AlertDescription>
+            </Alert>
+        </div>
+      </div>
+      
       <div className="space-y-1">
         <Label htmlFor="product-name">Nome do Produto/Serviço</Label>
         <Input id="product-name" placeholder="Ex: Copo Térmico Stanley" value={productName} onChange={(e) => setProductName(e.target.value)} />
