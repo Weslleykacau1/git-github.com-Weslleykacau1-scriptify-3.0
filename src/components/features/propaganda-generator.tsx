@@ -241,7 +241,7 @@ export function PropagandaGenerator() {
   const [targetAudience, setTargetAudience] = useState('');
   const [mainMessage, setMainMessage] = useState('');
   const [sceneFocus, setSceneFocus] = useState('');
-  const [talent, setTalent] = useState('');
+  const [talent, setTalent] = useState('none');
   const [narration, setNarration] = useState('');
   const [tone, setTone] = useState('Criativo');
   const [voiceStyle, setVoiceStyle] = useState('Voz Masculina (Jovem)');
@@ -417,7 +417,7 @@ export function PropagandaGenerator() {
                 <SelectItem value="Ator">Ator</SelectItem>
                 <SelectItem value="Atriz">Atriz</SelectItem>
                 <SelectItem value="Narrador">Narrador</SelectItem>
-                <SelectItem value="">Nenhum/Não especificado</SelectItem>
+                <SelectItem value="none">Nenhum/Não especificado</SelectItem>
             </SelectContent>
         </Select>
       </div>
