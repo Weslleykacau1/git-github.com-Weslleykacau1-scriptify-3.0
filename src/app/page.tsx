@@ -53,10 +53,11 @@ export default function Home() {
         return; // Stop further execution in this effect
     }
     
-    // Do not show purchase banner if the user has the VIP key.
-    if (activationKey === 'VIP-2025-ACESSO-LIB') {
-        setShowPurchaseBanner(false);
-    } else {
+    // Default to not showing the banner if any valid key is present.
+    setShowPurchaseBanner(false);
+    
+    // Logic for trial period for non-VIP keys
+    if (activationKey !== 'VIP-2025-ACESSO-LIB') {
         const firstUseDateStr = localStorage.getItem('studioFirstUseDate');
         if (!firstUseDateStr) {
           localStorage.setItem('studioFirstUseDate', new Date().toISOString());
@@ -64,12 +65,12 @@ export default function Home() {
           const firstUseDate = new Date(firstUseDateStr);
           const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
           if (new Date().getTime() - firstUseDate.getTime() > threeDaysInMillis) {
-            setShowPurchaseBanner(true);
+            setShowPurchaseBanner(true); // Show banner only after 3 days for non-VIPs
           }
         }
     }
     
-    // Inicializar banco se não existir
+    // Initialize storage if it doesn't exist
     if (!localStorage.getItem('studioBanco')) {
       const banco = {
         personagens: [],
@@ -308,3 +309,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
