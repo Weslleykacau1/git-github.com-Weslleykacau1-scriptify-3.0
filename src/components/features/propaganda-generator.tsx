@@ -482,7 +482,6 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
   const [voiceStyle, setVoiceStyle] = useState(initialPropaganda?.voiceStyle || 'Voz Masculina (Jovem)');
   const [videoStyle, setVideoStyle] = useState(initialPropaganda?.videoStyle || 'fast_cut_energetic');
   const [duration, setDuration] = useState<'5s' | '8s'>(initialPropaganda?.duration || '8s');
-  const [numberOfScenes, setNumberOfScenes] = useState(1);
   const [allowsDigitalText, setAllowsDigitalText] = useState(initialPropaganda?.allowsDigitalText ?? true);
   const [onlyPhysicalText, setOnlyPhysicalText] = useState(initialPropaganda?.onlyPhysicalText ?? false);
   const [generatedScript, setGeneratedScript] = useState(initialPropaganda?.generatedScript || '');
@@ -908,21 +907,15 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
             </SelectContent>
           </Select>
         </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-1">
-          <Label htmlFor="duration">Duração</Label>
-          <Select value={duration} onValueChange={(v) => setDuration(v as any)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5s">5 seg</SelectItem>
-              <SelectItem value="8s">8 seg</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1">
-            <Label htmlFor="scenes-number">Nº de Cenas</Label>
-            <Input id="scenes-number" type="number" min="1" value={numberOfScenes} onChange={(e) => setNumberOfScenes(parseInt(e.target.value) || 1)} />
-        </div>
+      <div className="space-y-1">
+        <Label htmlFor="duration">Duração</Label>
+        <Select value={duration} onValueChange={(v) => setDuration(v as any)}>
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="5s">5 seg</SelectItem>
+            <SelectItem value="8s">8 seg</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
        <div className="space-y-1">
         <div className="flex justify-between items-center">
