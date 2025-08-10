@@ -241,6 +241,7 @@ export function PropagandaGenerator() {
   const [targetAudience, setTargetAudience] = useState('');
   const [mainMessage, setMainMessage] = useState('');
   const [sceneFocus, setSceneFocus] = useState('');
+  const [talent, setTalent] = useState('');
   const [narration, setNarration] = useState('');
   const [tone, setTone] = useState('Criativo');
   const [voiceStyle, setVoiceStyle] = useState('Voz Masculina (Jovem)');
@@ -406,6 +407,11 @@ export function PropagandaGenerator() {
         <Textarea id="scene-focus" placeholder="Ex: Mostrar a resistência do produto em uma situação extrema." value={sceneFocus} onChange={(e) => setSceneFocus(e.target.value)} />
       </div>
       
+      <div className="space-y-1">
+        <Label htmlFor="talent">Ator/Atriz/Narrador (para a sua referência)</Label>
+        <Input id="talent" placeholder="Ex: Narrador com voz grave, Atriz jovem e energética" value={talent} onChange={(e) => setTalent(e.target.value)} />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-1">
           <Label htmlFor="tone">Tom</Label>
