@@ -1,4 +1,3 @@
-
 // src/components/features/propaganda-generator.tsx
 'use client';
 
@@ -6,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library, UploadCloud, ClipboardPaste } from 'lucide-react';
+import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library, UploadCloud, ClipboardPaste, List } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -254,6 +253,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
   const [tone, setTone] = useState(initialPropaganda?.tone ||'Criativo');
   const [voiceStyle, setVoiceStyle] = useState(initialPropaganda?.voiceStyle || 'Voz Masculina (Jovem)');
   const [duration, setDuration] = useState<'5s' | '8s'>(initialPropaganda?.duration || '8s');
+  const [numberOfScenes, setNumberOfScenes] = useState(1);
   const [generatedScript, setGeneratedScript] = useState(initialPropaganda?.generatedScript || '');
 
   const { toast } = useToast();
@@ -552,7 +552,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-1">
           <Label htmlFor="tone">Tom</Label>
           <Select value={tone} onValueChange={setTone}>
@@ -597,6 +597,10 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
               <SelectItem value="8s">8 seg</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="space-y-1">
+            <Label htmlFor="scenes-number">Nº de Cenas</Label>
+            <Input id="scenes-number" type="number" min="1" value={numberOfScenes} onChange={(e) => setNumberOfScenes(parseInt(e.target.value) || 1)} />
         </div>
       </div>
        <div className="space-y-1">
