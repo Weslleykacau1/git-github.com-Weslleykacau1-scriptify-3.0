@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Generates a commercial script in JSON format based on the AIDA formula.
+ * @fileOverview Generates a commercial script in JSON format based on the AIDA formula, compatible with Veo 3.
  *
  * - generatePropagandaJsonScript - A function that generates the JSON script.
  * - GeneratePropagandaJsonScriptInput - The input type for the function.
@@ -12,10 +12,36 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const CameraSchema = z.object({
+    type: z.string().describe('The type of camera, e.g., "mirrorless_compact", "drone_or_gimbal_wide".'),
+    lens: z.string().describe('The lens equivalent, e.g., "50mm_equiv", "24mm_equiv".'),
+    movement: z.string().describe('The camera movement, e.g., "slow_push_in_gimbal", "arc_around_subject".'),
+    notes: z.string().optional().describe('Additional notes for the camera work, e.g., "POV feel; leve handheld shake".'),
+});
+
+const TalentSchema = z.object({
+    character: z.string().describe('The character in the scene, e.g., "Comediante", "Amigo".'),
+    expression: z.string().describe('The character\'s expression, e.g., "surpreso/encantado", "confiante".'),
+    action: z.string().describe('The character\'s action, e.g., "pega o produto e sorri para a câmera".'),
+});
+
+const SoundSchema = z.object({
+    sfx: z.string().optional().describe('Sound effects for the scene, e.g., "whoosh_subtle", "impact_punch".'),
+    music: z.string().describe('The music for the scene, e.g., "upbeat_intro", "build_beat".'),
+    vo_level: z.string().optional().describe('Voice-over level, e.g., "clear".'),
+    vo: z.string().optional().describe('A call to action or final voice over line.'),
+});
+
 const SceneSchema = z.object({
-  time: z.string().describe('The time range for the scene, e.g., "0-3s".'),
-  visual: z.string().describe('A detailed visual description for the scene in English.'),
-  audio: z.string().describe('A detailed audio description for the scene in English (music, SFX).'),
+  id: z.number().describe('The scene identifier.'),
+  duration: z.number().describe('The duration of the scene in seconds.'),
+  frame: z.string().describe('The framing of the shot, e.g., "close_up", "medium", "wide_scene".'),
+  camera: CameraSchema,
+  talent: TalentSchema,
+  dialogue: z.string().describe('The dialogue for the scene in Brazilian Portuguese.'),
+  effects: z.array(z.string()).describe('Visual effects to be applied, e.g., ["color_grade:high_saturation", "film_grain:light"].'),
+  sound: SoundSchema,
+  post_notes: z.string().describe('Notes for post-production, e.g., "Adicionar kinetic_typography...".'),
 });
 
 const GeneratePropagandaJsonScriptInputSchema = z.object({
@@ -34,13 +60,13 @@ const GeneratePropagandaJsonScriptInputSchema = z.object({
 export type GeneratePropagandaJsonScriptInput = z.infer<typeof GeneratePropagandaJsonScriptInputSchema>;
 
 const GeneratePropagandaJsonScriptOutputSchema = z.object({
-  title: z.string().describe('The title of the commercial.'),
-  script: z.object({
-    attention: SceneSchema.describe('AIDA - Attention: Grab attention in the first seconds.'),
-    interest: SceneSchema.describe('AIDA - Interest: Show the direct benefit.'),
-    desire: SceneSchema.describe('AIDA - Desire: Create desire (e.g., transformation, emotion).'),
-    action: SceneSchema.describe('AIDA - Action: Clear call-to-action.'),
+  metadata: z.object({
+      project_name: z.string().describe('A generated project name for the commercial.'),
+      duration_seconds: z.number().describe('The total duration of the project in seconds.'),
+      target_formats: z.array(z.string()).describe('The target formats, e.g., ["9:16", "16:9"].'),
+      notes: z.string().optional().describe('General notes for the project.'),
   }),
+  scenes: z.array(SceneSchema).describe('An array of scenes that make up the script.'),
 });
 export type GeneratePropagandaJsonScriptOutput = z.infer<typeof GeneratePropagandaJsonScriptOutputSchema>;
 
@@ -52,13 +78,9 @@ const prompt = ai.definePrompt({
   name: 'generatePropagandaJsonScriptPrompt',
   input: {schema: GeneratePropagandaJsonScriptInputSchema},
   output: {schema: GeneratePropagandaJsonScriptOutputSchema},
-  prompt: `You are an expert advertising screenwriter. Create a detailed commercial script in JSON format with a total duration of {{duration}}.
-
-The script must be structured using the AIDA formula:
-- Attention (A): Grab attention in the first 3 seconds.
-- Interest (I): Show the direct benefit of the product.
-- Desire (D): Generate desire (e.g., show transformation, use testimonials, evoke emotion).
-- Action (A): Provide a clear call-to-action (e.g., buy, click, learn more).
+  prompt: `You are an expert advertising screenwriter creating a commercial script for the Veo 3 video generation model. 
+  Create a detailed script in JSON format with a total duration of approximately {{duration}}.
+  The script should be divided into a few scenes, and the total duration of the scenes should match the metadata's duration_seconds.
 
 **Product/Service Details:**
 - Name: {{productName}}
@@ -74,7 +96,11 @@ The script must be structured using the AIDA formula:
 - Reference Image (use for visual inspiration): {{media url=imagePrompt}}
 {{/if}}
 
-The final output must be in JSON. All visual and audio descriptions must be in English. The narration, if generated, must be in Brazilian Portuguese. Ensure the timing for each section is appropriate for the total {{duration}}.
+- The final output must be in JSON, following the provided output schema precisely.
+- All text fields like notes, descriptions, and prompts must be in English.
+- The 'dialogue' field must be in Brazilian Portuguese.
+- Be very creative and descriptive with camera movements, effects, and sound design to create a high-impact commercial.
+- Generate a script that is appropriate for the total {{duration}}.
 `,
 });
 
