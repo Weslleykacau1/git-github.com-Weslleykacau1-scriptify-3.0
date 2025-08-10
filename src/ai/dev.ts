@@ -1,3 +1,4 @@
+
 'use server';
 import { config } from 'dotenv';
 config();
@@ -10,11 +11,15 @@ import '@/ai/flows/analysis/analyze-product-image';
 
 // Script Generation
 import '@/ai/flows/script-generation/generate-script-ideas';
-import '@/ai-flows/script-generation/generate-quick-scene';
+import '@/ai/flows/script-generation/generate-quick-scene';
 import '@/ai/flows/script-generation/generate-long-script';
 import '@/ai/flows/script-generation/generate-web-doc-script';
 import '@/ai/flows/script-generation/generate-viral-script';
 import '@/ai/flows/script-generation/generate-json-script';
+import '@/ai/flows/script-generation/generate-propaganda-script';
+import '@/ai/flows/script-generation/generate-propaganda-json-script';
+import '@/ai/flows/script-generation/generate-narration-for-propaganda';
+
 
 // Content Assistance
 import '@/ai/flows/content-assistance/suggest-action';

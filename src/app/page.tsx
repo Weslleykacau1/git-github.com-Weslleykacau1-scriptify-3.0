@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/header';
 import { BentoGrid, BentoGridItem } from '@/components/bento-grid';
-import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft, Instagram } from 'lucide-react';
+import { Bot, Clapperboard, FileText, ImageIcon, Rocket, Users, Zap, Box, ArrowLeft, Instagram, Megaphone } from 'lucide-react';
 import { CharacterProfileGenerator } from '@/components/features/character-profile-generator';
 import { ScriptIdeaGenerator } from '@/components/features/script-idea-generator';
 import { AdvancedScriptingTools } from '@/components/features/advanced-scripting-tools';
@@ -20,6 +20,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingScreen } from '@/components/loading-screen';
 import { PurchaseBanner } from '@/components/purchase-banner';
 import { SettingsDialog } from '@/components/features/settings-dialog';
+import { PropagandaGenerator } from '@/components/features/propaganda-generator';
 
 
 const VALID_KEYS = [
@@ -28,7 +29,7 @@ const VALID_KEYS = [
     'VIP-2025-ACESSO-LIB'
 ];
 
-type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script';
+type ActiveView = 'home' | 'creator' | 'viral' | 'transcribe' | 'scene_gallery' | 'character_gallery' | 'product_gallery' | 'thumbnail' | 'advanced_script' | 'propaganda';
 
 export default function Home() {
   const [activeView, setActiveView] = useState<ActiveView>('home');
@@ -51,16 +52,21 @@ export default function Home() {
         router.push('/ativacao');
         return; // Stop further execution in this effect
     }
-
-    const firstUseDateStr = localStorage.getItem('studioFirstUseDate');
-    if (!firstUseDateStr) {
-      localStorage.setItem('studioFirstUseDate', new Date().toISOString());
+    
+    // Do not show purchase banner if the user has the VIP key.
+    if (activationKey === 'VIP-2025-ACESSO-LIB') {
+        setShowPurchaseBanner(false);
     } else {
-      const firstUseDate = new Date(firstUseDateStr);
-      const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
-      if (new Date().getTime() - firstUseDate.getTime() > threeDaysInMillis) {
-        setShowPurchaseBanner(true);
-      }
+        const firstUseDateStr = localStorage.getItem('studioFirstUseDate');
+        if (!firstUseDateStr) {
+          localStorage.setItem('studioFirstUseDate', new Date().toISOString());
+        } else {
+          const firstUseDate = new Date(firstUseDateStr);
+          const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000;
+          if (new Date().getTime() - firstUseDate.getTime() > threeDaysInMillis) {
+            setShowPurchaseBanner(true);
+          }
+        }
     }
     
     // Inicializar banco se não existir
@@ -145,6 +151,7 @@ export default function Home() {
     product_gallery: <ProductGallery />,
     thumbnail: <ThumbnailGenerator />,
     advanced_script: <AdvancedScriptingTools />,
+    propaganda: <PropagandaGenerator />,
   };
 
   const items = [
@@ -163,6 +170,14 @@ export default function Home() {
       mobileDescription: 'Crie roteiros curtos de alto impacto.',
       className: 'md:col-span-1',
       icon: <Rocket className="h-6 w-6" />,
+    },
+     {
+      id: 'propaganda' as ActiveView,
+      title: 'Gerador de Propaganda',
+      description: 'Crie roteiros para anúncios de rádio, TV ou internet.',
+      mobileDescription: 'Crie roteiros para anúncios.',
+      className: 'md:col-span-1',
+      icon: <Megaphone className="h-6 w-6" />,
     },
     {
       id: 'transcribe' as ActiveView,
