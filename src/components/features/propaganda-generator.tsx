@@ -479,7 +479,7 @@ export function PropagandaGenerator() {
         </div>
         <Textarea id="narration" placeholder="Escreva a narração que você quer que a IA use como base..." value={narration} onChange={(e) => setNarration(e.target.value)} />
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col md:flex-row gap-2">
         <Button onClick={() => handleGenerate('markdown')} disabled={isLoading} size="lg" className="w-full">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
             Gerar Propaganda
