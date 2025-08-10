@@ -332,6 +332,134 @@ const teslaExampleJson = `{
   ]
 }`;
 
+const ikeaExampleJson = `{
+  "metadata": {
+    "duration_seconds": 8,
+    "project_name": "IKEA_InstantHome_Transformation",
+    "target_formats": [
+      "16:9",
+      "9:16",
+      "1:1"
+    ],
+    "notes": "A short, high-impact commercial showcasing the magical and effortless transformation of a space into a cozy home using IKEA products. Emphasizes instant gratification and design ease."
+  },
+  "scenes": [
+    {
+      "camera": {
+        "lens": "24mm_equiv",
+        "movement": "slow_push_in_gimbal",
+        "type": "drone_or_gimbal_wide",
+        "notes": "Smooth, steady push into a pristine, empty room. Lighting is bright and even, highlighting potential."
+      },
+      "dialogue": "Em um piscar de olhos, veja a transformação acontecer.",
+      "duration": 1.5,
+      "effects": [
+        "soft_vignette",
+        "subtle_bloom"
+      ],
+      "frame": "wide_scene",
+      "id": 1,
+      "post_notes": "Ensure the room feels vast and empty, creating anticipation for the transformation. Use clean, minimalist aesthetics.",
+      "sound": {
+        "music": "light_airy_intro_swell",
+        "sfx": "ambient_room_tone",
+        "vo": "Em um piscar de olhos, veja a transformação acontecer.",
+        "vo_level": "clear"
+      },
+      "talent": {
+        "action": "A clean, empty room stands ready for a magical transformation.",
+        "character": "Empty Room",
+        "expression": "n/a"
+      }
+    },
+    {
+      "camera": {
+        "lens": "50mm_equiv",
+        "movement": "quick_dolly_left_then_right",
+        "type": "mirrorless_compact",
+        "notes": "Dynamic and rapid camera movement to enhance the sense of instant transformation and magic."
+      },
+      "dialogue": "De uma caixa, nasce um lar. Sem esforço, apenas a magia de cada peça se encaixando perfeitamente.",
+      "duration": 2.5,
+      "effects": [
+        "quick_morph_transition",
+        "particle_effects:sparkle_burst",
+        "glow_effect:on_appearing_items"
+      ],
+      "frame": "medium",
+      "id": 2,
+      "post_notes": "Utilize CGI for the magical appearance and assembly of furniture. Each piece should snap into place with a subtle, enchanting glow. Fast-paced editing is key.",
+      "sound": {
+        "music": "magical_build_up_fast",
+        "sfx": "whoosh_sparkle_fast, chime_ascending_short",
+        "vo": "De uma caixa, nasce um lar. Sem esforço, apenas a magia de cada peça se encaixando perfeitamente.",
+        "vo_level": "clear"
+      },
+      "talent": {
+        "action": "Furniture and decor elements magically materialize and assemble themselves in the room.",
+        "character": "IKEA Products",
+        "expression": "n/a"
+      }
+    },
+    {
+      "camera": {
+        "lens": "35mm_equiv",
+        "movement": "slow_arc_around_subject",
+        "type": "gimbal_smooth",
+        "notes": "Smooth, comforting camera movement to showcase the coziness and completeness of the newly furnished space."
+      },
+      "dialogue": "Seu espaço dos sonhos, instantaneamente.",
+      "duration": 2.5,
+      "effects": [
+        "color_grade:warm_and_cozy",
+        "soft_focus_bokeh"
+      ],
+      "frame": "medium_wide",
+      "id": 3,
+      "post_notes": "Lighting should be warm and inviting, emphasizing comfort. Ensure the talent looks genuinely relaxed and happy in the space.",
+      "sound": {
+        "music": "gentle_acoustic_melody",
+        "sfx": "subtle_cozy_ambience, page_turn_soft",
+        "vo": "Seu espaço dos sonhos, instantaneamente.",
+        "vo_level": "clear"
+      },
+      "talent": {
+        "action": "A person is comfortably settled in the now fully transformed and cozy room, reading a book and sipping coffee, radiating peace and contentment.",
+        "character": "Happy Individual",
+        "expression": "content/relaxed"
+      }
+    },
+    {
+      "camera": {
+        "lens": "100mm_equiv",
+        "movement": "static_shot",
+        "type": "static_tripod",
+        "notes": "Clear, stable shot for brand messaging and call to action."
+      },
+      "dialogue": "IKEA: seu lar, sua inspiração, simplificada.",
+      "duration": 1.5,
+      "effects": [
+        "kinetic_typography",
+        "logo_reveal_smooth"
+      ],
+      "frame": "close_up_text",
+      "id": 4,
+      "post_notes": "Elegant and swift animation for the IKEA logo and tagline reveal. Music should provide a clear and uplifting resolution.",
+      "sound": {
+        "music": "upbeat_outro_jingle",
+        "sfx": "sparkle_chime_final",
+        "vo": "IKEA: seu lar, sua inspiração, simplificada.",
+        "vo_level": "clear"
+      },
+      "talent": {
+        "action": "The IKEA logo and tagline are prominently displayed on screen.",
+        "character": "IKEA Logo",
+        "expression": "n/a"
+      }
+    }
+  ]
+}`;
+
 interface PropagandaGeneratorProps {
     initialPropaganda?: Propaganda | null;
 }
@@ -880,6 +1008,36 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
                 <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
                     <code>
                         {teslaExampleJson}
+                    </code>
+                </pre>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-6">
+          <AccordionTrigger>
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              <span>Exemplo JSON (IKEA)</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+             <Alert>
+                <AlertDescription>
+                   Use este exemplo da IKEA para criar um comercial focado na transformação mágica e sem esforço de um espaço.
+                </AlertDescription>
+            </Alert>
+            <div className="relative mt-2">
+                 <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={() => handleCopyJson(ikeaExampleJson)}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
+                    <code>
+                        {ikeaExampleJson}
                     </code>
                 </pre>
             </div>
