@@ -20,7 +20,7 @@ export function PurchaseBanner() {
                     </div>
                 </div>
                 <Button asChild className="mt-4 sm:mt-0 bg-primary hover:bg-primary/90 text-primary-foreground">
-                    <a href="https://pay.cakto.com.br/6uv8krj_496356" target="_blank" rel="noopener noreferrer">
+                    <a href="https://pay.kiwify.com.br/yQ6y5GZ" target="_blank" rel="noopener noreferrer">
                         Comprar Agora
                     </a>
                 </Button>
