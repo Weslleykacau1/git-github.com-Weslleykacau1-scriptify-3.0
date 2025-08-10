@@ -19,6 +19,7 @@ import '@/ai/flows/script-generation/generate-json-script';
 import '@/ai/flows/script-generation/generate-propaganda-script';
 import '@/ai/flows/script-generation/generate-propaganda-json-script';
 import '@/ai/flows/script-generation/generate-narration-for-propaganda';
+import '@/ai/flows/script-generation/generate-super-prompt';
 
 
 // Content Assistance

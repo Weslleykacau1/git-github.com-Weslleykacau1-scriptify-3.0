@@ -1,3 +1,4 @@
+
 // src/components/features/propaganda-generator.tsx
 'use client';
 
@@ -16,6 +17,7 @@ import { analyzeProductImage } from '@/ai/flows/analysis/analyze-product-image';
 import { generateNarrationForPropaganda } from '@/ai/flows/script-generation/generate-narration-for-propaganda';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { generateSuperPrompt } from '@/ai/flows/script-generation/generate-super-prompt';
 
 
 const veo3ExampleJson = `{
@@ -137,6 +139,43 @@ const veo3ExampleJson = `{
   ]
 }`;
 
+const superPromptExample = `{
+  "description": "Cinematic close-up opens on a glowing horizontal red energy wave pulsing against a black void. The wave ripples with soft fizzing textures and microscopic bubbles. As the camera gently pulls back, the red wave curves and stretches, gradually revealing the shape of a classic Coca-Cola bottle formed entirely from glowing condensation lines and fizz trails. The silhouette is suspended mid-air, hyper-stylized but instantly recognizable. Suddenly, a stream of rich amber Coca-Cola pours from above, seamlessly filling the outline from bottom to top. The glowing fizz dissipates, revealing a fully rendered glass Coca-Cola bottle, cold and glistening with condensation. Subtle mist gathers at the base. No text.",
+  "style": "cinematic, minimalist surrealism with crave realism",
+  "camera": "close macro start, smooth dolly pullback to centered bottle reveal",
+  "lighting": "black void with glowing red energy, internal light from bottle fizz, soft rim lights and condensation glow",
+  "environment": "pure black stage with subtle reflective ground plane and ambient mist",
+  "elements": [
+    "glowing red horizontal fizz wave",
+    "microbubbles and energy ripple texture",
+    "Coca-Cola bottle outline forming from wave",
+    "amber Coke stream pouring into fizz form",
+    "bottle taking solid form from top-down",
+    "realistic condensation and chill fog",
+    "classic Coca-Cola bottle (glass, embossed logo, proper shape)"
+  ],
+  "motion": "energy wave pulses and curves into outline; Coke pours in; fizz dissolves into physical bottle; condensation builds",
+  "ending": "fully formed Coca-Cola bottle centered on screen, glowing softly and fogged with chill, perfectly craveable",
+  "audio": {
+    "music": "subtle ambient pulse with rising fizz tones",
+    "sfx": "micro fizz crackle, wave hum, Coke pour splash, chill hiss"
+  },
+  "text_overlay": "none",
+  "format": "16:9",
+  "keywords": [
+    "Coca-Cola",
+    "bottle reveal",
+    "energy silhouette",
+    "fizz-driven animation",
+    "crave aesthetic",
+    "macro realism",
+    "minimalist surreal",
+    "cold drink focus",
+    "photoreal cinematic",
+    "no text"
+  ]
+}`;
+
 export function PropagandaGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
@@ -204,8 +243,8 @@ export function PropagandaGenerator() {
     }
   };
 
-  const handleGenerate = async (format: 'markdown' | 'json') => {
-    if (!productName || !targetAudience || !mainMessage) {
+  const handleGenerate = async (format: 'markdown' | 'json' | 'super_prompt') => {
+    if (!productName || (!targetAudience && format !== 'super_prompt') || !mainMessage) {
       toast({ title: 'Erro', description: 'Por favor, preencha todos os campos obrigatórios.', variant: 'destructive' });
       return;
     }
@@ -216,7 +255,14 @@ export function PropagandaGenerator() {
     
     try {
       let script;
-      if (format === 'json') {
+      if (format === 'super_prompt') {
+        const result = await generateSuperPrompt({
+          productName,
+          mainMessage,
+          tone,
+        });
+        script = JSON.stringify(result, null, 2);
+      } else if (format === 'json') {
           const result = await generatePropagandaJsonScript({
               productName,
               targetAudience,
@@ -249,8 +295,8 @@ export function PropagandaGenerator() {
     }
   };
 
-   const handleCopyJson = () => {
-    navigator.clipboard.writeText(veo3ExampleJson);
+   const handleCopyJson = (content: string) => {
+    navigator.clipboard.writeText(content);
     toast({ title: 'JSON copiado para a área de transferência!' });
   };
 
@@ -348,7 +394,15 @@ export function PropagandaGenerator() {
           ) : (
             <span className="font-mono mr-2">{'{ }'}</span>
           )}
-          Gerar em JSON
+          Gerar em JSON (Veo 3)
+        </Button>
+        <Button onClick={() => handleGenerate('super_prompt')} disabled={isLoading} variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10 hover:text-primary">
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+             <Wand2 className="mr-2 h-4 w-4" />
+          )}
+          Gerar Super Prompt
         </Button>
       </div>
 
@@ -396,13 +450,43 @@ export function PropagandaGenerator() {
                     variant="ghost"
                     size="icon"
                     className="absolute top-2 right-2 h-7 w-7"
-                    onClick={handleCopyJson}
+                    onClick={() => handleCopyJson(veo3ExampleJson)}
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
                 <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
                     <code>
                         {veo3ExampleJson}
+                    </code>
+                </pre>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              <span>Exemplo Super Prompt (Coca-Cola)</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+             <Alert>
+                <AlertDescription>
+                   Use este exemplo como inspiração para criar os seus próprios conceitos visuais de alto nível.
+                </AlertDescription>
+            </Alert>
+            <div className="relative mt-2">
+                 <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={() => handleCopyJson(superPromptExample)}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
+                    <code>
+                        {superPromptExample}
                     </code>
                 </pre>
             </div>
