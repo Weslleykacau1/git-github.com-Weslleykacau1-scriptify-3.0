@@ -20,6 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { generateSuperPrompt } from '@/ai/flows/script-generation/generate-super-prompt';
 import type { Propaganda } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { generateGoogleVidsScript } from '@/ai/flows/script-generation/generate-google-vids-script';
 
 
 const veo3ExampleJson = `{
@@ -583,7 +584,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
     }
   };
 
-  const handleGenerate = async (format: 'markdown' | 'json' | 'super_prompt') => {
+  const handleGenerate = async (format: 'json_google_vids' | 'json' | 'super_prompt') => {
     if (!productName || (!targetAudience && format !== 'super_prompt') || !mainMessage) {
       toast({ title: 'Erro', description: 'Por favor, preencha todos os campos obrigatórios.', variant: 'destructive' });
       return;
@@ -617,8 +618,8 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
               onlyPhysicalText,
           });
           script = JSON.stringify(result, null, 2);
-      } else {
-           const result = await generatePropagandaScript({
+      } else if (format === 'json_google_vids') {
+          const result = await generateGoogleVidsScript({
               productName,
               targetAudience,
               mainMessage,
@@ -632,8 +633,12 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
           });
           script = result.script;
       }
-      setGeneratedScript(script);
-      toast({ title: 'Propaganda gerada com sucesso!' });
+      
+      if(script){
+        setGeneratedScript(script);
+        toast({ title: 'Propaganda gerada com sucesso!' });
+      }
+
     } catch (error) {
       console.error(`Failed to generate propaganda script in ${format}`, error);
       toast({ title: 'Erro ao gerar roteiro', description: 'Ocorreu um erro ao comunicar com a IA.', variant: 'destructive' });
@@ -884,9 +889,9 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
         <Textarea id="narration" placeholder="Escreva a narração que você quer que a IA use como base..." value={narration} onChange={(e) => setNarration(e.target.value)} />
       </div>
       <div className="flex flex-col md:flex-row gap-2">
-        <Button onClick={() => handleGenerate('markdown')} disabled={isLoading} size="lg" className="w-full">
+        <Button onClick={() => handleGenerate('json_google_vids')} disabled={isLoading} size="lg" className="w-full">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
-            Gerar Propaganda
+            Gerar para Google Vids
         </Button>
          <Button onClick={() => handleGenerate('json')} disabled={isLoading} variant="outline" className="w-full">
           {isLoading ? (
