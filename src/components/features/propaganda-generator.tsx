@@ -1,4 +1,3 @@
-
 // src/components/features/propaganda-generator.tsx
 'use client';
 
@@ -243,6 +242,7 @@ export function PropagandaGenerator() {
   const [mainMessage, setMainMessage] = useState('');
   const [narration, setNarration] = useState('');
   const [tone, setTone] = useState('Criativo');
+  const [voiceStyle, setVoiceStyle] = useState('Voz Masculina (Jovem)');
   const [duration, setDuration] = useState<'5s' | '8s'>('8s');
   const [generatedScript, setGeneratedScript] = useState('');
 
@@ -288,7 +288,7 @@ export function PropagandaGenerator() {
       const result = await generateNarrationForPropaganda({
         productName: productName,
         mainMessage: mainMessage,
-        tone: tone,
+        tone: `${tone} (${voiceStyle})`,
       });
       setNarration(result.narration);
       toast({ title: 'Narração gerada com sucesso!' });
@@ -398,7 +398,7 @@ export function PropagandaGenerator() {
         <Textarea id="main-message" placeholder="Ex: Mantém a sua bebida gelada por 24 horas" value={mainMessage} onChange={(e) => setMainMessage(e.target.value)} />
       </div>
       
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
           <Label htmlFor="tone">Tom</Label>
           <Select value={tone} onValueChange={setTone}>
@@ -417,6 +417,20 @@ export function PropagandaGenerator() {
               <SelectItem value="Urgente">Urgente</SelectItem>
               <SelectItem value="Calmo">Calmo</SelectItem>
               <SelectItem value="Jovem / Cool">Jovem / Cool</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="voice-style">Estilo de Voz</Label>
+          <Select value={voiceStyle} onValueChange={setVoiceStyle}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+                <SelectItem value="Voz Masculina (Jovem)">Voz Masculina (Jovem)</SelectItem>
+                <SelectItem value="Voz Masculina (Madura)">Voz Masculina (Madura)</SelectItem>
+                <SelectItem value="Voz Masculina (Grave/Séria)">Voz Masculina (Grave/Séria)</SelectItem>
+                <SelectItem value="Voz Feminina (Jovem)">Voz Feminina (Jovem)</SelectItem>
+                <SelectItem value="Voz Feminina (Madura)">Voz Feminina (Madura)</SelectItem>
+                <SelectItem value="Voz Feminina (Suave/Calma)">Voz Feminina (Suave/Calma)</SelectItem>
             </SelectContent>
           </Select>
         </div>

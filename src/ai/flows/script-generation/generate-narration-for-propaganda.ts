@@ -15,7 +15,7 @@ import {z} from 'genkit';
 const GenerateNarrationForPropagandaInputSchema = z.object({
   productName: z.string().describe('The name of the product or service.'),
   mainMessage: z.string().describe('The core message or main benefit of the product.'),
-  tone: z.string().describe('The desired tone for the narration (e.g., "Divertido", "Sério", "Emocional").'),
+  tone: z.string().describe('The desired tone for the narration (e.g., "Divertido (Voz Masculina Jovem)", "Sério (Voz Feminina Madura)", "Emocional").'),
 });
 export type GenerateNarrationForPropagandaInput = z.infer<typeof GenerateNarrationForPropagandaInputSchema>;
 
@@ -39,7 +39,7 @@ Dados do Produto:
 - Mensagem Principal: {{{mainMessage}}}
 - Tom Desejado: {{{tone}}}
 
-Gere uma narração persuasiva e criativa em português do Brasil que se alinhe perfeitamente com o tom solicitado e venda o produto de forma eficaz dentro do tempo estipulado.
+Gere uma narração persuasiva e criativa em português do Brasil que se alinhe perfeitamente com o tom e o estilo de voz solicitados. A narração deve ser eficaz para o tempo estipulado.
 `,
 });
 
