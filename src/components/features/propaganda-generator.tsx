@@ -233,6 +233,105 @@ const productModelJson = `{
   }
 }`;
 
+const teslaExampleJson = `{
+  "metadata": {
+    "duration_seconds": 8,
+    "project_name": "TeslaFutureReveal",
+    "target_formats": [
+      "9:16",
+      "16:9"
+    ],
+    "notes": "Commercial showcasing the magical reveal of a Tesla vehicle and futuristic showroom, emphasizing innovation and design."
+  },
+  "scenes": [
+    {
+      "camera": {
+        "lens": "50mm_equiv",
+        "movement": "slow_push_in_gimbal",
+        "type": "mirrorless_compact",
+        "notes": "Abstract light particles forming, almost like digital dust coalescing into a defined shape."
+      },
+      "dialogue": "",
+      "duration": 2,
+      "effects": [
+        "digital_shimmer",
+        "light_streaks:subtle_blue",
+        "particles_forming:geometric"
+      ],
+      "frame": "close_up",
+      "id": 1,
+      "post_notes": "Adicionar efeito de transição luminosa e brilho intenso no ponto de convergência.",
+      "sound": {
+        "music": "futuristic_synth_build_up",
+        "sfx": "whoosh_digital_ascend"
+      },
+      "talent": {
+        "action": "Abstract light particles coalescing and shifting, hinting at a form.",
+        "character": "None",
+        "expression": "N/A"
+      }
+    },
+    {
+      "camera": {
+        "lens": "24mm_equiv",
+        "movement": "arc_around_subject",
+        "type": "drone_or_gimbal_wide",
+        "notes": "Camera slowly arcs as the Tesla vehicle and parts of the futuristic showroom materialize from light/digital patterns."
+      },
+      "dialogue": "O futuro se revela.",
+      "duration": 4,
+      "effects": [
+        "materialization_effect:digital_grid",
+        "light_bloom:intense",
+        "clean_design_reveal"
+      ],
+      "frame": "medium_wide",
+      "id": 2,
+      "post_notes": "Aplicar transição VFX suave de luz e grade digital que se solidifica no carro e ambiente. Garantir que a VO se sincronize perfeitamente com a materialização.",
+      "sound": {
+        "music": "technological_unfold",
+        "sfx": "digital_crystallize_whoosh",
+        "vo": "O futuro se revela.",
+        "vo_level": "clear"
+      },
+      "talent": {
+        "action": "The contours of a Tesla vehicle and elements of a minimalist, futuristic showroom gradually appear.",
+        "character": "None",
+        "expression": "N/A"
+      }
+    },
+    {
+      "camera": {
+        "lens": "16mm_equiv",
+        "movement": "slow_pull_back_reveal",
+        "type": "drone_or_gimbal_wide",
+        "notes": "Full, majestic view of the gleaming Tesla in its futuristic, minimalist showroom. Emphasis on sleek lines and innovative design."
+      },
+      "dialogue": "A inovação Tesla, sem limites.",
+      "duration": 2,
+      "effects": [
+        "color_grade:cool_tones",
+        "polished_surface_reflection",
+        "subtle_lens_flare"
+      ],
+      "frame": "wide_scene",
+      "id": 3,
+      "post_notes": "Garantir iluminação perfeita para realçar o design do carro e a arquitetura do showroom. Adicionar um brilho sutil ao redor do veículo.",
+      "sound": {
+        "music": "uplifting_techno_finale",
+        "sfx": "electric_car_hum_subtle",
+        "vo": "A inovação Tesla, sem limites.",
+        "vo_level": "clear"
+      },
+      "talent": {
+        "action": "A fully formed Tesla vehicle stands majestically in a pristine, futuristic showroom, bathed in soft, elegant light.",
+        "character": "None",
+        "expression": "N/A"
+      }
+    }
+  ]
+}`;
+
 interface PropagandaGeneratorProps {
     initialPropaganda?: Propaganda | null;
 }
@@ -751,6 +850,36 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
                 <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
                     <code>
                         {productModelJson}
+                    </code>
+                </pre>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-5">
+          <AccordionTrigger>
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              <span>Exemplo JSON (Tesla)</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+             <Alert>
+                <AlertDescription>
+                   Use este exemplo como inspiração para criar um anúncio de produto com um estilo tecnológico e futurista.
+                </AlertDescription>
+            </Alert>
+            <div className="relative mt-2">
+                 <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={() => handleCopyJson(teslaExampleJson)}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
+                    <code>
+                        {teslaExampleJson}
                     </code>
                 </pre>
             </div>
