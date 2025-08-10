@@ -47,6 +47,7 @@ export interface Propaganda {
     narration?: string;
     tone: string;
     voiceStyle: string;
+    videoStyle: string;
     duration: '5s' | '8s';
     image: string | null;
     generatedScript: string;

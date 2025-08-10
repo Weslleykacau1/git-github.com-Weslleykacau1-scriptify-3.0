@@ -8,9 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library, UploadCloud, ClipboardPaste, List, Text } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from '../ui/select';
 import { FileUploader } from '../ui/file-uploader';
-import { generatePropagandaScript } from '@/ai/flows/script-generation/generate-propaganda-script';
 import { generatePropagandaJsonScript } from '@/ai/flows/script-generation/generate-propaganda-json-script';
 import { analyzeProductImage } from '@/ai/flows/analysis/analyze-product-image';
 import { analyzePropagandaText } from '@/ai/flows/analysis/analyze-propaganda-text';
@@ -481,6 +480,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
   const [narration, setNarration] = useState(initialPropaganda?.narration || '');
   const [tone, setTone] = useState(initialPropaganda?.tone ||'Criativo');
   const [voiceStyle, setVoiceStyle] = useState(initialPropaganda?.voiceStyle || 'Voz Masculina (Jovem)');
+  const [videoStyle, setVideoStyle] = useState(initialPropaganda?.videoStyle || 'fast_cut_energetic');
   const [duration, setDuration] = useState<'5s' | '8s'>(initialPropaganda?.duration || '8s');
   const [numberOfScenes, setNumberOfScenes] = useState(1);
   const [allowsDigitalText, setAllowsDigitalText] = useState(initialPropaganda?.allowsDigitalText ?? true);
@@ -501,6 +501,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
       setNarration(initialPropaganda.narration || '');
       setTone(initialPropaganda.tone || 'Criativo');
       setVoiceStyle(initialPropaganda.voiceStyle || 'Voz Masculina (Jovem)');
+      setVideoStyle(initialPropaganda.videoStyle || 'fast_cut_energetic');
       setDuration(initialPropaganda.duration || '8s');
       setAllowsDigitalText(initialPropaganda.allowsDigitalText ?? true);
       setOnlyPhysicalText(initialPropaganda.onlyPhysicalText ?? false);
@@ -612,6 +613,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
               sceneFocus,
               tone: tone as any,
               duration,
+              videoStyle,
               imagePrompt: image || undefined,
               narration: narration || undefined,
               allowsDigitalText,
@@ -626,6 +628,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
               sceneFocus,
               tone: tone as any,
               duration,
+              videoStyle,
               imagePrompt: image || undefined,
               narration: narration || undefined,
               allowsDigitalText,
@@ -673,6 +676,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
         narration,
         tone,
         voiceStyle,
+        videoStyle,
         duration,
         image,
         generatedScript,
@@ -827,7 +831,7 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
       </div>
 
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
           <Label htmlFor="tone">Tom</Label>
           <Select value={tone} onValueChange={setTone}>
@@ -863,6 +867,48 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
             </SelectContent>
           </Select>
         </div>
+      </div>
+      <div className="space-y-1">
+          <Label htmlFor="video-style">Estilo de Vídeo</Label>
+          <Select value={videoStyle} onValueChange={setVideoStyle}>
+            <SelectTrigger id="video-style"><SelectValue placeholder="Selecione o estilo do vídeo..." /></SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Narrativa / Sequência</SelectLabel>
+                <SelectItem value="timeline_story">Linha do tempo (Evolução)</SelectItem>
+                <SelectItem value="day_in_the_life">Um dia na vida</SelectItem>
+                <SelectItem value="before_and_after">Antes e Depois</SelectItem>
+                <SelectItem value="how_it_works">Como Funciona (Passo a passo)</SelectItem>
+                <SelectItem value="product_journey">Jornada do Produto</SelectItem>
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Ritmo e Corte</SelectLabel>
+                <SelectItem value="fast_cut_energetic">Cortes Rápidos e Energéticos</SelectItem>
+                <SelectItem value="smooth_flow">Fluxo Suave e Contínuo</SelectItem>
+                <SelectItem value="loopable_social">Looping para Redes Sociais</SelectItem>
+                <SelectItem value="split_screen_comparison">Tela Dividida</SelectItem>
+                <SelectItem value="seamless_transitions">Transições Fluidas (Morphing)</SelectItem>
+              </SelectGroup>
+               <SelectGroup>
+                <SelectLabel>Look Visual</SelectLabel>
+                <SelectItem value="cinematic">Cinematográfico</SelectItem>
+                <SelectItem value="doc_style">Estilo Documentário</SelectItem>
+                <SelectItem value="social_media_trend">Estilo TikTok/Reels</SelectItem>
+                <SelectItem value="retro_vhs">Retrô (VHS)</SelectItem>
+                <SelectItem value="color_pop">Cores Vibrantes (Pop)</SelectItem>
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Híbrido / Criativo</SelectLabel>
+                <SelectItem value="live_action_plus_3d">Live-Action com 3D</SelectItem>
+                <SelectItem value="motion_graphics_focus">Foco em Motion Graphics</SelectItem>
+                <SelectItem value="stop_motion">Stop Motion</SelectItem>
+                <SelectItem value="hyperlapse_product">Hyperlapse</SelectItem>
+                <SelectItem value="360_product_view">Visão 360º do Produto</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
           <Label htmlFor="duration">Duração</Label>
           <Select value={duration} onValueChange={(v) => setDuration(v as any)}>

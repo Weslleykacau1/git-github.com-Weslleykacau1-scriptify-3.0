@@ -55,6 +55,7 @@ const GeneratePropagandaJsonScriptInputSchema = z.object({
       'Natural', 'Urgente', 'Calmo', 'Jovem / Cool'
   ]).describe('The desired tone for the commercial.'),
   duration: z.enum(['5s', '8s']).describe('The total duration of the commercial.'),
+  videoStyle: z.string().optional().describe('The desired video style (e.g., "cinematic", "fast_cut_energetic").'),
   narration: z.string().optional().describe('An optional narration script to base the ad on.'),
   imagePrompt: z.string().optional().describe("An optional reference image for the ad's visual style, as a data URI."),
   allowsDigitalText: z.boolean().optional().describe('Whether digital text is allowed on screen.'),
@@ -93,6 +94,10 @@ const prompt = ai.definePrompt({
 
 {{#if sceneFocus}}
 - Scene Focus: "{{sceneFocus}}" - This should be the central point of the commercial's visuals and narrative. Use this as the primary guide for the 'action' and 'notes' fields.
+{{/if}}
+
+{{#if videoStyle}}
+- Video Style: "{{videoStyle}}" - This is a key instruction. It should heavily influence the camera movements, editing style (e.g., 'fast_cut_energetic'), visual effects, and overall look and feel of the commercial. For example, a 'cinematic' style would imply different camera work than a 'social_media_trend' style.
 {{/if}}
 
 {{#if narration}}

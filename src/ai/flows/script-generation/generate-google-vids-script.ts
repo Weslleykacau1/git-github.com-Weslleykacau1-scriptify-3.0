@@ -23,6 +23,7 @@ const GenerateGoogleVidsScriptInputSchema = z.object({
       'Natural', 'Urgente', 'Calmo', 'Jovem / Cool'
   ]).describe('The desired tone for the commercial.'),
   duration: z.enum(['5s', '8s']).describe('The total duration of the commercial.'),
+  videoStyle: z.string().optional().describe('The desired video style (e.g., "cinematic", "fast_cut_energetic").'),
   narration: z.string().optional().describe('An optional narration script to base the ad on.'),
   imagePrompt: z.string().optional().describe("An optional reference image for the ad's visual style, as a data URI."),
   allowsDigitalText: z.boolean().optional().describe('Whether digital text is allowed on screen.'),
@@ -56,6 +57,10 @@ const prompt = ai.definePrompt({
 
 {{#if sceneFocus}}
 - Scene Focus: "{{sceneFocus}}"
+{{/if}}
+
+{{#if videoStyle}}
+- Video Style: "{{videoStyle}}" - This should heavily influence the camera, editing, and visual effects descriptions.
 {{/if}}
 
 {{#if narration}}
