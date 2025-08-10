@@ -92,7 +92,11 @@ The prompt should be inspired by the following example structure for Coca-Cola, 
   ]
 }
 
-Now, generate a new Super Prompt for the user's product, following the same detailed, structured JSON format. All output must be in Portuguese, except for fields that are typically in English (like style, keywords, etc.). Be extremely creative and visual in your descriptions.
+Now, generate a new Super Prompt for the user's product, following the same detailed, structured JSON format.
+**Language instructions:**
+- **All descriptive fields must be in ENGLISH.** This includes: description, style, camera, lighting, environment, elements, motion, ending, audio.music, audio.sfx, and keywords.
+- **Only the 'text_overlay' field must be in BRAZILIAN PORTUGUESE.** This field contains the narration or on-screen text for the ad.
+Be extremely creative and visual in your descriptions.
 `,
 });
 
