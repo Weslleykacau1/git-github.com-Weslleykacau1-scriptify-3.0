@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -22,7 +23,7 @@ const AnalyzeTextProfileOutputSchema = z.object({
   name: z.string().describe("The character's name."),
   niche: z.string().describe("The character's niche."),
   personality: z.string().describe("The character's personality."),
-  physicalAppearance: z.string().describe("The character's physical appearance."),
+  physicalAppearance: z.string().describe("A hyper-detailed description of the character's physical appearance, focusing on facial features like face shape, eye color, hair type, and any other unique details to ensure visual consistency."),
   clothingStyle: z.string().describe("The character's clothing style."),
   biography: z.string().describe("A short biography of the character."),
   uniqueTraits: z.string().describe("The character's unique traits."),
@@ -47,7 +48,7 @@ const prompt = ai.definePrompt({
 - Name: The character's name.
 - Niche: The character's niche.
 - Personality: The character's personality.
-- Physical Appearance: The character's physical appearance.
+- Physical Appearance: Provide a hyper-detailed description of the character's physical appearance. Focus on facial features like face shape, eye color, hair type, skin tone, and any other unique details to ensure maximum visual consistency in later generations.
 - Clothing Style: The character's clothing style.
 - Biography: A short biography of the character.
 - Unique Traits: The character's unique traits.
