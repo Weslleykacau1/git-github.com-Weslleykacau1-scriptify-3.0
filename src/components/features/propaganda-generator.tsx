@@ -1137,6 +1137,50 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
             </div>
           </AccordionContent>
         </AccordionItem>
+         <AccordionItem value="item-7">
+            <AccordionTrigger>
+                <div className="flex items-center gap-2">
+                <Info className="h-4 w-4" />
+                <span>Opções de Estilo de Vídeo (Exemplos)</span>
+                </div>
+            </AccordionTrigger>
+            <AccordionContent>
+                <div className="prose prose-sm dark:prose-invert text-muted-foreground space-y-4">
+                <div>
+                    <strong className="text-foreground">1. Narrativa / Sequência</strong>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>timeline_story</code> → Linha do tempo, com cenas mostrando evolução do produto/uso</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>day_in_the_life</code> → Um dia na vida usando o produto</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>before_and_after</code> → Comparação antes/depois</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>how_it_works</code> → Explicativo passo a passo</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>product_journey</code> → História do produto desde a criação até chegar ao cliente</p>
+                </div>
+                <div>
+                    <strong className="text-foreground">2. Ritmo e Corte</strong>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>fast_cut_energetic</code> → Cortes rápidos, som dinâmico, transições agressivas</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>smooth_flow</code> → Transições suaves, continuidade entre cenas</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>loopable_social</code> → Vídeo que começa e termina igual (perfeito para redes sociais)</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>split_screen_comparison</code> → Tela dividida mostrando opções diferentes</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>seamless_transitions</code> → Trocas de cena com morphing e efeitos contínuos</p>
+                </div>
+                <div>
+                    <strong className="text-foreground">3. Look Visual</strong>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>cinematic</code> → Tons cinematográficos, câmera lenta, profundidade de campo</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>doc_style</code> → Estilo documentário, mais realista</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>social_media_trend</code> → Estilo TikTok/Reels, com texto na tela e cortes rápidos</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>retro_vhs</code> → Efeito anos 80/90, VHS, glitches</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>color_pop</code> → Saturação alta e cores vibrantes no produto</p>
+                </div>
+                <div>
+                    <strong className="text-foreground">4. Híbrido / Criativo</strong>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>live_action_plus_3d</code> → Filmagem real com elementos 3D integrados</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>motion_graphics_focus</code> → Uso de tipografia animada e ilustrações</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>stop_motion</code> → Produto animado quadro a quadro</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>hyperlapse_product</code> → Movimento acelerado mostrando locais diferentes</p>
+                    <p className='mt-1'><code className='font-mono text-xs bg-muted p-1 rounded-md'>360_product_view</code> → Gira o produto em todas as direções com zooms</p>
+                </div>
+                </div>
+            </AccordionContent>
+            </AccordionItem>
       </Accordion>
     </div>
   );
