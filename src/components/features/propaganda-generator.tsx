@@ -317,6 +317,7 @@ export function PropagandaGenerator() {
           productName,
           mainMessage,
           tone,
+          narration: narration || undefined,
         });
         script = JSON.stringify(result, null, 2);
       } else if (format === 'json') {

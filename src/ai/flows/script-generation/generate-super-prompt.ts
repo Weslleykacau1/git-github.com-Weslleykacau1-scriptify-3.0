@@ -16,6 +16,7 @@ const GenerateSuperPromptInputSchema = z.object({
   productName: z.string().describe('The name of the product or service.'),
   mainMessage: z.string().describe('The core message or main benefit of the product.'),
   tone: z.string().describe('The desired tone for the commercial (e.g., "Cinematic", "Minimalist Surrealism").'),
+  narration: z.string().optional().describe('An optional narration script in Brazilian Portuguese to be used as the text_overlay.'),
 });
 export type GenerateSuperPromptInput = z.infer<typeof GenerateSuperPromptInputSchema>;
 
@@ -53,6 +54,9 @@ The prompt should be inspired by the following example structure for Coca-Cola, 
 - Product Name: {{{productName}}}
 - Main Message: {{{mainMessage}}}
 - Desired Tone: {{{tone}}}
+{{#if narration}}
+- Base Narration: "{{narration}}". Use this exact text for the 'text_overlay' field.
+{{/if}}
 
 **Example Structure to follow:**
 {
@@ -95,7 +99,7 @@ The prompt should be inspired by the following example structure for Coca-Cola, 
 Now, generate a new Super Prompt for the user's product, following the same detailed, structured JSON format.
 **Language instructions:**
 - **All descriptive fields must be in ENGLISH.** This includes: description, style, camera, lighting, environment, elements, motion, ending, audio.music, audio.sfx, and keywords.
-- **Only the 'text_overlay' field must be in BRAZILIAN PORTUGUESE.** This field contains the narration or on-screen text for the ad.
+- **Only the 'text_overlay' field must be in BRAZILIAN PORTUGUESE.** This field contains the narration or on-screen text for the ad. If a base narration is provided, use it for this field.
 Be extremely creative and visual in your descriptions.
 `,
 });
