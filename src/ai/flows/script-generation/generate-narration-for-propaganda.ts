@@ -32,14 +32,14 @@ const prompt = ai.definePrompt({
   name: 'generateNarrationForPropagandaPrompt',
   input: {schema: GenerateNarrationForPropagandaInputSchema},
   output: {schema: GenerateNarrationForPropagandaOutputSchema},
-  prompt: `Você é um roteirista de comerciais e especialista em copywriting. Sua tarefa é criar uma narração curta e impactante para um comercial.
+  prompt: `Você é um roteirista de comerciais e especialista em copywriting. Sua tarefa é criar uma narração curta e impactante para um comercial com aproximadamente 8 segundos de duração.
 
 Dados do Produto:
 - Nome: {{{productName}}}
 - Mensagem Principal: {{{mainMessage}}}
 - Tom Desejado: {{{tone}}}
 
-Gere uma narração persuasiva e criativa em português do Brasil que se alinhe perfeitamente com o tom solicitado e venda o produto de forma eficaz.
+Gere uma narração persuasiva e criativa em português do Brasil que se alinhe perfeitamente com o tom solicitado e venda o produto de forma eficaz dentro do tempo estipulado.
 `,
 });
 
