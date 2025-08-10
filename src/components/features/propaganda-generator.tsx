@@ -408,8 +408,18 @@ export function PropagandaGenerator() {
       </div>
       
       <div className="space-y-1">
-        <Label htmlFor="talent">Ator/Atriz/Narrador (para a sua referência)</Label>
-        <Input id="talent" placeholder="Ex: Narrador com voz grave, Atriz jovem e energética" value={talent} onChange={(e) => setTalent(e.target.value)} />
+        <Label htmlFor="talent">Ator/Atriz/Narrador</Label>
+        <Select value={talent} onValueChange={setTalent}>
+            <SelectTrigger id="talent">
+                <SelectValue placeholder="Selecione..." />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="Ator">Ator</SelectItem>
+                <SelectItem value="Atriz">Atriz</SelectItem>
+                <SelectItem value="Narrador">Narrador</SelectItem>
+                <SelectItem value="">Nenhum/Não especificado</SelectItem>
+            </SelectContent>
+        </Select>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
