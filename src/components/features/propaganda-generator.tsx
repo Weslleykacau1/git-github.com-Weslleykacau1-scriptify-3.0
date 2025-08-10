@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles } from 'lucide-react';
+import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -14,7 +14,128 @@ import { generatePropagandaScript } from '@/ai/flows/script-generation/generate-
 import { generatePropagandaJsonScript } from '@/ai/flows/script-generation/generate-propaganda-json-script';
 import { analyzeProductImage } from '@/ai/flows/analysis/analyze-product-image';
 import { generateNarrationForPropaganda } from '@/ai/flows/script-generation/generate-narration-for-propaganda';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
+
+const veo3ExampleJson = `{
+  "metadata": {
+    "project_name": "Comercial_Veo3_Exemplo",
+    "duration_seconds": 32,
+    "target_formats": ["9:16","16:9"],
+    "notes": "Blocos ~8s. Ajuste duração de cada cena conforme necessário."
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "duration": 8,
+      "frame": "close_up",
+      "camera": {
+        "type": "mirrorless_compact",
+        "lens": "50mm_equiv",
+        "movement": "slow_push_in_gimbal",
+        "notes": "POV feel; leve handheld shake"
+      },
+      "talent": {
+        "character": "Comediante",
+        "expression": "surpreso/encantado",
+        "action": "pega o produto e sorri para a câmera"
+      },
+      "dialogue": "Você não vai acreditar no que isso faz!",
+      "effects": [
+        "color_grade:high_saturation",
+        "film_grain:light",
+        "lens_flare:subtle"
+      ],
+      "sound": {
+        "sfx": "whoosh_subtle",
+        "music": "upbeat_intro",
+        "vo_level": "clear"
+      },
+      "post_notes": "Adicionar kinetic_typography entrando pelo canto direito ao final (palavra: 'Incrível')."
+    },
+    {
+      "id": 2,
+      "duration": 8,
+      "frame": "medium",
+      "camera": {
+        "type": "drone_or_gimbal_wide",
+        "lens": "24mm_equiv",
+        "movement": "arc_around_subject",
+        "notes": "usar movimento leve de arco para revelar produto"
+      },
+      "talent": {
+        "character": "Amigo",
+        "expression": "confiante",
+        "action": "aponta para o produto e faz gesto de 'você precisa disso'"
+      },
+      "dialogue": "Funciona em segundos — sério.",
+      "effects": [
+        "seamless_transition_in_from_previous",
+        "color_pop:accent_orange"
+      ],
+      "sound": {
+        "sfx": "impact_punch",
+        "music": "build_beat"
+      },
+      "post_notes": "Inserir 3D_particle sparkles no produto (subtle)."
+    },
+    {
+      "id": 3,
+      "duration": 8,
+      "frame": "product_close",
+      "camera": {
+        "type": "macro_lens",
+        "lens": "85mm_macro_equiv",
+        "movement": "rack_focus_from_product_to_hand",
+        "notes": "foco racked para guiar atenção"
+      },
+      "talent": {
+        "character": "Comediante",
+        "expression": "satisfeito",
+        "action": "mostra como usar o produto com close nas mãos"
+      },
+      "dialogue": "Viu? Fácil assim.",
+      "effects": [
+        "micro_vfx:3d_label_popout",
+        "depth_of_field:shallow"
+      ],
+      "sound": {
+        "sfx": "tap_and_swipe",
+        "music": "main_loop"
+      },
+      "post_notes": "Adicionar kinetic_typography explicando '1 passo'."
+    },
+    {
+      "id": 4,
+      "duration": 8,
+      "frame": "wide_scene",
+      "camera": {
+        "type": "cinema_camera",
+        "lens": "35mm_equiv",
+        "movement": "push_out_then_crane_up",
+        "notes": "final reveal, sensação épica e engraçada"
+      },
+      "talent": {
+        "character": "Todos",
+        "expression": "riso coletivo",
+        "action": "celebram, olhando para a câmera"
+      },
+      "dialogue": "Agora é sua vez — aproveite!",
+      "effects": [
+        "bold_color_grade",
+        "final_glow",
+        "vintage_texture_overlay:very_subtle"
+      ],
+      "sound": {
+        "sfx": "crowd_cheer",
+        "music": "outro_hook",
+        "vo": "call_to_action_line"
+      },
+      "post_notes": "Corte para tela final com CTA, botão animado (kinetic), e versão curta do jingle."
+    }
+  ]
+}`;
 
 export function PropagandaGenerator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +221,7 @@ export function PropagandaGenerator() {
               productName,
               targetAudience,
               mainMessage,
-              tone,
+              tone: tone as any,
               duration,
               imagePrompt: image || undefined,
               narration: narration || undefined,
@@ -111,7 +232,7 @@ export function PropagandaGenerator() {
               productName,
               targetAudience,
               mainMessage,
-              tone,
+              tone: tone as any,
               duration,
               imagePrompt: image || undefined,
               narration: narration || undefined,
@@ -126,6 +247,11 @@ export function PropagandaGenerator() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+   const handleCopyJson = () => {
+    navigator.clipboard.writeText(veo3ExampleJson);
+    toast({ title: 'JSON copiado para a área de transferência!' });
   };
 
   return (
@@ -168,17 +294,6 @@ export function PropagandaGenerator() {
         <Textarea id="main-message" placeholder="Ex: Mantém a sua bebida gelada por 24 horas" value={mainMessage} onChange={(e) => setMainMessage(e.target.value)} />
       </div>
       
-       <div className="space-y-1">
-        <div className="flex justify-between items-center">
-          <Label htmlFor="narration">Narração (Opcional)</Label>
-           <Button variant="ghost" size="sm" onClick={handleGenerateNarration} disabled={isLoadingNarration}>
-                {isLoadingNarration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                Gerar com IA
-            </Button>
-        </div>
-        <Textarea id="narration" placeholder="Escreva a narração que você quer que a IA use como base..." value={narration} onChange={(e) => setNarration(e.target.value)} />
-      </div>
-
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
           <Label htmlFor="tone">Tom</Label>
@@ -212,7 +327,16 @@ export function PropagandaGenerator() {
           </Select>
         </div>
       </div>
-
+       <div className="space-y-1">
+        <div className="flex justify-between items-center">
+          <Label htmlFor="narration">Narração (Opcional)</Label>
+           <Button variant="ghost" size="sm" onClick={handleGenerateNarration} disabled={isLoadingNarration}>
+                {isLoadingNarration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                Gerar com IA
+            </Button>
+        </div>
+        <Textarea id="narration" placeholder="Escreva a narração que você quer que a IA use como base..." value={narration} onChange={(e) => setNarration(e.target.value)} />
+      </div>
       <div className="flex flex-col gap-2">
         <Button onClick={() => handleGenerate('markdown')} disabled={isLoading} size="lg" className="w-full">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
@@ -234,6 +358,57 @@ export function PropagandaGenerator() {
               <Textarea readOnly value={generatedScript} className='min-h-[250px] bg-muted' />
           </div>
       )}
+
+       <Accordion type="single" collapsible className="w-full pt-4">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              <span>Tendências Rápidas para Comerciais</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="prose prose-sm dark:prose-invert text-muted-foreground space-y-2">
+                <p><strong className="text-foreground">Movimentos Dinâmicos e POV:</strong> Use gimbals, sliders e braços robóticos para criar imersão sem custos elevados. O Ponto de Vista (POV) é muito eficaz.</p>
+                <p><strong className="text-foreground">Cores e Estilo Visual:</strong> Cores saturadas, grades ousadas e um look "analógico" (com grão e lens flare) chamam a atenção nos feeds.</p>
+                <p><strong className="text-foreground">Transições Fluidas:</strong> "Morph cuts" e "seamless transitions" são ideais para anúncios curtos e motion design, criando um fluxo contínuo.</p>
+                <p><strong className="text-foreground">Híbrido 3D e Live-Action:</strong> Integre motion graphics, como tipografia cinética e elementos 3D, para fazer o produto "saltar" da tela.</p>
+                <p><strong className="text-foreground">Uso de IA:</strong> Acelere testes A/B com assistência de IA para edição, correção de cor e geração de variações de formato (vertical/horizontal).</p>
+                <p><strong className="text-foreground">Dica de Formato:</strong> Para redes sociais, prefira o formato vertical (9:16) com cortes rápidos. Para TV/streaming, use 16:9 com planos mais abertos e cinematográficos.</p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              <span>Exemplo JSON (VEO 3)</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+             <Alert>
+                <AlertDescription>
+                   Use este template como base. Cada cena tem duração, câmera, movimento, expressão, fala, efeitos e instruções para pós-produção. Copie e ajuste conforme necessário.
+                </AlertDescription>
+            </Alert>
+            <div className="relative mt-2">
+                 <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={handleCopyJson}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                <pre className="bg-muted p-4 rounded-md overflow-x-auto text-xs">
+                    <code>
+                        {veo3ExampleJson}
+                    </code>
+                </pre>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
