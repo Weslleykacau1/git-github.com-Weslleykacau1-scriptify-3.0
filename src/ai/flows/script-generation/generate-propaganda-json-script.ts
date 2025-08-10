@@ -48,6 +48,7 @@ const GeneratePropagandaJsonScriptInputSchema = z.object({
   productName: z.string().describe('The name of the product or service.'),
   targetAudience: z.string().describe('The target audience for the commercial.'),
   mainMessage: z.string().describe('The core message or main benefit of the product.'),
+  sceneFocus: z.string().optional().describe('The main focus of the scene.'),
   tone: z.enum([
       'Sério', 'Emocional', 'Divertido', 'Criativo', 'Didático', 
       'Motivacional', 'Luxuoso', 'Tecnológico', 'Confiável', 
@@ -87,6 +88,10 @@ const prompt = ai.definePrompt({
 - Target Audience: {{targetAudience}}
 - Main Message: {{mainMessage}}
 - Desired Tone: {{tone}}
+
+{{#if sceneFocus}}
+- Scene Focus: "{{sceneFocus}}" - This should be the central point of the commercial's visuals and narrative. Use this as the primary guide for the 'action' and 'notes' fields.
+{{/if}}
 
 {{#if narration}}
 - Base Narration (use this as the primary guide for the dialogue): "{{narration}}"

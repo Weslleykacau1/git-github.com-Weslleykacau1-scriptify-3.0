@@ -240,6 +240,7 @@ export function PropagandaGenerator() {
   const [productName, setProductName] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
   const [mainMessage, setMainMessage] = useState('');
+  const [sceneFocus, setSceneFocus] = useState('');
   const [narration, setNarration] = useState('');
   const [tone, setTone] = useState('Criativo');
   const [voiceStyle, setVoiceStyle] = useState('Voz Masculina (Jovem)');
@@ -325,6 +326,7 @@ export function PropagandaGenerator() {
               productName,
               targetAudience,
               mainMessage,
+              sceneFocus,
               tone: tone as any,
               duration,
               imagePrompt: image || undefined,
@@ -336,6 +338,7 @@ export function PropagandaGenerator() {
               productName,
               targetAudience,
               mainMessage,
+              sceneFocus,
               tone: tone as any,
               duration,
               imagePrompt: image || undefined,
@@ -397,8 +400,13 @@ export function PropagandaGenerator() {
         <Label htmlFor="main-message">Mensagem Principal</Label>
         <Textarea id="main-message" placeholder="Ex: Mantém a sua bebida gelada por 24 horas" value={mainMessage} onChange={(e) => setMainMessage(e.target.value)} />
       </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="scene-focus">Foco Principal da Cena</Label>
+        <Textarea id="scene-focus" placeholder="Ex: Mostrar a resistência do produto em uma situação extrema." value={sceneFocus} onChange={(e) => setSceneFocus(e.target.value)} />
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-1">
           <Label htmlFor="tone">Tom</Label>
           <Select value={tone} onValueChange={setTone}>
