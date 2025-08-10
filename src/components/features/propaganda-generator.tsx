@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library, UploadCloud, ClipboardPaste, List } from 'lucide-react';
+import { Loader2, Pencil, Image as ImageIcon, Rocket, Wand2, Megaphone, Sparkles, Copy, Info, Save, Library, UploadCloud, ClipboardPaste, List, Text } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -19,6 +19,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { generateSuperPrompt } from '@/ai/flows/script-generation/generate-super-prompt';
 import type { Propaganda } from '@/lib/types';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 
 const veo3ExampleJson = `{
@@ -481,6 +482,8 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
   const [voiceStyle, setVoiceStyle] = useState(initialPropaganda?.voiceStyle || 'Voz Masculina (Jovem)');
   const [duration, setDuration] = useState<'5s' | '8s'>(initialPropaganda?.duration || '8s');
   const [numberOfScenes, setNumberOfScenes] = useState(1);
+  const [allowsDigitalText, setAllowsDigitalText] = useState(initialPropaganda?.allowsDigitalText ?? true);
+  const [onlyPhysicalText, setOnlyPhysicalText] = useState(initialPropaganda?.onlyPhysicalText ?? false);
   const [generatedScript, setGeneratedScript] = useState(initialPropaganda?.generatedScript || '');
 
   const { toast } = useToast();
@@ -498,6 +501,8 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
       setTone(initialPropaganda.tone || 'Criativo');
       setVoiceStyle(initialPropaganda.voiceStyle || 'Voz Masculina (Jovem)');
       setDuration(initialPropaganda.duration || '8s');
+      setAllowsDigitalText(initialPropaganda.allowsDigitalText ?? true);
+      setOnlyPhysicalText(initialPropaganda.onlyPhysicalText ?? false);
       setGeneratedScript(initialPropaganda.generatedScript || '');
     }
   }, [initialPropaganda]);
@@ -608,6 +613,8 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
               duration,
               imagePrompt: image || undefined,
               narration: narration || undefined,
+              allowsDigitalText,
+              onlyPhysicalText,
           });
           script = JSON.stringify(result, null, 2);
       } else {
@@ -620,6 +627,8 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
               duration,
               imagePrompt: image || undefined,
               narration: narration || undefined,
+              allowsDigitalText,
+              onlyPhysicalText,
           });
           script = result.script;
       }
@@ -662,6 +671,8 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
         duration,
         image,
         generatedScript,
+        allowsDigitalText,
+        onlyPhysicalText,
     };
 
     try {
@@ -765,19 +776,51 @@ export function PropagandaGenerator({ initialPropaganda }: PropagandaGeneratorPr
       </div>
       
       <div className="space-y-1">
-        <Label htmlFor="talent">Ator/Atriz/Narrador</Label>
-        <Select value={talent} onValueChange={setTalent}>
-            <SelectTrigger id="talent">
-                <SelectValue placeholder="Selecione..." />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="Ator">Ator</SelectItem>
-                <SelectItem value="Atriz">Atriz</SelectItem>
-                <SelectItem value="Narrador">Narrador</SelectItem>
-                <SelectItem value="none">Nenhum/Não especificado</SelectItem>
-            </SelectContent>
-        </Select>
+          <Label htmlFor="talent">Ator/Atriz/Narrador</Label>
+          <Select value={talent} onValueChange={setTalent}>
+              <SelectTrigger id="talent"><SelectValue placeholder="Selecione..." /></SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="Ator">Ator</SelectItem>
+                  <SelectItem value="Atriz">Atriz</SelectItem>
+                  <SelectItem value="Narrador">Narrador</SelectItem>
+                  <SelectItem value="none">Nenhum/Não especificado</SelectItem>
+              </SelectContent>
+          </Select>
       </div>
+
+      <div className="border rounded-lg p-4 space-y-4 border-red-500/30 bg-red-500/10">
+          <div className="flex items-center gap-3">
+              <Text className="h-6 w-6 text-red-400" />
+              <h3 className="font-semibold text-lg text-red-400">Controlo de Texto no Ecrã</h3>
+          </div>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <Label htmlFor="digitalText">Permite textos digitais na tela?</Label>
+              <RadioGroup value={allowsDigitalText ? 'yes' : 'no'} onValueChange={(v) => setAllowsDigitalText(v === 'yes')} id="digitalText" className="flex gap-4">
+                  <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="yes" id="digitalText-yes" />
+                      <Label htmlFor="digitalText-yes">Sim</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="no" id="digitalText-no" />
+                      <Label htmlFor="digitalText-no">Não</Label>
+                  </div>
+              </RadioGroup>
+          </div>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <Label htmlFor="physicalText">Apenas textos físicos?</Label>
+              <RadioGroup value={onlyPhysicalText ? 'yes' : 'no'} onValueChange={(v) => setOnlyPhysicalText(v === 'yes')} id="physicalText" className="flex gap-4">
+                  <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="yes" id="physicalText-yes" />
+                      <Label htmlFor="physicalText-yes">Sim</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="no" id="physicalText-no" />
+                      <Label htmlFor="physicalText-no">Não</Label>
+                  </div>
+              </RadioGroup>
+          </div>
+      </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-1">

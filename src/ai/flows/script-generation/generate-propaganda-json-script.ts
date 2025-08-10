@@ -57,6 +57,8 @@ const GeneratePropagandaJsonScriptInputSchema = z.object({
   duration: z.enum(['5s', '8s']).describe('The total duration of the commercial.'),
   narration: z.string().optional().describe('An optional narration script to base the ad on.'),
   imagePrompt: z.string().optional().describe("An optional reference image for the ad's visual style, as a data URI."),
+  allowsDigitalText: z.boolean().optional().describe('Whether digital text is allowed on screen.'),
+  onlyPhysicalText: z.boolean().optional().describe('Whether only physical text is allowed on screen.'),
 });
 export type GeneratePropagandaJsonScriptInput = z.infer<typeof GeneratePropagandaJsonScriptInputSchema>;
 
@@ -100,6 +102,11 @@ const prompt = ai.definePrompt({
 {{#if imagePrompt}}
 - Reference Image (use for visual inspiration): {{media url=imagePrompt}}
 {{/if}}
+
+**Text Control:**
+- Allows Digital Text on Screen: {{#if allowsDigitalText}}Yes{{else}}No{{/if}}
+- Only Physical Text on Screen: {{#if onlyPhysicalText}}Yes{{else}}No{{/if}}
+- Based on these text controls, decide whether to include on-screen text overlays (like in 'post_notes' for kinetic typography) or to only describe text that is physically present in the scene.
 
 - The final output must be in JSON, following the provided output schema precisely.
 - All text fields like notes, descriptions, and prompts must be in English.

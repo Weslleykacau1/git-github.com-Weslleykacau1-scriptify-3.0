@@ -50,4 +50,6 @@ export interface Propaganda {
     duration: '5s' | '8s';
     image: string | null;
     generatedScript: string;
+    allowsDigitalText?: boolean;
+    onlyPhysicalText?: boolean;
 }

@@ -25,6 +25,8 @@ const GeneratePropagandaScriptInputSchema = z.object({
   duration: z.enum(['5s', '8s']).describe('The total duration of the commercial.'),
   narration: z.string().optional().describe('An optional narration script to base the ad on.'),
   imagePrompt: z.string().optional().describe("An optional reference image for the ad's visual style, as a data URI."),
+  allowsDigitalText: z.boolean().optional().describe('Whether digital text is allowed on screen.'),
+  onlyPhysicalText: z.boolean().optional().describe('Whether only physical text is allowed on screen.'),
 });
 export type GeneratePropagandaScriptInput = z.infer<typeof GeneratePropagandaScriptInputSchema>;
 
@@ -66,6 +68,11 @@ The script must be structured using the AIDA formula, with timings appropriate f
 {{#if imagePrompt}}
 - Reference Image (use for visual inspiration): {{media url=imagePrompt}}
 {{/if}}
+
+**Text Control:**
+- Allows Digital Text on Screen: {{#if allowsDigitalText}}Yes{{else}}No{{/if}}
+- Only Physical Text on Screen: {{#if onlyPhysicalText}}Yes{{else}}No{{/if}}
+- Based on these text controls, decide whether to include on-screen text overlays or to only describe text that is physically present in the scene.
 
 The final output must be a Markdown script. All visual and audio descriptions must be in English. The narration must be in Brazilian Portuguese. Detail the script second-by-second.
 `,
