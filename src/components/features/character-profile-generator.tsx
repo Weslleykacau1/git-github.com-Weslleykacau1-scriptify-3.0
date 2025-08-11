@@ -1,4 +1,3 @@
-
 // src/components/features/character-profile-generator.tsx
 'use client';
 
@@ -324,13 +323,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                 <UploadCloud className="h-6 w-6 text-primary" />
                 <h3 className="font-semibold text-lg">Carregar Foto</h3>
             </div>
-            <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} />
-             {photoDataUri && (
-                <Button onClick={analyzeImage} disabled={isLoading} className="w-full">
-                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Analisar Imagem
-                </Button>
-            )}
+            <FileUploader onFileChange={setPhotoDataUri} file={photoDataUri} onAnalyze={analyzeImage} isLoading={isLoading} />
             <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-400 [&>svg]:text-blue-400">
                 <Sparkles className="h-4 w-4" />
                 <AlertDescription className="text-xs text-blue-400/80">
@@ -462,13 +455,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
             </div>
             <div className="space-y-2">
                 <Label>Referência de Cenário (Opcional)</Label>
-                <FileUploader onFileChange={setScenePhotoDataUri} file={scenePhotoDataUri} />
-                 {scenePhotoDataUri && (
-                    <Button onClick={analyzeSceneImage} disabled={isLoadingScene} className="mt-4 w-full">
-                        {isLoadingScene ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                        Gerar Cena com IA
-                    </Button>
-                )}
+                <FileUploader onFileChange={setScenePhotoDataUri} file={scenePhotoDataUri} onAnalyze={analyzeSceneImage} isLoading={isLoadingScene} />
             </div>
             <div className="flex flex-col sm:flex-row gap-2 justify-start pt-2">
                 <Button variant="outline" className="w-full sm:w-auto" onClick={resetScene}><Plus className="mr-2 h-4 w-4"/> Nova Cena</Button>
@@ -596,13 +583,7 @@ export function CharacterProfileGenerator({ initialCharacter, initialScene, init
                 </div>
                 <div className="space-y-2">
                     <Label>Carregue a imagem do produto</Label>
-                    <FileUploader onFileChange={setProductPhotoDataUri} file={productPhotoDataUri} />
-                    {productPhotoDataUri && (
-                        <Button onClick={analyzeProduct} disabled={isLoadingProduct} className="mt-4 w-full">
-                            {isLoadingProduct ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            Analisar Imagem do Produto
-                        </Button>
-                    )}
+                    <FileUploader onFileChange={setProductPhotoDataUri} file={productPhotoDataUri} onAnalyze={analyzeProduct} isLoading={isLoadingProduct} />
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="productDescription">Descrição do Produto</Label>
